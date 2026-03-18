@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wortarten Lernspiel</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  max-width: 700px;
+  margin: auto;
+  padding: 15px;
+  text-align: center;
+}
+
+h2 { margin-bottom: 10px; }
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+button {
+  flex: 1;
+  margin: 5px;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+}
+
+.active-blue { background: lightblue; border: 2px solid blue; }
+.active-red { background: lightcoral; border: 2px solid red; }
+.active-green { background: lightgreen; border: 2px solid green; }
+
+.word {
+  display: inline-block;
+  margin: 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.blue { background: lightblue; }
+.red { background: lightcoral; }
+.green { background: lightgreen; }
+
+.shake { animation: shake 0.2s; }
+
+@keyframes shake {
+  50% { transform: translateX(4px); }
+}
+
+.score {
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+.message {
+  height: 24px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Markiere: Nomen (blau), Verben (rot), Adjektive (grün)</h2>
+
+<div class="controls">
+  <button id="blueBtn" onclick="setColor('blue')">Nomen - Blau</button>
+  <button id="redBtn" onclick="setColor('red')">Verb - Rot</button>
+  <button id="greenBtn" onclick="setColor('green')">Adjektiv - Grün</button>
+</div>
+
+<p id="text"></p>
+
+<div class="score">
+  📄 Satz: <span id="index">1</span>/100 |
+  🎯 Level: <span id="level">1</span><br>
+  ✅ Richtig: <span id="correct">0</span> |
+  ❌ Falsch: <span id="wrong">0</span> |
+  ⭐ Sterne: <span id="stars">0</span>
+</div>
+
+<div class="message" id="message"></div>
+
+<div class="nav">
+  <button onclick="prevSentence()">⬅️ Zurück</button>
+  <button onclick="nextSentence()">➡️ Weiter</button>
+</div>
+
+<!-- LOAD DATASET -->
+<script src="sentences.js"></script>
+
+<script>
+let selectedColor = null;
+let currentIndex = 0;
+let correctClicks = 0;
+let wrongClicks = 0;
+let stars = 0;
+
+// Load saved progress
+const saved = JSON.parse(localStorage.getItem("progress"));
+if (saved) {
+  currentIndex = saved.index || 0;
+  correctClicks = saved.correct || 0;
+  wrongClicks = saved.wrong || 0;
+  stars = saved.stars || 0;
+}
+
+function saveProgress() {
+  localStorage.setItem("progress", JSON.stringify({
+    index: currentIndex,
+    correct: correctClicks,
+    wrong: wrongClicks,
+    stars: stars
+  }));
+}
+
+const buttons = {
+  blue: document.getElementById("blueBtn"),
+  red: document.getElementById("redBtn"),
+  green: document.getElementById("greenBtn")
+};
+
+function setColor(color) {
+  selectedColor = color;
+  Object.values(buttons).forEach(b => b.classList.remove("active-blue","active-red","active-green"));
+  buttons[color].classList.add("active-" + color);
+}
+
+function playSound(type) {
+  const audio = new Audio(
+    type === "correct"
+      ? "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
+      : "https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"
+  );
+  audio.play();
+}
+
+function getCorrectColor(type) {
+  if (type === "noun") return "blue";
+  if (type === "verb") return "red";
+  if (type === "adjective") return "green";
+  return null;
+}
+
+function updateUI() {
+  document.getElementById("correct").textContent = correctClicks;
+  document.getElementById("wrong").textContent = wrongClicks;
+  document.getElementById("stars").textContent = stars;
+  document.getElementById("index").textContent = currentIndex + 1;
+  document.getElementById("level").textContent = Math.floor(currentIndex / 5) + 1;
+}
+
+function showMessage(text) {
+  const el = document.getElementById("message");
+  el.textContent = text;
+  setTimeout(() => el.textContent = "", 1000);
+}
+
+function renderSentence() {
+  const container = document.getElementById("text");
+  container.innerHTML = "";
+
+  const sentence = sentences[currentIndex];
+
+  sentence.forEach((wordObj, i) => {
+    const span = document.createElement("span");
+    span.textContent = wordObj.text + " ";
+    span.className = "word";
+
+    span.onclick = () => {
+      if (!selectedColor) return;
+
+      const correctColor = getCorrectColor(wordObj.type);
+
+      if (selectedColor === correctColor && !span.classList.contains(correctColor)) {
+        span.classList.add(selectedColor);
+        correctClicks++;
+        playSound("correct");
+      } else if (selectedColor !== correctColor) {
+        span.classList.add("shake");
+        wrongClicks++;
+        playSound("wrong");
+        setTimeout(() => span.classList.remove("shake"), 200);
+      }
+
+      updateUI();
+      checkCompletion();
+      saveProgress();
+    };
+
+    container.appendChild(span);
+  });
+
+  updateUI();
+}
+
+function checkCompletion() {
+  const words = document.querySelectorAll(".word");
+  let allCorrect = true;
+
+  words.forEach((el, i) => {
+    const type = sentences[currentIndex][i].type;
+    const correctColor = getCorrectColor(type);
+
+    if (correctColor && !el.classList.contains(correctColor)) {
+      allCorrect = false;
+    }
+  });
+
+  if (allCorrect) {
+    stars++;
+    showMessage("Super! 🎉");
+    setTimeout(() => nextSentence(), 800);
+  }
+}
+
+function nextSentence() {
+  if (currentIndex < sentences.length - 1) {
+    currentIndex++;
+    renderSentence();
+    saveProgress();
+  }
+}
+
+function prevSentence() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderSentence();
+    saveProgress();
+  }
+}
+
+// INIT
+renderSentence();
+</script>
+
+</body>
+</html>
