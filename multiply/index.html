@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart Multiplication Trainer</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f0f8ff;
+    margin: 0;
+    padding: 10px;
+}
+
+h1 {
+    font-size: 6vw;
+}
+
+.problem {
+    font-size: 12vw;
+    margin: 20px 0;
+}
+
+input {
+    font-size: 8vw;
+    width: 40vw;
+    padding: 10px;
+    text-align: center;
+}
+
+button {
+    font-size: 5vw;
+    padding: 10px 20px;
+}
+
+.correct { color: green; }
+.wrong { color: red; }
+
+.panel {
+    margin-top: 15px;
+    font-size: 4.5vw;
+}
+
+.timer {
+    font-weight: bold;
+}
+
+.review-section {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.review-title {
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.review-box {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 5px;
+    word-wrap: break-word;
+}
+
+@media (min-width: 600px) {
+
+    h1 { font-size: 32px; }
+    .problem { font-size: 50px; }
+    input { font-size: 28px; width: 150px; }
+    button { font-size: 18px; }
+    .panel { font-size: 18px; }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Multiplication Trainer ✏️</h1>
+
+<div class="problem" id="problem"></div>
+
+<input type="number" id="answer" autofocus>
+
+<br>
+
+<button onclick="checkAnswer()">Check</button>
+
+<div id="feedback"></div>
+
+<div class="panel">
+⏱ Time: <span class="timer" id="timer">0.0</span>s
+</div>
+
+<div class="panel">
+✅ Correct: <span id="correctCount">0</span>
+|
+❌ Wrong: <span id="wrongCount">0</span>
+</div>
+
+<div class="review-section">
+
+<div class="review-title">
+❌ Latest Wrong Problems
+</div>
+
+<div class="review-box" id="wrongList">
+</div>
+
+<div class="review-title">
+🐢 Slowest Problems (slowest first)
+</div>
+
+<div class="review-box" id="slowList">
+</div>
+
+</div>
+
+<script>
+
+// SETTINGS
+
+const MAX_TABLE = 10;
+
+const OUTLIER_MIN = 0.3;
+const OUTLIER_MAX = 20;
+
+const SLOW_THRESHOLD = 4;
+
+const MAX_LIST = 12;
+
+
+// STATE
+
+let num1;
+let num2;
+let correctAnswer;
+
+let correctCount = 0;
+let wrongCount = 0;
+
+let startTime;
+let timerInterval;
+
+let problemStats = {};
+
+let wrongHistory = [];
+let slowHistory = [];
+
+
+// HELPERS
+
+function formatProblem(a, b) {
+    return a + "x" + b;
+}
+
+function problemKey(a, b) {
+    return a + "x" + b;
+}
+
+function average(arr) {
+
+    if (!arr.length) return 0;
+
+    let sum = arr.reduce((a,b)=>a+b,0);
+    return sum / arr.length;
+
+}
+
+
+// PROBLEM SELECTION
+
+function chooseProblem() {
+
+    let weightedPool = [];
+
+    for (let a = 1; a <= MAX_TABLE; a++) {
+
+        for (let b = 1; b <= MAX_TABLE; b++) {
+
+            let key = problemKey(a, b);
+
+            if (!problemStats[key]) {
+
+                problemStats[key] = {
+                    wrong: 0,
+                    times: []
+                };
+
+            }
+
+            let weight = 1;
+
+            // Wrong answers weight
+            weight += problemStats[key].wrong * 3;
+
+            // Slow answers weight
+            let avgTime =
+                average(problemStats[key].times);
+
+            if (avgTime > SLOW_THRESHOLD)
+                weight += 2;
+
+            for (let i = 0; i < weight; i++)
+                weightedPool.push([a, b]);
+
+        }
+    }
+
+    return weightedPool[
+        Math.floor(Math.random() * weightedPool.length)
+    ];
+}
+
+
+// TIMER
+
+function startTimer() {
+
+    startTime = Date.now();
+
+    timerInterval = setInterval(() => {
+
+        let t =
+            (Date.now() - startTime) / 1000;
+
+        document.getElementById("timer")
+            .innerText = t.toFixed(1);
+
+    }, 100);
+
+}
+
+function stopTimer() {
+
+    clearInterval(timerInterval);
+
+    return (Date.now() - startTime) / 1000;
+
+}
+
+
+// WRONG LIST
+
+function addWrong(problem) {
+
+    wrongHistory.unshift(problem);
+
+    if (wrongHistory.length > MAX_LIST)
+        wrongHistory.pop();
+
+    updateLists();
+
+}
+
+
+// SLOW LIST
+
+function addSlow(problem, time) {
+
+    slowHistory.push({
+        problem: problem,
+        time: time
+    });
+
+    // Sort slowest first
+    slowHistory.sort(
+        (a, b) => b.time - a.time
+    );
+
+    slowHistory =
+        slowHistory.slice(0, MAX_LIST);
+
+    updateLists();
+
+}
+
+
+// DISPLAY LISTS
+
+function updateLists() {
+
+    let wrongText =
+        wrongHistory
+        .map(p => p + ";")
+        .join(" ");
+
+    document.getElementById("wrongList")
+        .innerText = wrongText;
+
+
+    let slowText =
+        slowHistory
+        .map(item =>
+            item.problem +
+            "(" +
+            item.time.toFixed(1) +
+            "s);"
+        )
+        .join(" ");
+
+    document.getElementById("slowList")
+        .innerText = slowText;
+
+}
+
+
+// FLOW
+
+function newProblem() {
+
+    let chosen = chooseProblem();
+
+    num1 = chosen[0];
+    num2 = chosen[1];
+
+    correctAnswer = num1 * num2;
+
+    document.getElementById("problem")
+        .innerText =
+        num1 + " × " + num2 + " =";
+
+    document.getElementById("answer").value = "";
+
+    document.getElementById("feedback").innerText = "";
+
+    startTimer();
+
+}
+
+
+function checkAnswer() {
+
+    let userAnswer =
+        parseInt(
+            document.getElementById("answer").value
+        );
+
+    let key = problemKey(num1, num2);
+
+    if (userAnswer === correctAnswer) {
+
+        let elapsed = stopTimer();
+
+        if (
+            elapsed >= OUTLIER_MIN &&
+            elapsed <= OUTLIER_MAX
+        ) {
+
+            problemStats[key].times.push(elapsed);
+
+            if (elapsed > SLOW_THRESHOLD) {
+
+                addSlow(
+                    formatProblem(num1, num2),
+                    elapsed
+                );
+
+            }
+
+        }
+
+        correctCount++;
+
+        document.getElementById("feedback")
+            .innerText = "Correct! 🎉";
+
+        document.getElementById("feedback")
+            .className = "correct";
+
+        document.getElementById("correctCount")
+            .innerText = correctCount;
+
+        setTimeout(newProblem, 800);
+
+    }
+
+    else {
+
+        wrongCount++;
+
+        if (!problemStats[key]) {
+
+            problemStats[key] = {
+                wrong: 0,
+                times: []
+            };
+
+        }
+
+        problemStats[key].wrong++;
+
+        addWrong(
+            formatProblem(num1, num2)
+        );
+
+        document.getElementById("feedback")
+            .innerText = "Try again ❌";
+
+        document.getElementById("feedback")
+            .className = "wrong";
+
+        document.getElementById("wrongCount")
+            .innerText = wrongCount;
+
+        document.getElementById("answer").value = "";
+
+    }
+
+}
+
+
+// ENTER KEY SUPPORT
+
+document.getElementById("answer")
+.addEventListener("keypress", function(e) {
+
+    if (e.key === "Enter")
+        checkAnswer();
+
+});
+
+
+// START
+
+newProblem();
+
+</script>
+
+</body>
+</html>
