@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Tasteninstrumente Quiz</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    text-align: center;
+}
+
+.question {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
+
+.correct {
+    background-color: #c8f7c5;
+}
+
+.wrong {
+    background-color: #f7c5c5;
+}
+
+button {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+#result {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🎹 Tasteninstrumente Quiz</h1>
+
+<form id="quizForm">
+
+<div class="question">
+<p>1. Beim Klavier entstehen Töne durch …</p>
+<label><input type="checkbox" name="q1" value="a"> das Anschlagen von Saiten mit kleinen Hämmern</label><br>
+<label><input type="checkbox" name="q1" value="b"> das Blasen von Luft durch Pfeifen</label><br>
+<label><input type="checkbox" name="q1" value="c"> das Drehen von Rädern</label>
+</div>
+
+<div class="question">
+<p>2. Die weißen und schwarzen Tasten zusammen nennt man …</p>
+<label><input type="radio" name="q2" value="a"> Klaviertafel</label><br>
+<label><input type="radio" name="q2" value="b"> Klaviatur</label><br>
+<label><input type="radio" name="q2" value="c"> Klangbrett</label>
+</div>
+
+<div class="question">
+<p>3. Welche Tasteninstrumente gehören zur Familie der Saiteninstrumente?</p>
+<label><input type="checkbox" name="q3" value="a"> Klavier</label><br>
+<label><input type="checkbox" name="q3" value="b"> Flügel</label><br>
+<label><input type="checkbox" name="q3" value="c"> Orgel</label>
+</div>
+
+<div class="question">
+<p>4. Welche Tasteninstrumente erzeugen Töne mit Luft?</p>
+<label><input type="checkbox" name="q4" value="a"> Orgel</label><br>
+<label><input type="checkbox" name="q4" value="b"> Akkordeon</label><br>
+<label><input type="checkbox" name="q4" value="c"> Klavier</label>
+</div>
+
+<div class="question">
+<p>5. Beim Akkordeon wird der Ton erzeugt durch …</p>
+<label><input type="radio" name="q5" value="a"> das Drücken von Pedalen</label><br>
+<label><input type="radio" name="q5" value="b"> Luft, die durch Metallzungen strömt</label><br>
+<label><input type="radio" name="q5" value="c"> das Schlagen auf Trommeln</label>
+</div>
+
+<div class="question">
+<p>6. Wozu dienen die Pedale beim Klavier?</p>
+<label><input type="checkbox" name="q6" value="a"> Zum Lauterstellen der Musik</label><br>
+<label><input type="checkbox" name="q6" value="b"> Zum Verlängern oder Verändern des Tons</label><br>
+<label><input type="checkbox" name="q6" value="c"> Zum Einschalten des Instruments</label>
+</div>
+
+<div class="question">
+<p>7. Wie viele Tasten hat ein modernes Klavier normalerweise?</p>
+<label><input type="radio" name="q7" value="a"> 88</label><br>
+<label><input type="radio" name="q7" value="b"> 44</label><br>
+<label><input type="radio" name="q7" value="c"> 120</label>
+</div>
+
+<div class="question">
+<p>8. Ein Keyboard braucht Strom, weil …</p>
+<label><input type="radio" name="q8" value="a"> es aus Holz besteht</label><br>
+<label><input type="radio" name="q8" value="b"> es elektronische Klänge erzeugt</label><br>
+<label><input type="radio" name="q8" value="c"> es sehr schwer ist</label>
+</div>
+
+<div class="question">
+<p>9. Die tiefen Töne auf dem Klavier liegen meistens …</p>
+<label><input type="radio" name="q9" value="a"> links</label><br>
+<label><input type="radio" name="q9" value="b"> rechts</label><br>
+<label><input type="radio" name="q9" value="c"> in der Mitte</label>
+</div>
+
+<div class="question">
+<p>10. Die hohen Töne auf dem Klavier liegen meistens …</p>
+<label><input type="radio" name="q10" value="a"> links</label><br>
+<label><input type="radio" name="q10" value="b"> rechts</label><br>
+<label><input type="radio" name="q10" value="c"> unter dem Klavier</label>
+</div>
+
+<div class="question">
+<p>11. Welche Instrumente kann man gleichzeitig viele Töne spielen?</p>
+<label><input type="checkbox" name="q11" value="a"> Klavier</label><br>
+<label><input type="checkbox" name="q11" value="b"> Orgel</label><br>
+<label><input type="checkbox" name="q11" value="c"> Trompete</label>
+</div>
+
+<div class="question">
+<p>12. Was befindet sich im Inneren eines Klaviers?</p>
+<label><input type="checkbox" name="q12" value="a"> Saiten</label><br>
+<label><input type="checkbox" name="q12" value="b"> Pfeifen</label><br>
+<label><input type="checkbox" name="q12" value="c"> Hämmer</label>
+</div>
+
+<div class="question">
+<p>13. Warum sind die Saiten im Klavier unterschiedlich lang?</p>
+<label><input type="radio" name="q13" value="a"> Damit sie unterschiedlich laut sind</label><br>
+<label><input type="radio" name="q13" value="b"> Damit sie unterschiedliche Tonhöhen erzeugen</label><br>
+<label><input type="radio" name="q13" value="c"> Damit sie besser aussehen</label>
+</div>
+
+<div class="question">
+<p>14. Welches Instrument steht oft in Kirchen?</p>
+<label><input type="radio" name="q14" value="a"> Orgel</label><br>
+<label><input type="radio" name="q14" value="b"> Flügel</label><br>
+<label><input type="radio" name="q14" value="c"> Akkordeon</label>
+</div>
+
+<div class="question">
+<p>15. Was macht ein Keyboard besonders?</p>
+<label><input type="checkbox" name="q15" value="a"> Es kann viele verschiedene Instrumente nachahmen</label><br>
+<label><input type="checkbox" name="q15" value="b"> Es ist immer aus Metall</label><br>
+<label><input type="checkbox" name="q15" value="c"> Es hat keine Tasten</label>
+</div>
+
+<div class="question">
+<p>16. Wie nennt man jemanden, der Klavier spielt?</p>
+<label><input type="radio" name="q16" value="a"> Pianist oder Pianistin</label><br>
+<label><input type="radio" name="q16" value="b"> Trommler</label><br>
+<label><input type="radio" name="q16" value="c"> Sänger</label>
+</div>
+
+<div class="question">
+<p>17. Was passiert, wenn man eine Taste stärker drückt?</p>
+<label><input type="radio" name="q17" value="a"> Der Ton wird lauter</label><br>
+<label><input type="radio" name="q17" value="b"> Der Ton verschwindet</label><br>
+<label><input type="radio" name="q17" value="c"> Nichts verändert sich</label>
+</div>
+
+<div class="question">
+<p>18. Welche Teile helfen beim Spielen mit den Füßen?</p>
+<label><input type="checkbox" name="q18" value="a"> Pedale</label><br>
+<label><input type="checkbox" name="q18" value="b"> Saiten</label><br>
+<label><input type="checkbox" name="q18" value="c"> Lautsprecher</label>
+</div>
+
+<div class="question">
+<p>19. Warum ist ein Flügel oft in Konzertsälen zu finden?</p>
+<label><input type="radio" name="q19" value="a"> Weil er besonders laut und klangvoll ist</label><br>
+<label><input type="radio" name="q19" value="b"> Weil er sehr klein ist</label><br>
+<label><input type="radio" name="q19" value="c"> Weil er keine Tasten hat</label>
+</div>
+
+<div class="question">
+<p>20. Was kann man mit Tasteninstrumenten gut spielen?</p>
+<label><input type="checkbox" name="q20" value="a"> Melodien</label><br>
+<label><input type="checkbox" name="q20" value="b"> Akkorde</label><br>
+<label><input type="checkbox" name="q20" value="c"> Nur Geräusche</label>
+</div>
+
+<button type="button" onclick="checkAnswers()">Antworten prüfen</button>
+
+</form>
+
+<div id="result"></div>
+
+<script>
+
+const answers = {
+q1:["a"],
+q2:["b"],
+q3:["a","b"],
+q4:["a","b"],
+q5:["b"],
+q6:["b"],
+q7:["a"],
+q8:["b"],
+q9:["a"],
+q10:["b"],
+q11:["a","b"],
+q12:["a","c"],
+q13:["b"],
+q14:["a"],
+q15:["a"],
+q16:["a"],
+q17:["a"],
+q18:["a"],
+q19:["a"],
+q20:["a","b"]
+};
+
+function checkAnswers(){
+
+let score = 0;
+let total = Object.keys(answers).length;
+
+for(let q in answers){
+
+let selected =
+[...document.querySelectorAll(`input[name=${q}]:checked`)]
+.map(el=>el.value)
+.sort();
+
+let correct =
+answers[q].slice().sort();
+
+let questionDiv =
+document.querySelector(`input[name=${q}]`)
+.closest(".question");
+
+if(JSON.stringify(selected) === JSON.stringify(correct)){
+score++;
+questionDiv.classList.add("correct");
+questionDiv.classList.remove("wrong");
+}
+else{
+questionDiv.classList.add("wrong");
+questionDiv.classList.remove("correct");
+}
+
+}
+
+document.getElementById("result")
+.innerHTML = `Ergebnis: ${score} von ${total} richtig 🎯`;
+
+}
+
+</script>
+
+</body>
+</html>

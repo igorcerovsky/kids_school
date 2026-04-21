@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Saiteninstrumente Quiz – Teil 2</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    text-align: center;
+}
+
+.question {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
+
+.correct {
+    background-color: #c8f7c5;
+}
+
+.wrong {
+    background-color: #f7c5c5;
+}
+
+button {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+#result {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🎻 Saiteninstrumente – Quiz Teil 2</h1>
+
+<form id="quizForm">
+
+<div class="question">
+<p>1. Saiten können zum Klingen gebracht werden durch …</p>
+<label><input type="checkbox" name="q1" value="a"> Streichen</label><br>
+<label><input type="checkbox" name="q1" value="b"> Zupfen</label><br>
+<label><input type="checkbox" name="q1" value="c"> Blasen</label>
+</div>
+
+<div class="question">
+<p>2. Welches Instrument wird mit einem Bogen gespielt?</p>
+<label><input type="radio" name="q2" value="a"> Geige</label><br>
+<label><input type="radio" name="q2" value="b"> Trommel</label><br>
+<label><input type="radio" name="q2" value="c"> Flöte</label>
+</div>
+
+<div class="question">
+<p>3. Welche Instrumente sind Zupfinstrumente?</p>
+<label><input type="checkbox" name="q3" value="a"> Gitarre</label><br>
+<label><input type="checkbox" name="q3" value="b"> Harfe</label><br>
+<label><input type="checkbox" name="q3" value="c"> Trompete</label>
+</div>
+
+<div class="question">
+<p>4. Wie nennt man den Stock zum Streichen der Saiten?</p>
+<label><input type="radio" name="q4" value="a"> Hammer</label><br>
+<label><input type="radio" name="q4" value="b"> Bogen</label><br>
+<label><input type="radio" name="q4" value="c"> Hebel</label>
+</div>
+
+<div class="question">
+<p>5. Welche Saite klingt tiefer?</p>
+<label><input type="radio" name="q5" value="a"> Eine dicke Saite</label><br>
+<label><input type="radio" name="q5" value="b"> Eine dünne Saite</label><br>
+<label><input type="radio" name="q5" value="c"> Beide gleich</label>
+</div>
+
+<div class="question">
+<p>6. Welche Saite klingt höher?</p>
+<label><input type="radio" name="q6" value="a"> Eine kurze Saite</label><br>
+<label><input type="radio" name="q6" value="b"> Eine lange Saite</label><br>
+<label><input type="radio" name="q6" value="c"> Eine dicke Saite</label>
+</div>
+
+<div class="question">
+<p>7. Welche Instrumente gehören zu den Streichinstrumenten?</p>
+<label><input type="checkbox" name="q7" value="a"> Geige</label><br>
+<label><input type="checkbox" name="q7" value="b"> Cello</label><br>
+<label><input type="checkbox" name="q7" value="c"> Trommel</label>
+</div>
+
+<div class="question">
+<p>8. Welche Instrumente gehören zu den Zupfinstrumenten?</p>
+<label><input type="checkbox" name="q8" value="a"> Gitarre</label><br>
+<label><input type="checkbox" name="q8" value="b"> Harfe</label><br>
+<label><input type="checkbox" name="q8" value="c"> Flöte</label>
+</div>
+
+<div class="question">
+<p>9. Was passiert, wenn eine Saite stärker gespannt wird?</p>
+<label><input type="radio" name="q9" value="a"> Der Ton wird höher</label><br>
+<label><input type="radio" name="q9" value="b"> Der Ton wird tiefer</label><br>
+<label><input type="radio" name="q9" value="c"> Nichts passiert</label>
+</div>
+
+<div class="question">
+<p>10. Was passiert, wenn eine Saite lockerer wird?</p>
+<label><input type="radio" name="q10" value="a"> Der Ton wird höher</label><br>
+<label><input type="radio" name="q10" value="b"> Der Ton wird tiefer</label><br>
+<label><input type="radio" name="q10" value="c"> Der Ton verschwindet</label>
+</div>
+
+<div class="question">
+<p>11. Welches Instrument hat normalerweise sechs Saiten?</p>
+<label><input type="radio" name="q11" value="a"> Gitarre</label><br>
+<label><input type="radio" name="q11" value="b"> Geige</label><br>
+<label><input type="radio" name="q11" value="c"> Trommel</label>
+</div>
+
+<div class="question">
+<p>12. Welches Instrument ist sehr groß und steht oft auf dem Boden?</p>
+<label><input type="radio" name="q12" value="a"> Cello</label><br>
+<label><input type="radio" name="q12" value="b"> Geige</label><br>
+<label><input type="radio" name="q12" value="c"> Ukulele</label>
+</div>
+
+<div class="question">
+<p>13. Was macht man mit den Fingern bei der Gitarre?</p>
+<label><input type="checkbox" name="q13" value="a"> Saiten drücken</label><br>
+<label><input type="checkbox" name="q13" value="b"> Saiten zupfen</label><br>
+<label><input type="checkbox" name="q13" value="c"> Luft blasen</label>
+</div>
+
+<div class="question">
+<p>14. Welche Instrumente sind kleiner als ein Cello?</p>
+<label><input type="checkbox" name="q14" value="a"> Geige</label><br>
+<label><input type="checkbox" name="q14" value="b"> Bratsche</label><br>
+<label><input type="checkbox" name="q14" value="c"> Kontrabass</label>
+</div>
+
+<div class="question">
+<p>15. Welches Instrument hat sehr viele Saiten?</p>
+<label><input type="radio" name="q15" value="a"> Harfe</label><br>
+<label><input type="radio" name="q15" value="b"> Trommel</label><br>
+<label><input type="radio" name="q15" value="c"> Flöte</label>
+</div>
+
+<div class="question">
+<p>16. Wie nennt man das Loch in der Mitte einer Gitarre?</p>
+<label><input type="radio" name="q16" value="a"> Klangloch</label><br>
+<label><input type="radio" name="q16" value="b"> Luftloch</label><br>
+<label><input type="radio" name="q16" value="c"> Tonloch</label>
+</div>
+
+<div class="question">
+<p>17. Was macht den Ton lauter?</p>
+<label><input type="radio" name="q17" value="a"> Stärkeres Zupfen</label><br>
+<label><input type="radio" name="q17" value="b"> Leichteres Zupfen</label><br>
+<label><input type="radio" name="q17" value="c"> Gar nichts tun</label>
+</div>
+
+<div class="question">
+<p>18. Welche Instrumente gehören zur Violinfamilie?</p>
+<label><input type="checkbox" name="q18" value="a"> Geige</label><br>
+<label><input type="checkbox" name="q18" value="b"> Bratsche</label><br>
+<label><input type="checkbox" name="q18" value="c"> Trompete</label>
+</div>
+
+<div class="question">
+<p>19. Welches Instrument ist das größte der Violinfamilie?</p>
+<label><input type="radio" name="q19" value="a"> Geige</label><br>
+<label><input type="radio" name="q19" value="b"> Cello</label><br>
+<label><input type="radio" name="q19" value="c"> Kontrabass</label>
+</div>
+
+<div class="question">
+<p>20. Was braucht man zum Stimmen eines Saiteninstruments?</p>
+<label><input type="checkbox" name="q20" value="a"> Stimmwirbel</label><br>
+<label><input type="checkbox" name="q20" value="b"> Schraubenzieher</label><br>
+<label><input type="checkbox" name="q20" value="c"> Gehör</label>
+</div>
+
+<button type="button" onclick="checkAnswers()">Antworten prüfen</button>
+
+</form>
+
+<div id="result"></div>
+
+<script>
+
+const answers = {
+q1:["a","b"],
+q2:["a"],
+q3:["a","b"],
+q4:["b"],
+q5:["a"],
+q6:["a"],
+q7:["a","b"],
+q8:["a","b"],
+q9:["a"],
+q10:["b"],
+q11:["a"],
+q12:["a"],
+q13:["a","b"],
+q14:["a","b"],
+q15:["a"],
+q16:["a"],
+q17:["a"],
+q18:["a","b"],
+q19:["c"],
+q20:["a","c"]
+};
+
+function checkAnswers(){
+
+let score = 0;
+let total = Object.keys(answers).length;
+
+for(let q in answers){
+
+let selected =
+[...document.querySelectorAll(`input[name=${q}]:checked`)]
+.map(el=>el.value)
+.sort();
+
+let correct =
+answers[q].slice().sort();
+
+let questionDiv =
+document.querySelector(`input[name=${q}]`)
+.closest(".question");
+
+if(JSON.stringify(selected) === JSON.stringify(correct)){
+score++;
+questionDiv.classList.add("correct");
+questionDiv.classList.remove("wrong");
+}
+else{
+questionDiv.classList.add("wrong");
+questionDiv.classList.remove("correct");
+}
+
+}
+
+document.getElementById("result")
+.innerHTML = `Ergebnis: ${score} von ${total} richtig 🎯`;
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<title>Slovak Spelling Practice</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 40px;
+    background-color: #f5f7fb;
+}
+
+h1 {
+    font-size: 32px;
+}
+
+button {
+    font-size: 18px;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+input {
+    font-size: 22px;
+    padding: 10px;
+    width: 300px;
+    text-align: center;
+}
+
+#result {
+    font-size: 24px;
+    margin-top: 15px;
+    height: 30px;
+}
+
+.correct {
+    color: green;
+}
+
+.incorrect {
+    color: red;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>📝 Slovak Spelling Practice</h1>
+
+<button onclick="speakWord()">🔊 Hear Word</button>
+
+<br><br>
+
+<input
+    type="text"
+    id="answer"
+    placeholder="Napíš slovo..."
+    onkeydown="if(event.key==='Enter') checkWord()"
+/>
+
+<br>
+
+<div id="result"></div>
+
+<button onclick="nextWord()">➡️ Next Word</button>
+
+<script>
+
+const words = [
+"digestor",
+"diktát",
+"dinosaurus",
+"dioptria",
+"disk",
+"diskutovať",
+"dispečer",
+"džudista",
+"Edita",
+"krokodíl",
+"puding",
+"disciplína",
+"dirigent",
+"Martin",
+"Tibor",
+"tiger",
+"tikať",
+"tik-tak",
+"tím",
+"Timea",
+"tip",
+"tipovať",
+"tip-top",
+"títo",
+"titul",
+"Valentín",
+"Bonifác",
+"Denis",
+"Dôminik",
+"Monika",
+"tenis",
+"tenisky",
+"Veronika",
+"klíma",
+"klimatizácia",
+"milimeter",
+"licencia",
+"liga",
+"liter",
+"literatúra",
+"republika"
+];
+
+let currentIndex = 0;
+
+function speakWord() {
+    const utterance = new SpeechSynthesisUtterance(words[currentIndex]);
+    utterance.lang = "sk-SK"; // Slovak pronunciation
+    speechSynthesis.speak(utterance);
+}
+
+function checkWord() {
+
+    const input = document.getElementById("answer").value.trim();
+    const correctWord = words[currentIndex];
+    const result = document.getElementById("result");
+
+    if (input === correctWord) {
+        result.textContent = "✅ Správne!";
+        result.className = "correct";
+    } else {
+        result.textContent = "❌ Nesprávne! Správne slovo: " + correctWord;
+        result.className = "incorrect";
+    }
+}
+
+function nextWord() {
+
+    currentIndex++;
+
+    if (currentIndex >= words.length) {
+        currentIndex = 0;
+    }
+
+    document.getElementById("answer").value = "";
+    document.getElementById("result").textContent = "";
+
+    speakWord();
+}
+
+// Speak first word automatically
+window.onload = () => {
+    speakWord();
+};
+
+</script>
+
+</body>
+</html>
