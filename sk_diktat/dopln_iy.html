@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<title>I/Y Gap Practice</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 40px;
+    background-color: #f5f7fb;
+}
+
+h1 {
+    font-size: 32px;
+}
+
+#word {
+    font-size: 44px;
+    margin: 30px;
+    letter-spacing: 4px;
+}
+
+button.choice {
+    font-size: 26px;
+    padding: 12px 24px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+button.control {
+    font-size: 18px;
+    padding: 10px 20px;
+}
+
+#result {
+    font-size: 26px;
+    margin-top: 15px;
+    height: 30px;
+}
+
+.correct {
+    color: green;
+}
+
+.incorrect {
+    color: red;
+}
+
+#stats {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>📝 I / Y Practice</h1>
+
+<button class="control" onclick="speakWord()">
+🔊 Hear Word
+</button>
+
+<div id="word">loading...</div>
+
+<div>
+
+<button class="choice" onclick="chooseLetter('i')">i</button>
+<button class="choice" onclick="chooseLetter('y')">y</button>
+<button class="choice" onclick="chooseLetter('í')">í</button>
+<button class="choice" onclick="chooseLetter('ý')">ý</button>
+
+</div>
+
+<div id="result"></div>
+
+<div id="stats">
+Correct: 0 | Incorrect: 0
+</div>
+
+<script>
+
+// =====================
+// ALL WORDS (3 IMAGES)
+// =====================
+
+let words = [
+
+"digestor","diktát","dinosaurus","dioptria","disk",
+"diskutovať","dispečer","džudista","Edita",
+"krokodíl","puding","disciplína","dirigent",
+
+"Martin","Tibor","tiger","tikať","tik-tak",
+"tím","Timea","tip","tipovať","tip-top",
+"títo","titul","Valentín",
+
+"Bonifác","Denis","Dôminik","Monika",
+"tenis","tenisky","Veronika",
+
+"klíma","klimatizácia","milimeter",
+"licencia","liga","liter",
+"literatúra","republika",
+
+"hi-hi","hijó","híkať","Hilda",
+"história","historik","hit","hitparáda",
+
+"architekt","archív","chi-chi",
+"chichot","chichotať sa",
+"chirurg","chirurgia",
+
+"kibicovať","kikirikí","kilo",
+"kilogram","kilometer","kimono",
+"kino","kinofilm","kinosála",
+"kivi","treningy","panika",
+
+"angína","Brigita","gigabajt",
+"gigant","girlanda","gitara",
+"gitovať","Gizela","legíny",
+"logika","Margita","Regina",
+"gibon",
+
+"hymna","hygiena","hydina",
+"hýbať","hydrant","hyacint",
+"ohýbať","mohyla","pohyb",
+
+"chyba","chýbať","chýr",
+"chyža","chytiť",
+
+"kyslík","kyslý","kyslé",
+
+"gymnastika","gymnázium",
+
+"dyňa","dym","dýchať",
+"dýka","dýchovka",
+
+"tykadlo","tyč",
+"tyčinka","týždeň",
+"tyrkysový",
+
+"nylon","synonymá",
+"vinyl","nymfa",
+
+"lyko","lykožrút",
+"lyže","lysý",
+
+"plyn","mlyn","plyš",
+"blýskať sa","blyšťal sa",
+"plytký"
+
+];
+
+// =====================
+// VARIABLES
+// =====================
+
+let currentWord = "";
+let gapIndex = -1;
+
+let correctCount = 0;
+let incorrectCount = 0;
+
+
+// =====================
+// RANDOM WORD
+// =====================
+
+function getRandomWord() {
+
+    let word;
+
+    do {
+
+        word =
+        words[Math.floor(
+            Math.random() * words.length
+        )];
+
+    } while (!hasGapLetter(word));
+
+    return word;
+}
+
+
+// Check if word contains i/y
+
+function hasGapLetter(word) {
+
+    return [...word].some(
+        c => "iyíý".includes(c)
+    );
+}
+
+
+// =====================
+// CREATE GAP
+// =====================
+
+function createGap(word) {
+
+    let positions = [];
+
+    for (let i = 0; i < word.length; i++) {
+
+        if ("iyíý".includes(word[i])) {
+            positions.push(i);
+        }
+    }
+
+    gapIndex =
+        positions[Math.floor(
+            Math.random() * positions.length
+        )];
+
+    return (
+        word.substring(0, gapIndex) +
+        "_" +
+        word.substring(gapIndex + 1)
+    );
+}
+
+
+// =====================
+// SHOW WORD
+// =====================
+
+function showWord() {
+
+    currentWord =
+        getRandomWord();
+
+    let display =
+        createGap(currentWord);
+
+    document.getElementById("word")
+        .textContent = display;
+
+    document.getElementById("result")
+        .textContent = "";
+}
+
+
+// =====================
+// CHECK LETTER
+// =====================
+
+function chooseLetter(letter) {
+
+    if (gapIndex === -1) return;
+
+    let correctLetter =
+        currentWord[gapIndex];
+
+    let result =
+        document.getElementById("result");
+
+    let wordDisplay =
+        document.getElementById("word");
+
+    if (letter === correctLetter) {
+
+        correctCount++;
+
+        // Fill the correct letter into the word
+        wordDisplay.textContent =
+            currentWord;
+
+        result.textContent = "✅ Správne!";
+        result.className = "correct";
+
+        updateStats();
+
+        // Move to next word after 2 seconds
+        setTimeout(() => {
+
+            showWord();
+
+        }, 1000);
+
+    } else {
+
+        incorrectCount++;
+
+        result.textContent =
+            "❌ Nesprávne!";
+        result.className = "incorrect";
+
+        updateStats();
+    }
+}
+
+
+// =====================
+// STATS
+// =====================
+
+function updateStats() {
+
+    document.getElementById("stats")
+        .textContent =
+        "Correct: "
+        + correctCount +
+        " | Incorrect: "
+        + incorrectCount;
+}
+
+
+// =====================
+// SPEECH
+// =====================
+
+function speakWord() {
+
+    let utterance =
+        new SpeechSynthesisUtterance(currentWord);
+
+    utterance.lang = "sk-SK";
+
+    speechSynthesis.speak(utterance);
+}
+
+
+// =====================
+// START
+// =====================
+
+window.onload = () => {
+
+    showWord();
+
+};
+
+</script>
+
+</body>
+</html>

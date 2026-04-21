@@ -26,7 +26,7 @@ button {
 input {
     font-size: 22px;
     padding: 10px;
-    width: 300px;
+    width: 320px;
     text-align: center;
 }
 
@@ -42,6 +42,11 @@ input {
 
 .incorrect {
     color: red;
+}
+
+#score {
+    font-size: 18px;
+    margin-top: 10px;
 }
 </style>
 
@@ -62,79 +67,170 @@ input {
     onkeydown="if(event.key==='Enter') checkWord()"
 />
 
-<br>
-
 <div id="result"></div>
 
 <button onclick="nextWord()">➡️ Next Word</button>
 
+<div id="score">Score: 0 / 0</div>
+
 <script>
 
-const words = [
-"digestor",
-"diktát",
-"dinosaurus",
-"dioptria",
-"disk",
-"diskutovať",
-"dispečer",
-"džudista",
-"Edita",
-"krokodíl",
-"puding",
-"disciplína",
-"dirigent",
-"Martin",
-"Tibor",
-"tiger",
-"tikať",
-"tik-tak",
-"tím",
-"Timea",
-"tip",
-"tipovať",
-"tip-top",
-"títo",
-"titul",
-"Valentín",
-"Bonifác",
-"Denis",
-"Dôminik",
-"Monika",
-"tenis",
-"tenisky",
-"Veronika",
-"klíma",
-"klimatizácia",
-"milimeter",
-"licencia",
-"liga",
-"liter",
-"literatúra",
-"republika"
+// ALL WORDS COMBINED
+
+let words = [
+
+"digestor","diktát","dinosaurus","dioptria","disk",
+"diskutovať","dispečer","džudista","Edita",
+"krokodíl","puding","disciplína","dirigent",
+
+"Martin","Tibor","tiger","tikať","tik-tak",
+"tím","Timea","tip","tipovať","tip-top",
+"títo","titul","Valentín",
+
+"Bonifác","Denis","Dôminik","Monika",
+"tenis","tenisky","Veronika",
+
+"klíma","klimatizácia","milimeter",
+"licencia","liga","liter",
+"literatúra","republika",
+
+// NEW WORDS
+
+"hi-hi","hijó","híkať","Hilda",
+"história","historik","hit","hitparáda",
+
+"architekt","archív","chi-chi",
+"chichot","chichotať sa",
+"chirurg","chirurgia",
+
+"kibicovať","kikirikí","kilo",
+"kilogram","kilometer","kimono",
+"kino","kinofilm","kinosála",
+"kivi","treningy","panika",
+
+"angína","Brigita","gigabajt",
+"gigant","girlanda","gitara",
+"gitovať","Gizela","legíny",
+"logika","Margita","Regina",
+"gibon",
+"hymna",
+"hyj?",
+"hygiena",
+"hydina",
+"hýbať sa",
+"hydrant",
+"hyacint",
+"ohýbať",
+"mohyla",
+"pohyb",
+
+"chytro",
+"chyba",
+"chýbať",
+"chýr",
+"chyža",
+"chytiť",
+"chýl",
+"pochybovať",
+
+"kýchnuť",
+"kyslé",
+"kyslý",
+"kyslík",
+"kysnuté",
+"zakývať",
+"kývadlo",
+"kypí",
+
+"gymnastika",
+"gymnázium",
+
+"dyňa",
+"dym",
+"dýchať",
+"oddych",
+"dýka",
+"dýchovka",
+"Londýn",
+
+"dotyk",
+"tykadlo",
+"tykať niekomu",
+"týrajú",
+"tyč",
+"tyčinka",
+"motýľ",
+"týždeň",
+"tyrkysový",
+"kostým",
+
+"nylon",
+"synonymá",
+"vinyl",
+"nymfa",
+
+"lyko",
+"lykožrút",
+"lyže",
+"lysý",
+
+"plyn",
+"mlyn",
+"plyš",
+"blýskať sa",
+"blyšťal sa",
+"plytký"
+
 ];
 
+// Shuffle words
+words = words.sort(() => Math.random() - 0.5);
+
 let currentIndex = 0;
+let correctCount = 0;
+let totalCount = 0;
 
 function speakWord() {
-    const utterance = new SpeechSynthesisUtterance(words[currentIndex]);
-    utterance.lang = "sk-SK"; // Slovak pronunciation
+
+    const utterance =
+        new SpeechSynthesisUtterance(words[currentIndex]);
+
+    utterance.lang = "sk-SK";
+
     speechSynthesis.speak(utterance);
 }
 
 function checkWord() {
 
-    const input = document.getElementById("answer").value.trim();
-    const correctWord = words[currentIndex];
-    const result = document.getElementById("result");
+    const input =
+        document.getElementById("answer")
+        .value.trim();
+
+    const correctWord =
+        words[currentIndex];
+
+    const result =
+        document.getElementById("result");
+
+    totalCount++;
 
     if (input === correctWord) {
+
         result.textContent = "✅ Správne!";
         result.className = "correct";
+
+        correctCount++;
+
     } else {
-        result.textContent = "❌ Nesprávne! Správne slovo: " + correctWord;
+
+        result.textContent =
+            "❌ Nesprávne! Správne slovo: "
+            + correctWord;
+
         result.className = "incorrect";
     }
+
+    updateScore();
 }
 
 function nextWord() {
@@ -142,7 +238,10 @@ function nextWord() {
     currentIndex++;
 
     if (currentIndex >= words.length) {
+
+        words = words.sort(() => Math.random() - 0.5);
         currentIndex = 0;
+
     }
 
     document.getElementById("answer").value = "";
@@ -151,9 +250,21 @@ function nextWord() {
     speakWord();
 }
 
-// Speak first word automatically
+function updateScore() {
+
+    document.getElementById("score")
+        .textContent =
+        "Score: "
+        + correctCount
+        + " / "
+        + totalCount;
+}
+
+// Start automatically
 window.onload = () => {
+
     speakWord();
+
 };
 
 </script>
