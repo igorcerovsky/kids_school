@@ -2,7 +2,7 @@
 <html lang="sk">
 <head>
 <meta charset="UTF-8">
-<title>I/Y Gap Practice</title>
+<title>I/Y Multi-Gap Practice</title>
 
 <style>
 
@@ -62,10 +62,6 @@ button.control {
 
 <h1>📝 I / Y Practice</h1>
 
-<button class="control" onclick="speakWord()">
-🔊 Hear Word
-</button>
-
 <div id="word">loading...</div>
 
 <div>
@@ -86,7 +82,7 @@ Correct: 0 | Incorrect: 0
 <script>
 
 // =====================
-// ALL WORDS (3 IMAGES)
+// WORD LIST (ALL IMAGES)
 // =====================
 
 let words = [
@@ -159,7 +155,8 @@ let words = [
 // =====================
 
 let currentWord = "";
-let gapIndex = -1;
+let gapPositions = [];
+let currentGapIndex = 0;
 
 let correctCount = 0;
 let incorrectCount = 0;
@@ -186,8 +183,6 @@ function getRandomWord() {
 }
 
 
-// Check if word contains i/y
-
 function hasGapLetter(word) {
 
     return [...word].some(
@@ -197,30 +192,29 @@ function hasGapLetter(word) {
 
 
 // =====================
-// CREATE GAP
+// CREATE MULTIPLE GAPS
 // =====================
 
-function createGap(word) {
+function createGaps(word) {
 
-    let positions = [];
+    gapPositions = [];
 
     for (let i = 0; i < word.length; i++) {
 
         if ("iyíý".includes(word[i])) {
-            positions.push(i);
+            gapPositions.push(i);
         }
     }
 
-    gapIndex =
-        positions[Math.floor(
-            Math.random() * positions.length
-        )];
+    currentGapIndex = 0;
 
-    return (
-        word.substring(0, gapIndex) +
-        "_" +
-        word.substring(gapIndex + 1)
-    );
+    let display = word.split("");
+
+    gapPositions.forEach(pos => {
+        display[pos] = "_";
+    });
+
+    return display.join("");
 }
 
 
@@ -234,26 +228,32 @@ function showWord() {
         getRandomWord();
 
     let display =
-        createGap(currentWord);
+        createGaps(currentWord);
 
     document.getElementById("word")
         .textContent = display;
 
     document.getElementById("result")
         .textContent = "";
+
+    // 🔊 Automatically pronounce
+    speakWord();
 }
 
 
 // =====================
-// CHECK LETTER
+// LETTER CHOICE
 // =====================
 
 function chooseLetter(letter) {
 
-    if (gapIndex === -1) return;
+    if (currentGapIndex >= gapPositions.length)
+        return;
 
     let correctLetter =
-        currentWord[gapIndex];
+        currentWord[
+            gapPositions[currentGapIndex]
+        ];
 
     let result =
         document.getElementById("result");
@@ -263,23 +263,31 @@ function chooseLetter(letter) {
 
     if (letter === correctLetter) {
 
-        correctCount++;
+        // Fill correct letter
+        let chars =
+            wordDisplay.textContent.split("");
 
-        // Fill the correct letter into the word
+        chars[
+            gapPositions[currentGapIndex]
+        ] = letter;
+
         wordDisplay.textContent =
-            currentWord;
+            chars.join("");
 
-        result.textContent = "✅ Správne!";
-        result.className = "correct";
+        currentGapIndex++;
 
-        updateStats();
+        if (currentGapIndex === gapPositions.length) {
 
-        // Move to next word after 2 seconds
-        setTimeout(() => {
+            correctCount++;
 
-            showWord();
+            result.textContent = "✅ Správne!";
+            result.className = "correct";
 
-        }, 1000);
+            updateStats();
+
+            // Show full word 2 sec
+            setTimeout(showWord, 2000);
+        }
 
     } else {
 
@@ -295,6 +303,22 @@ function chooseLetter(letter) {
 
 
 // =====================
+// SPEECH
+// =====================
+
+function speakWord() {
+
+    let utterance =
+        new SpeechSynthesisUtterance(currentWord);
+
+    utterance.lang = "sk-SK";
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+}
+
+
+// =====================
 // STATS
 // =====================
 
@@ -306,21 +330,6 @@ function updateStats() {
         + correctCount +
         " | Incorrect: "
         + incorrectCount;
-}
-
-
-// =====================
-// SPEECH
-// =====================
-
-function speakWord() {
-
-    let utterance =
-        new SpeechSynthesisUtterance(currentWord);
-
-    utterance.lang = "sk-SK";
-
-    speechSynthesis.speak(utterance);
 }
 
 
