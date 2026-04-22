@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<title>I/Y Trainer</title>
+
+<style>
+
+body {
+font-family: Arial;
+text-align: center;
+padding: 30px;
+background: #f5f7fb;
+}
+
+#word {
+font-size: 44px;
+margin: 30px;
+letter-spacing: 4px;
+}
+
+button.choice {
+font-size: 26px;
+padding: 12px 24px;
+margin: 10px;
+cursor: pointer;
+}
+
+.correctWord {
+color: green;
+}
+
+canvas {
+margin-top: 30px;
+border: 1px solid #ccc;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>I / Y Trainer</h1>
+
+<label><b>Practice Mode:</b></label><br>
+
+<select id="modeSelect">
+<option value="normal">Normal</option>
+<option value="slow">Slowest</option>
+<option value="wrong">Incorrect</option>
+</select>
+
+<div id="word">loading...</div>
+
+<div>
+
+<button class="choice" onclick="chooseLetter('i')">i</button>
+<button class="choice" onclick="chooseLetter('y')">y</button>
+<button class="choice" onclick="chooseLetter('í')">í</button>
+<button class="choice" onclick="chooseLetter('ý')">ý</button>
+
+</div>
+
+<div id="stats"></div>
+<div id="slowWords"></div>
+<div id="wrongWords"></div>
+
+<canvas id="speedChart"
+width="500"
+height="200"></canvas>
+
+<br><br>
+
+<button onclick="resetProgress()">
+Reset Progress
+</button>
+
+<script>
+
+// STORAGE
+
+const STORAGE_KEY =
+"iy_practice_progress_v5";
+
+// WORDS
+
+let words = [
+
+"digestor","diktát","dinosaurus","dioptria","disk",
+"diskutovať","dispečer","džudista","Edita",
+"krokodíl","puding","disciplína","dirigent",
+
+"Martin","Tibor","tiger","tikať","tik-tak",
+"tím","Timea","tip","tipovať","tip-top",
+"títo","titul","Valentín",
+
+"Bonifác","Denis","Dôminik","Monika",
+"tenis","tenisky","Veronika",
+
+"klíma","klimatizácia","milimeter",
+"licencia","liga","liter",
+"literatúra","republika",
+
+// NEW WORDS
+
+"hi-hi","hijó","híkať","Hilda",
+"história","historik","hit","hitparáda",
+
+"architekt","archív","chi-chi",
+"chichot","chichotať sa",
+"chirurg","chirurgia",
+
+"kibicovať","kikirikí","kilo",
+"kilogram","kilometer","kimono",
+"kino","kinofilm","kinosála",
+"kivi","treningy","panika",
+
+"angína","Brigita","gigabajt",
+"gigant","girlanda","gitara",
+"gitovať","Gizela","legíny",
+"logika","Margita","Regina",
+"gibon",
+"hymna",
+"hyj?",
+"hygiena",
+"hydina",
+"hýbať sa",
+"hydrant",
+"hyacint",
+"ohýbať",
+"mohyla",
+"pohyb",
+
+"chytro",
+"chyba",
+"chýbať",
+"chýr",
+"chyža",
+"chytiť",
+"chýl",
+"pochybovať",
+
+"kýchnuť",
+"kyslé",
+"kyslý",
+"kyslík",
+"kysnuté",
+"zakývať",
+"kývadlo",
+"kypí",
+
+"gymnastika",
+"gymnázium",
+
+"dyňa",
+"dym",
+"dýchať",
+"oddych",
+"dýka",
+"dýchovka",
+"Londýn",
+
+"dotyk",
+"tykadlo",
+"tykať niekomu",
+"týrajú",
+"tyč",
+"tyčinka",
+"motýľ",
+"týždeň",
+"tyrkysový",
+"kostým",
+
+"nylon",
+"synonymá",
+"vinyl",
+"nymfa",
+
+"lyko",
+"lykožrút",
+"lyže",
+"lysý",
+
+"plyn",
+"mlyn",
+"plyš",
+"blýskať sa",
+"blyšťal sa",
+"plytký"
+
+];
+
+// VARIABLES
+
+let stats = {};
+let wrongMap = {};
+
+let correctCount = 0;
+let incorrectCount = 0;
+
+let speedSamples = [];
+let recentTimes = [];
+
+let currentWord = "";
+let gapPositions = [];
+let gapIndex = 0;
+
+let startTime = 0;
+
+// LOAD
+
+function loadProgress(){
+
+let saved =
+localStorage.getItem(STORAGE_KEY);
+
+if(saved){
+
+let data =
+JSON.parse(saved);
+
+stats = data.stats;
+wrongMap = data.wrongMap || {};
+
+correctCount =
+data.correctCount;
+
+incorrectCount =
+data.incorrectCount;
+
+speedSamples =
+data.speedSamples || [];
+
+recentTimes =
+data.recentTimes || [];
+
+}
+
+else{
+
+words.forEach(w=>{
+
+stats[w]={
+totalTime:0,
+attempts:0
+};
+
+});
+
+}
+
+}
+
+// SAVE
+
+function saveProgress(){
+
+let data={
+
+stats:stats,
+wrongMap:wrongMap,
+
+correctCount:correctCount,
+incorrectCount:incorrectCount,
+
+speedSamples:speedSamples,
+recentTimes:recentTimes
+
+};
+
+localStorage.setItem(
+STORAGE_KEY,
+JSON.stringify(data)
+);
+
+}
+
+function resetProgress(){
+
+localStorage.removeItem(
+STORAGE_KEY
+);
+
+location.reload();
+
+}
+
+// MODE
+
+function getMode(){
+
+return document
+.getElementById("modeSelect")
+.value;
+
+}
+
+// WORD SELECTION
+
+function getSlowWords(){
+
+return Object.entries(stats)
+
+.sort((a,b)=>
+
+(b[1].totalTime /
+Math.max(b[1].attempts,1))
+
+-
+
+(a[1].totalTime /
+Math.max(a[1].attempts,1))
+
+)
+
+.slice(0,12)
+
+.map(x=>x[0]);
+
+}
+
+function getWrongWords(){
+
+return Object.keys(wrongMap);
+
+}
+
+function getRandomWord(){
+
+let mode=getMode();
+
+let pool=[];
+
+if(mode==="slow"){
+
+pool=getSlowWords();
+
+}
+
+else if(mode==="wrong"){
+
+pool=getWrongWords();
+
+if(pool.length===0)
+pool=[...words];
+
+}
+
+else{
+
+pool=[...words];
+
+let slow=getSlowWords();
+
+slow.forEach(w=>{
+
+pool.push(w);
+pool.push(w);
+
+});
+
+}
+
+let word;
+
+do{
+
+word=
+pool[Math.floor(
+Math.random()*pool.length
+)];
+
+}while(!hasGap(word));
+
+return word;
+
+}
+
+function hasGap(word){
+
+return [...word].some(
+c=>"iyíý".includes(c)
+);
+
+}
+
+// GAP CREATION
+
+function createGaps(word){
+
+gapPositions=[];
+
+for(let i=0;i<word.length;i++){
+
+if("iyíý".includes(word[i])){
+
+gapPositions.push(i);
+
+}
+
+}
+
+gapIndex=0;
+
+let chars=word.split("");
+
+gapPositions.forEach(pos=>{
+
+chars[pos]="_";
+
+});
+
+return chars.join("");
+
+}
+
+// SHOW WORD
+
+function showWord(){
+
+currentWord=
+getRandomWord();
+
+let wordDiv=
+document.getElementById("word");
+
+wordDiv.classList.remove(
+"correctWord"
+);
+
+wordDiv.textContent=
+createGaps(currentWord);
+
+speakWord();
+
+startTime=
+performance.now();
+
+}
+
+// INPUT
+
+function chooseLetter(letter){
+
+let correctLetter=
+currentWord[
+gapPositions[gapIndex]
+];
+
+if(letter===correctLetter){
+
+fillLetter(letter);
+
+gapIndex++;
+
+if(
+gapIndex===
+gapPositions.length
+){
+
+finishWord();
+
+}
+
+}
+
+else{
+
+incorrectCount++;
+
+logWrongLetter(letter);
+
+updateStats();
+saveProgress();
+
+}
+
+}
+
+// WRONG LETTER LOGGING
+
+function logWrongLetter(letter){
+
+let pos=
+gapPositions[gapIndex];
+
+if(!wrongMap[currentWord]){
+
+wrongMap[currentWord]={};
+
+}
+
+if(!wrongMap[currentWord][pos]){
+
+wrongMap[currentWord][pos]=[];
+
+}
+
+wrongMap[currentWord][pos]
+.push(letter);
+
+}
+
+// FILL LETTER
+
+function fillLetter(letter){
+
+let wordDiv=
+document.getElementById("word");
+
+let chars=
+wordDiv.textContent.split("");
+
+chars[
+gapPositions[gapIndex]
+]=letter;
+
+wordDiv.textContent=
+chars.join("");
+
+}
+
+// FINISH WORD
+
+function finishWord(){
+
+let endTime=
+performance.now();
+
+let time=
+(endTime-startTime)/1000;
+
+let perLetter=
+time/gapPositions.length;
+
+stats[currentWord]
+.totalTime+=perLetter;
+
+stats[currentWord]
+.attempts++;
+
+recentTimes.push(perLetter);
+
+if(recentTimes.length===10){
+
+let avg=
+recentTimes.reduce((a,b)=>a+b,0)
+/ recentTimes.length;
+
+speedSamples.push(avg);
+
+if(speedSamples.length>20)
+speedSamples.shift();
+
+recentTimes=[];
+
+}
+
+correctCount++;
+
+updateStats();
+saveProgress();
+
+let wordDiv=
+document.getElementById("word");
+
+wordDiv.textContent=
+currentWord;
+
+wordDiv.classList.add(
+"correctWord"
+);
+
+setTimeout(
+showWord,
+1000
+);
+
+}
+
+// SPEECH
+
+function speakWord(){
+
+let utterance=
+new SpeechSynthesisUtterance(
+currentWord
+);
+
+utterance.lang="sk-SK";
+
+speechSynthesis.cancel();
+
+speechSynthesis.speak(
+utterance
+);
+
+}
+
+// DISPLAY WRONG WORDS
+
+function displayWrongWords(){
+
+let list=[];
+
+for(let word in wrongMap){
+
+let positions=
+wrongMap[word];
+
+let result="";
+
+for(let i=0;i<word.length;i++){
+
+let letter=word[i];
+
+if(positions[i]){
+
+let wrongs=
+positions[i].join(",");
+
+result+=
+"<span style='color:green'>"
++letter+
+"</span>"
++"(<span style='color:red'>"
++wrongs+
+"</span>)";
+
+}
+
+else{
+
+result+=letter;
+
+}
+
+}
+
+list.push(result);
+
+}
+
+document.getElementById("wrongWords")
+.innerHTML=
+"<b>Incorrect Words:</b><br>"
++list.join("<br>");
+
+}
+
+// DISPLAY STATS
+
+function updateStats(){
+
+let total=
+correctCount+
+incorrectCount;
+
+let accuracy=
+total>0
+?(correctCount/total*100).toFixed(1)
+:0;
+
+document.getElementById("stats")
+.textContent=
+"Correct: "
++correctCount+
+" | Incorrect: "
++incorrectCount+
+" | Accuracy: "
++accuracy+"%";
+
+document.getElementById("slowWords")
+.innerHTML=
+"<b>12 Slowest Words:</b><br>"
++getSlowWords().join(", ");
+
+displayWrongWords();
+
+drawChart();
+
+}
+
+// GRAPH
+
+function drawChart(){
+
+let canvas=
+document.getElementById("speedChart");
+
+let ctx=
+canvas.getContext("2d");
+
+ctx.clearRect(
+0,0,
+canvas.width,
+canvas.height
+);
+
+if(speedSamples.length<2)
+return;
+
+let max=
+Math.max(...speedSamples);
+
+let min=
+Math.min(...speedSamples);
+
+let range=
+max-min||1;
+
+let stepX=
+canvas.width/
+(speedSamples.length-1);
+
+ctx.beginPath();
+
+speedSamples.forEach((v,i)=>{
+
+let x=i*stepX;
+
+let y=
+canvas.height-
+((v-min)/range)
+*canvas.height;
+
+if(i===0)
+ctx.moveTo(x,y);
+else
+ctx.lineTo(x,y);
+
+});
+
+ctx.stroke();
+
+}
+
+// START
+
+window.onload=()=>{
+
+loadProgress();
+
+updateStats();
+
+showWord();
+
+};
+
+</script>
+
+</body>
+</html>

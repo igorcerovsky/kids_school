@@ -2,19 +2,15 @@
 <html lang="sk">
 <head>
 <meta charset="UTF-8">
-<title>I/Y Multi-Gap Practice</title>
+<title>Adaptive I/Y Practice</title>
 
 <style>
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial;
     text-align: center;
-    padding: 40px;
+    padding: 30px;
     background-color: #f5f7fb;
-}
-
-h1 {
-    font-size: 32px;
 }
 
 #word {
@@ -30,28 +26,25 @@ button.choice {
     cursor: pointer;
 }
 
-button.control {
-    font-size: 18px;
-    padding: 10px 20px;
-}
-
-#result {
-    font-size: 26px;
-    margin-top: 15px;
-    height: 30px;
-}
-
-.correct {
-    color: green;
-}
-
-.incorrect {
-    color: red;
-}
-
 #stats {
     margin-top: 20px;
     font-size: 18px;
+}
+
+#slowWords,
+#wrongWords,
+#speedTrend {
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.correctWord {
+    color: green;
+}
+
+.resetBtn {
+    margin-top: 20px;
+    padding: 8px 16px;
 }
 
 </style>
@@ -60,93 +53,68 @@ button.control {
 
 <body>
 
-<h1>📝 I / Y Practice</h1>
+<h1>📝 Adaptive I / Y Practice</h1>
 
 <div id="word">loading...</div>
 
 <div>
-
 <button class="choice" onclick="chooseLetter('i')">i</button>
 <button class="choice" onclick="chooseLetter('y')">y</button>
 <button class="choice" onclick="chooseLetter('í')">í</button>
 <button class="choice" onclick="chooseLetter('ý')">ý</button>
-
 </div>
 
-<div id="result"></div>
+<div id="stats"></div>
 
-<div id="stats">
-Correct: 0 | Incorrect: 0
-</div>
+<div id="slowWords"></div>
+<div id="wrongWords"></div>
+<div id="speedTrend"></div>
+
+<button class="resetBtn" onclick="resetProgress()">
+Reset Progress
+</button>
 
 <script>
 
 // =====================
-// WORD LIST (ALL IMAGES)
+// STORAGE
+// =====================
+
+const STORAGE_KEY =
+"iy_practice_progress_v2";
+
+// =====================
+// WORD LIST
 // =====================
 
 let words = [
 
 "digestor","diktát","dinosaurus","dioptria","disk",
-"diskutovať","dispečer","džudista","Edita",
-"krokodíl","puding","disciplína","dirigent",
-
-"Martin","Tibor","tiger","tikať","tik-tak",
-"tím","Timea","tip","tipovať","tip-top",
-"títo","titul","Valentín",
-
-"Bonifác","Denis","Dôminik","Monika",
-"tenis","tenisky","Veronika",
-
-"klíma","klimatizácia","milimeter",
-"licencia","liga","liter",
-"literatúra","republika",
-
-"hi-hi","hijó","híkať","Hilda",
-"história","historik","hit","hitparáda",
-
-"architekt","archív","chi-chi",
-"chichot","chichotať sa",
-"chirurg","chirurgia",
-
-"kibicovať","kikirikí","kilo",
-"kilogram","kilometer","kimono",
-"kino","kinofilm","kinosála",
-"kivi","treningy","panika",
-
-"angína","Brigita","gigabajt",
-"gigant","girlanda","gitara",
-"gitovať","Gizela","legíny",
-"logika","Margita","Regina",
-"gibon",
+"diskutovať","dispečer","džudista",
+"krokodíl","puding","disciplína",
 
 "hymna","hygiena","hydina",
-"hýbať","hydrant","hyacint",
-"ohýbať","mohyla","pohyb",
+"hydrant","hyacint",
+"ohýbať","mohyla",
 
-"chyba","chýbať","chýr",
+"chyba","chýbať",
 "chyža","chytiť",
 
-"kyslík","kyslý","kyslé",
+"kyslík","kyslý",
 
 "gymnastika","gymnázium",
 
 "dyňa","dym","dýchať",
-"dýka","dýchovka",
 
-"tykadlo","tyč",
-"tyčinka","týždeň",
-"tyrkysový",
+"tykadlo","tyčinka",
+"týždeň",
 
-"nylon","synonymá",
-"vinyl","nymfa",
+"nylon","vinyl",
 
-"lyko","lykožrút",
-"lyže","lysý",
+"lyko","lyže",
 
-"plyn","mlyn","plyš",
-"blýskať sa","blyšťal sa",
-"plytký"
+"plyn","mlyn",
+"plyš","plytký"
 
 ];
 
@@ -154,69 +122,194 @@ let words = [
 // VARIABLES
 // =====================
 
-let currentWord = "";
-let gapPositions = [];
-let currentGapIndex = 0;
+let stats = {};
+let wrongWords = new Set();
 
 let correctCount = 0;
 let incorrectCount = 0;
 
+let speedSamples = [];
+let recentTimes = [];
+
+let currentWord = "";
+let gapPositions = [];
+let gapIndex = 0;
+
+let startTime = 0;
 
 // =====================
-// RANDOM WORD
+// LOAD / SAVE
 // =====================
+
+function loadProgress() {
+
+let saved =
+localStorage.getItem(STORAGE_KEY);
+
+if (saved) {
+
+let data =
+JSON.parse(saved);
+
+stats = data.stats;
+
+wrongWords =
+new Set(data.wrongWords);
+
+correctCount =
+data.correctCount;
+
+incorrectCount =
+data.incorrectCount;
+
+speedSamples =
+data.speedSamples || [];
+
+recentTimes =
+data.recentTimes || [];
+
+} else {
+
+words.forEach(w => {
+
+stats[w] = {
+totalTime: 0,
+attempts: 0
+};
+
+});
+
+}
+
+}
+
+function saveProgress() {
+
+let data = {
+
+stats: stats,
+
+wrongWords:
+[...wrongWords],
+
+correctCount:
+correctCount,
+
+incorrectCount:
+incorrectCount,
+
+speedSamples:
+speedSamples,
+
+recentTimes:
+recentTimes
+
+};
+
+localStorage.setItem(
+STORAGE_KEY,
+JSON.stringify(data)
+);
+
+}
+
+function resetProgress() {
+
+localStorage.removeItem(
+STORAGE_KEY
+);
+
+location.reload();
+
+}
+
+// =====================
+// WORD SELECTION
+// =====================
+
+function getSlowWords() {
+
+return Object.entries(stats)
+.sort((a,b) =>
+(b[1].totalTime /
+Math.max(b[1].attempts,1))
+-
+(a[1].totalTime /
+Math.max(a[1].attempts,1))
+)
+.slice(0,12)
+.map(x => x[0]);
+
+}
 
 function getRandomWord() {
 
-    let word;
+let slowWords =
+getSlowWords();
 
-    do {
+let pool = [...words];
 
-        word =
-        words[Math.floor(
-            Math.random() * words.length
-        )];
+slowWords.forEach(w => {
 
-    } while (!hasGapLetter(word));
+pool.push(w);
+pool.push(w);
 
-    return word;
+});
+
+let word;
+
+do {
+
+word =
+pool[Math.floor(
+Math.random() * pool.length
+)];
+
+} while (!hasGap(word));
+
+return word;
+
 }
 
+function hasGap(word) {
 
-function hasGapLetter(word) {
+return [...word].some(
+c => "iyíý".includes(c)
+);
 
-    return [...word].some(
-        c => "iyíý".includes(c)
-    );
 }
-
 
 // =====================
-// CREATE MULTIPLE GAPS
+// GAP CREATION
 // =====================
 
 function createGaps(word) {
 
-    gapPositions = [];
+gapPositions = [];
 
-    for (let i = 0; i < word.length; i++) {
+for (let i=0;i<word.length;i++) {
 
-        if ("iyíý".includes(word[i])) {
-            gapPositions.push(i);
-        }
-    }
+if ("iyíý".includes(word[i])) {
 
-    currentGapIndex = 0;
+gapPositions.push(i);
 
-    let display = word.split("");
-
-    gapPositions.forEach(pos => {
-        display[pos] = "_";
-    });
-
-    return display.join("");
 }
 
+}
+
+gapIndex = 0;
+
+let chars = word.split("");
+
+gapPositions.forEach(pos => {
+
+chars[pos] = "_";
+
+});
+
+return chars.join("");
+
+}
 
 // =====================
 // SHOW WORD
@@ -224,83 +317,146 @@ function createGaps(word) {
 
 function showWord() {
 
-    currentWord =
-        getRandomWord();
+currentWord =
+getRandomWord();
 
-    let display =
-        createGaps(currentWord);
+let wordDiv =
+document.getElementById("word");
 
-    document.getElementById("word")
-        .textContent = display;
+wordDiv.classList.remove(
+"correctWord"
+);
 
-    document.getElementById("result")
-        .textContent = "";
+wordDiv.textContent =
+createGaps(currentWord);
 
-    // 🔊 Automatically pronounce
-    speakWord();
+speakWord();
+
+startTime =
+performance.now();
+
 }
 
-
 // =====================
-// LETTER CHOICE
+// LETTER INPUT
 // =====================
 
 function chooseLetter(letter) {
 
-    if (currentGapIndex >= gapPositions.length)
-        return;
+let correctLetter =
+currentWord[
+gapPositions[gapIndex]
+];
 
-    let correctLetter =
-        currentWord[
-            gapPositions[currentGapIndex]
-        ];
+if (letter === correctLetter) {
 
-    let result =
-        document.getElementById("result");
+fillLetter(letter);
 
-    let wordDisplay =
-        document.getElementById("word");
+gapIndex++;
 
-    if (letter === correctLetter) {
+if (
+gapIndex ===
+gapPositions.length
+) {
 
-        // Fill correct letter
-        let chars =
-            wordDisplay.textContent.split("");
+finishWord();
 
-        chars[
-            gapPositions[currentGapIndex]
-        ] = letter;
-
-        wordDisplay.textContent =
-            chars.join("");
-
-        currentGapIndex++;
-
-        if (currentGapIndex === gapPositions.length) {
-
-            correctCount++;
-
-            result.textContent = "✅ Správne!";
-            result.className = "correct";
-
-            updateStats();
-
-            // Show full word 2 sec
-            setTimeout(showWord, 2000);
-        }
-
-    } else {
-
-        incorrectCount++;
-
-        result.textContent =
-            "❌ Nesprávne!";
-        result.className = "incorrect";
-
-        updateStats();
-    }
 }
 
+} else {
+
+incorrectCount++;
+
+wrongWords.add(
+currentWord
+);
+
+updateStats();
+saveProgress();
+
+}
+
+}
+
+function fillLetter(letter) {
+
+let wordDiv =
+document.getElementById("word");
+
+let chars =
+wordDiv.textContent.split("");
+
+chars[
+gapPositions[gapIndex]
+] = letter;
+
+wordDiv.textContent =
+chars.join("");
+
+}
+
+// =====================
+// FINISH WORD
+// =====================
+
+function finishWord() {
+
+let endTime =
+performance.now();
+
+let time =
+(endTime - startTime)/1000;
+
+let perLetter =
+time / gapPositions.length;
+
+stats[currentWord]
+.totalTime += perLetter;
+
+stats[currentWord]
+.attempts++;
+
+recentTimes.push(perLetter);
+
+if (recentTimes.length === 10) {
+
+let avg =
+recentTimes.reduce((a,b)=>a+b,0)
+/ recentTimes.length;
+
+speedSamples.push(avg);
+
+if (speedSamples.length > 20) {
+
+speedSamples.shift();
+
+}
+
+recentTimes = [];
+
+}
+
+correctCount++;
+
+updateStats();
+saveProgress();
+
+let wordDiv =
+document.getElementById("word");
+
+wordDiv.textContent =
+currentWord;
+
+wordDiv.classList.add(
+"correctWord"
+);
+
+setTimeout(
+showWord,
+1000
+);
+
+}
 
 // =====================
 // SPEECH
@@ -308,30 +464,79 @@ function chooseLetter(letter) {
 
 function speakWord() {
 
-    let utterance =
-        new SpeechSynthesisUtterance(currentWord);
+let utterance =
+new SpeechSynthesisUtterance(
+currentWord
+);
 
-    utterance.lang = "sk-SK";
+utterance.lang = "sk-SK";
 
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utterance);
+speechSynthesis.cancel();
+
+speechSynthesis.speak(
+utterance
+);
+
 }
 
-
 // =====================
-// STATS
+// DISPLAY
 // =====================
 
 function updateStats() {
 
-    document.getElementById("stats")
-        .textContent =
-        "Correct: "
-        + correctCount +
-        " | Incorrect: "
-        + incorrectCount;
+let total =
+correctCount +
+incorrectCount;
+
+let accuracy =
+total > 0
+? (correctCount / total * 100).toFixed(1)
+: 0;
+
+document.getElementById("stats")
+.textContent =
+"Correct: "
++ correctCount +
+" | Incorrect: "
++ incorrectCount +
+" | Accuracy: "
++ accuracy + "%";
+
+displaySlowWords();
+displayWrongWords();
+displaySpeedTrend();
+
 }
 
+function displaySlowWords() {
+
+document.getElementById("slowWords")
+.innerHTML =
+"<b>12 Slowest Words:</b><br>"
++ getSlowWords().join(", ");
+
+}
+
+function displayWrongWords() {
+
+document.getElementById("wrongWords")
+.innerHTML =
+"<b>Incorrect Words:</b><br>"
++ [...wrongWords].join(", ");
+
+}
+
+function displaySpeedTrend() {
+
+document.getElementById("speedTrend")
+.innerHTML =
+"<b>Speed trend (sec/letter):</b><br>"
++ speedSamples
+.map(v => v.toFixed(2))
+.join(" → ");
+
+}
 
 // =====================
 // START
@@ -339,7 +544,11 @@ function updateStats() {
 
 window.onload = () => {
 
-    showWord();
+loadProgress();
+
+updateStats();
+
+showWord();
 
 };
 
