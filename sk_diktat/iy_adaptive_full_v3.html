@@ -2,100 +2,229 @@
 <html lang="sk">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>I/Y Trainer</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
 
 body {
-font-family: Arial;
-text-align: center;
-padding: 30px;
-background: #f5f7fb;
+    font-family: 'Outfit', sans-serif;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    min-height: 100vh;
+    margin: 0;
+    color: #2d3748;
+}
+
+h1 {
+    font-weight: 800;
+    font-size: 2.5rem;
+    color: #1a202c;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 10px rgba(255,255,255,0.5);
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    max-width: 800px;
+    margin: 0 auto 20px auto;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.5);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+select, input[type="number"] {
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    padding: 8px 12px;
+    border: 2px solid #cbd5e0;
+    border-radius: 8px;
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+select:focus, input:focus {
+    border-color: #667eea;
 }
 
 #word {
-font-size: 44px;
-margin: 30px;
-letter-spacing: 4px;
-}
-
-button.choice {
-font-size: 26px;
-padding: 12px 24px;
-margin: 10px;
-cursor: pointer;
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 30px 0;
+    letter-spacing: 4px;
+    color: #2d3748;
 }
 
 .correctWord {
-color: green;
+    color: #38a169 !important;
 }
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+button.choice {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 28px;
+    padding: 15px 35px;
+    cursor: pointer;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    color: #4a5568;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button.choice:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    border-color: #667eea;
+    color: #667eea;
+}
+
+button.choice:active {
+    transform: translateY(1px);
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); background-color: #feb2b2; border-color: #e53e3e; color: #c53030;}
+  50% { transform: translateX(5px); background-color: #feb2b2; border-color: #e53e3e; color: #c53030;}
+  75% { transform: translateX(-5px); background-color: #feb2b2; border-color: #e53e3e; color: #c53030;}
+  100% { transform: translateX(0); }
+}
+
+.wrong-animation {
+  animation: shake 0.4s;
+}
+
+.action-btn {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #edf2f7;
+    color: #4a5568;
+}
+.action-btn:hover { background: #e2e8f0; }
 
 canvas {
-margin-top: 30px;
-border: 1px solid #ccc;
+    margin-top: 20px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 600px;
+    height: 250px;
 }
 
-#wrongWords {
-max-width: 900px;
-margin: auto;
-line-height: 1.6;
+#stats {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 20px 0;
+    color: #4a5568;
 }
 
-#dailyHistory {
-margin-top:20px;
-font-size:14px;
+.info-box {
+    background: rgba(255,255,255,0.6);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    text-align: left;
 }
 
+#wrongWords span { font-weight: 600; }
 </style>
 
 </head>
 
 <body>
 
-<h1>I / Y Trainer</h1>
+<div class="card">
+    <h1>I / Y Trainer</h1>
 
-<label><b>Practice Mode:</b></label><br>
+    <div class="controls">
+        <div>
+            <label><b>Practice Mode:</b></label>
+            <select id="modeSelect">
+                <option value="normal">Normal</option>
+                <option value="slow">Slowest</option>
+                <option value="wrong">Incorrect</option>
+            </select>
+        </div>
+        <div>
+            <label><b>Remove after:</b></label>
+            <input type="number" id="successThreshold" value="10" min="1" max="50" style="width: 60px;">
+            <b>successes</b>
+        </div>
+    </div>
 
-<select id="modeSelect">
-<option value="normal">Normal</option>
-<option value="slow">Slowest</option>
-<option value="wrong">Incorrect</option>
-</select>
+    <div id="word">loading...</div>
 
-<div id="word">loading...</div>
+    <div class="button-container">
+        <button class="choice" onclick="chooseLetter('i')">i</button>
+        <button class="choice" onclick="chooseLetter('y')">y</button>
+        <button class="choice" onclick="chooseLetter('í')">í</button>
+        <button class="choice" onclick="chooseLetter('ý')">ý</button>
+    </div>
 
-<div>
+    <button class="action-btn" onclick="speakWord()">🔊 Repeat Word</button>
 
-<button class="choice" onclick="chooseLetter('i')">i</button>
-<button class="choice" onclick="chooseLetter('y')">y</button>
-<button class="choice" onclick="chooseLetter('í')">í</button>
-<button class="choice" onclick="chooseLetter('ý')">ý</button>
-
+    <div id="stats"></div>
 </div>
 
-<br>
-
-<button onclick="speakWord()">
-🔊 Repeat Word
-</button>
-
-<div id="stats"></div>
-<div id="slowWords"></div>
-<div id="wrongWords"></div>
-
-<canvas id="speedChart"
-width="600"
-height="250"></canvas>
-
-<div id="dailyHistory"></div>
-
-<br><br>
-
-<button onclick="resetProgress()">
-Reset Progress
-</button>
+<div class="card">
+    <div id="slowWords" class="info-box"></div>
+    <div id="wrongWords" class="info-box"></div>
+    
+    <canvas id="speedChart" width="600" height="250"></canvas>
+    
+    <div id="dailyHistory" class="info-box" style="margin-top:20px;"></div>
+    
+    <br>
+    <button class="action-btn" onclick="resetProgress()">Reset Progress</button>
+</div>
 
 <script>
+document.addEventListener('keydown', (e) => {
+    let key = e.key.toLowerCase();
+    if (['i', 'y', 'í', 'ý'].includes(key)) {
+        let buttons = document.querySelectorAll('.choice');
+        for (let btn of buttons) {
+            if (btn.textContent === key) {
+                btn.click();
+                break;
+            }
+        }
+    }
+});
 
 // STORAGE
 
@@ -144,7 +273,7 @@ let words=[
 "kibicovať","kikirikí","kilo",
 "kilogram","kilometer","kimono",
 "kino","kinofilm","kinosála",
-"kivi","treningy","panika",
+"kivi","tréningy","panika",
 
 "angína","Brigita","gigabajt",
 "gigant","girlanda","gitara",
@@ -152,7 +281,7 @@ let words=[
 "logika","Margita","Regina",
 "gibon",
 "hymna",
-"hyj?",
+"hyjó",
 "hygiena",
 "hydina",
 "hýbať sa",
@@ -264,6 +393,8 @@ let gapPositions=[];
 let gapIndex=0;
 
 let startTime=0;
+let mistakesThisWord=0;
+let lastWord="";
 
 // LOAD
 
@@ -271,6 +402,8 @@ function loadProgress(){
 
 let saved=
 localStorage.getItem(STORAGE_KEY);
+
+let today = new Date().toLocaleDateString('en-CA');
 
 if(saved){
 
@@ -280,10 +413,15 @@ JSON.parse(saved);
 stats=data.stats;
 wrongMap=data.wrongMap||{};
 
-correctCount=data.correctCount;
-incorrectCount=data.incorrectCount;
-
-speedSamples=data.speedSamples||[];
+if (data.lastPlayedDate !== today) {
+  correctCount = 0;
+  incorrectCount = 0;
+  speedSamples = [];
+} else {
+  correctCount=data.correctCount;
+  incorrectCount=data.incorrectCount;
+  speedSamples=data.speedSamples||[];
+}
 
 recentTimes=data.recentTimes||[];
 
@@ -317,7 +455,8 @@ correctCount:correctCount,
 incorrectCount:incorrectCount,
 
 speedSamples:speedSamples,
-recentTimes:recentTimes
+recentTimes:recentTimes,
+lastPlayedDate: new Date().toLocaleDateString('en-CA')
 
 };
 
@@ -334,8 +473,7 @@ function saveDailyHistory(){
 
 let today=
 new Date()
-.toISOString()
-.slice(0,10);
+.toLocaleDateString('en-CA');
 
 let history=
 JSON.parse(
@@ -500,12 +638,46 @@ return chars.join("");
 
 function showWord(){
 
-currentWord=
-words[
-Math.floor(
-Math.random()*words.length
-)
-];
+let mode = document.getElementById("modeSelect").value;
+let wordPool = words;
+
+if (mode === "wrong") {
+  wordPool = Object.keys(wrongMap);
+  if (wordPool.length === 0) wordPool = words;
+} else if (mode === "slow") {
+  let slowWords = Object.keys(stats).filter(w => stats[w] && stats[w].attempts > 0);
+  slowWords.sort((a,b) => {
+    let avgA = stats[a].totalTime / stats[a].attempts;
+    let avgB = stats[b].totalTime / stats[b].attempts;
+    return avgB - avgA;
+  });
+  wordPool = slowWords.slice(0, 10);
+  if (wordPool.length === 0) wordPool = words;
+} else if (mode === "normal") {
+  let wrongKeys = Object.keys(wrongMap);
+  if (wrongKeys.length > 0 && Math.random() < 0.4) {
+    wordPool = wrongKeys;
+  }
+}
+
+if (wordPool.length > 1) {
+  let newWord;
+  do {
+    newWord = wordPool[Math.floor(Math.random()*wordPool.length)];
+  } while (newWord === lastWord);
+  currentWord = newWord;
+} else {
+  if (wordPool[0] === lastWord) {
+    let newWord;
+    do {
+      newWord = words[Math.floor(Math.random()*words.length)];
+    } while (newWord === lastWord);
+    currentWord = newWord;
+  } else {
+    currentWord = wordPool[0];
+  }
+}
+lastWord = currentWord;
 
 let wordDiv=
 document.getElementById("word");
@@ -523,6 +695,7 @@ startTime=
 performance.now();
 
 totalPausedTime=0;
+mistakesThisWord=0;
 
 resetIdleTimer();
 
@@ -570,6 +743,23 @@ finishWord();
 
 else{
 
+mistakesThisWord++;
+let targetN = parseInt(document.getElementById("successThreshold")?.value || "10", 10);
+if (!stats[currentWord]) {
+  stats[currentWord] = { totalTime: 0, attempts: 0, countdown: targetN };
+} else {
+  stats[currentWord].countdown = targetN;
+}
+
+let buttons = document.querySelectorAll('.choice');
+for (let btn of buttons) {
+  if (btn.textContent === letter) {
+    btn.classList.add('wrong-animation');
+    setTimeout(() => btn.classList.remove('wrong-animation'), 400);
+    break;
+  }
+}
+
 incorrectCount++;
 
 logWrongLetter(letter);
@@ -600,8 +790,7 @@ wrongMap[currentWord][pos]=[];
 
 }
 
-wrongMap[currentWord][pos]
-.push(letter);
+wrongMap[currentWord][pos].push(letter);
 
 }
 
@@ -642,28 +831,42 @@ let perLetter=
 time/gapPositions.length;
 
 // OUTLIER FILTER
-
-if(
-perLetter>5||
-perLetter<0.05
-){
-
-console.log("Outlier skipped");
-
-correctCount++;
-
-setTimeout(
-showWord,
-1000
-);
-
-return;
-
+// Relaxed to allow for slow typing, but capped so it doesn't break graph scale
+if(perLetter > 15) {
+  perLetter = 15;
+  time = 15 * gapPositions.length;
 }
 
 recentTimes.push(perLetter);
+if(recentTimes.length > 50) recentTimes.shift();
 
-correctCount++;
+speedSamples.push(perLetter);
+
+let targetN = parseInt(document.getElementById("successThreshold")?.value || "10", 10);
+
+if (!stats[currentWord]) {
+  stats[currentWord] = { totalTime: 0, attempts: 0, countdown: targetN };
+}
+stats[currentWord].attempts += 1;
+stats[currentWord].totalTime += time;
+
+if (!wrongMap[currentWord]) {
+  correctCount++;
+}
+
+if (mistakesThisWord === 0 && wrongMap[currentWord]) {
+  if (stats[currentWord].countdown === undefined) stats[currentWord].countdown = targetN;
+  stats[currentWord].countdown -= 1;
+  
+  if (stats[currentWord].countdown <= 0) {
+    let mistakesForgiven = 0;
+    for (let pos in wrongMap[currentWord]) {
+      mistakesForgiven += wrongMap[currentWord][pos].length;
+    }
+    incorrectCount = Math.max(0, incorrectCount - mistakesForgiven);
+    delete wrongMap[currentWord];
+  }
+}
 
 updateStats();
 saveProgress();
@@ -745,6 +948,10 @@ result+=letter;
 
 }
 
+let count = stats[word]?.countdown;
+if (count !== undefined && count > 0) {
+  result += " <span style='color:#718096; font-size:0.9em;'>[" + count + " left]</span>";
+}
 list.push(result);
 
 }
@@ -779,7 +986,127 @@ document.getElementById("stats")
 +accuracy+"%";
 
 displayWrongWords();
+displaySlowWords();
+drawChart();
 
+}
+
+function displaySlowWords(){
+  let slowWords = Object.keys(stats).filter(w => stats[w] && stats[w].attempts > 0);
+  slowWords.sort((a,b) => {
+    let avgA = stats[a].totalTime / stats[a].attempts;
+    let avgB = stats[b].totalTime / stats[b].attempts;
+    return avgB - avgA;
+  });
+  
+  let list = slowWords.slice(0, 5).map(w => {
+    let avg = (stats[w].totalTime / stats[w].attempts).toFixed(2);
+    return w + " (" + avg + "s)";
+  });
+  
+  if (list.length > 0) {
+    document.getElementById("slowWords").innerHTML = "<br><b>Slowest Words:</b><br>" + list.join(", ");
+  }
+}
+
+function drawChart() {
+  let canvas = document.getElementById("speedChart");
+  if (!canvas) return;
+  let ctx = canvas.getContext("2d");
+  let w = canvas.width;
+  let h = canvas.height;
+  
+  ctx.clearRect(0, 0, w, h);
+  
+  if (recentTimes.length < 2) {
+    ctx.font = "14px Arial";
+    ctx.fillStyle = "#999";
+    ctx.textAlign = "center";
+    ctx.fillText("Complete at least 2 words to see your speed graph!", w/2, h/2);
+    return;
+  }
+  
+  let maxTime = Math.max(...recentTimes);
+  maxTime = Math.max(maxTime, 3);
+  
+  let padL = 40;
+  let padR = 20;
+  let padT = 20;
+  let padB = 40;
+  
+  let graphW = w - padL - padR;
+  let graphH = h - padT - padB;
+  
+  let xStep = graphW / (recentTimes.length - 1);
+  
+  // Draw grid & Y-axis labels
+  ctx.strokeStyle = "#eee";
+  ctx.fillStyle = "#666";
+  ctx.font = "12px Arial";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  
+  ctx.beginPath();
+  for(let i=0; i<=3; i++) {
+    let y = padT + graphH - (i/3)*graphH;
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR, y);
+    
+    // Y-axis label
+    let val = (i/3) * maxTime;
+    ctx.fillText(val.toFixed(1) + "s", padL - 8, y);
+  }
+  ctx.stroke();
+
+  // Draw axes
+  ctx.strokeStyle = "#999";
+  ctx.beginPath();
+  ctx.moveTo(padL, padT);
+  ctx.lineTo(padL, h - padB);
+  ctx.lineTo(w - padR, h - padB);
+  ctx.stroke();
+  
+  // Y-axis title
+  ctx.save();
+  ctx.translate(12, padT + graphH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#333";
+  ctx.font = "bold 12px Arial";
+  ctx.fillText("Speed (s/letter)", 0, 0);
+  ctx.restore();
+  
+  // X-axis title
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#333";
+  ctx.font = "bold 12px Arial";
+  ctx.fillText("Recent Attempts", padL + graphW / 2, h - 10);
+  
+  // Draw line
+  ctx.strokeStyle = "#4CAF50";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  for (let i = 0; i < recentTimes.length; i++) {
+    let val = recentTimes[i];
+    let x = padL + i * xStep;
+    let y = padT + graphH - ((val / maxTime) * graphH);
+    
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  
+  // Draw points
+  ctx.fillStyle = "#2E7D32";
+  for (let i = 0; i < recentTimes.length; i++) {
+    let val = recentTimes[i];
+    let x = padL + i * xStep;
+    let y = padT + graphH - ((val / maxTime) * graphH);
+    
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 // START
@@ -787,6 +1114,7 @@ displayWrongWords();
 window.onload=()=>{
 
 loadProgress();
+updateStats();
 displayDailyHistory();
 showWord();
 
