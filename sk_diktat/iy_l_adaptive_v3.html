@@ -80,17 +80,22 @@
         }
 
         .button-container {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
             justify-content: center;
-            gap: 15px;
             margin-bottom: 30px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         button.choice {
             font-family: 'Outfit', sans-serif;
             font-weight: 600;
             font-size: 28px;
-            padding: 15px 35px;
+            width: 80px;
+            height: 80px;
             cursor: pointer;
             background: white;
             border: 2px solid #e2e8f0;
@@ -207,12 +212,12 @@
                 <select id="modeSelect">
                     <option value="normal">Normálny</option>
                     <option value="slow">Najpomalšie slová</option>
-                    <option value="wrong">Nesprávne slová</option>
+                    <option value="wrong" selected>Nesprávne slová</option>
                 </select>
             </div>
             <div>
                 <label><b>Vyradenie po:</b></label>
-                <input type="number" id="successThreshold" value="10" min="1" max="50" style="width: 60px;">
+                <input type="number" id="successThreshold" value="4" min="1" max="50" style="width: 60px;">
                 <b>úspechoch</b>
             </div>
         </div>
@@ -305,6 +310,8 @@
 
         // VARIABLES
 
+        const REPEAT_SPACING_MAX = 4; // Wrong words reappear after 1..REPEAT_SPACING_MAX other words (random each time)
+
         let stats = {};
         let wrongMap = {};
 
@@ -323,6 +330,7 @@
         let lastWord = "";
         let recentWords = [];
         let activeDeck = [];
+        let wrongModeSkip = 0; // filler words to show before next wrong word in "wrong" mode
 
         // LOAD
 
@@ -476,11 +484,41 @@
             let wrongKeys = Object.keys(wrongMap);
 
             if (mode === "wrong") {
-                let pool = wrongKeys.length > 0 ? wrongKeys : words;
-                let available = pool.filter(w => !recentWords.includes(w));
-                if (available.length === 0) available = pool.filter(w => w !== lastWord);
-                if (available.length === 0) available = words.filter(w => w !== lastWord);
-                selectedWord = available[Math.floor(Math.random() * available.length)];
+                // Determine the featured pool:
+                //   • wrong words if any exist
+                //   • otherwise fall back to the top slowest words so the session stays productive
+                let featuredPool;
+                if (wrongKeys.length > 0) {
+                    featuredPool = wrongKeys;
+                } else {
+                    let slowWords = Object.keys(stats)
+                        .filter(w => stats[w] && stats[w].attempts > 0)
+                        .sort((a, b) =>
+                            (stats[b].totalTime / stats[b].attempts) -
+                            (stats[a].totalTime / stats[a].attempts))
+                        .slice(0, 5);
+                    featuredPool = slowWords.length > 0 ? slowWords : null;
+                }
+
+                if (wrongModeSkip > 0 && featuredPool) {
+                    // Filler word — breaks predictable repetition pattern
+                    wrongModeSkip--;
+                    let fillerPool = words.filter(w => !featuredPool.includes(w) && w !== lastWord);
+                    if (fillerPool.length === 0) fillerPool = words.filter(w => w !== lastWord);
+                    if (fillerPool.length === 0) fillerPool = words;
+                    selectedWord = fillerPool[Math.floor(Math.random() * fillerPool.length)];
+                } else if (featuredPool) {
+                    // Featured word (wrong or slowest), then schedule filler spacing
+                    let available = featuredPool.filter(w => w !== lastWord);
+                    if (available.length === 0) available = featuredPool;
+                    selectedWord = available[Math.floor(Math.random() * available.length)];
+                    wrongModeSkip = Math.floor(Math.random() * (REPEAT_SPACING_MAX - 1)) + 2;
+                } else {
+                    // No stats yet and no wrong words — pick any word
+                    let available = words.filter(w => w !== lastWord);
+                    if (available.length === 0) available = words;
+                    selectedWord = available[Math.floor(Math.random() * available.length)];
+                }
             } 
             else if (mode === "slow") {
                 let slowWords = Object.keys(stats).filter(w => stats[w] && stats[w].attempts > 0);
@@ -639,13 +677,27 @@
                 }
             }
 
-            // Reschedule incorrect words to reappear randomly after 2 to 4 other words (Normal Mode review spacing)
+            // Reschedule incorrect words to reappear randomly after 1..REPEAT_SPACING_MAX other words
             if (mistakesThisWord > 0) {
-                if (activeDeck.length < 6) {
+                // CRITICAL: remove all existing copies of currentWord from the deck first.
+                // refillDeck() includes every word (incl. currentWord), so without this filter
+                // currentWord could land at position 0 and appear immediately as the next word,
+                // creating the predictable "every second word" pattern.
+                activeDeck = activeDeck.filter(w => w !== currentWord);
+
+                if (activeDeck.length < REPEAT_SPACING_MAX + 2) {
                     refillDeck();
+                    // Strip again — refill re-adds currentWord into the shuffled deck
+                    activeDeck = activeDeck.filter(w => w !== currentWord);
                 }
-                // Random spacing from 2 to 4 words (inserts at index 2, 3, or 4 in the front-pulled queue)
-                let spacing = Math.floor(Math.random() * 3) + 2; 
+
+                // Random spacing: 2 to REPEAT_SPACING_MAX
+                // Minimum 2 is required: spacing=1 risks two wrong words becoming adjacent
+                // and alternating in an infinite loop (W1→W2→W1→W2...).
+                // The unpredictability vs. the old bug comes from the filter fix above,
+                // not from allowing spacing=1.
+                let spacing = Math.floor(Math.random() * (REPEAT_SPACING_MAX - 1)) + 2;
+                spacing = Math.min(spacing, activeDeck.length); // guard against tiny decks
                 activeDeck.splice(spacing, 0, currentWord);
             }
 
