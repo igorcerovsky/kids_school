@@ -88,6 +88,7 @@
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
+            position: relative;
         }
 
         button.choice {
@@ -114,6 +115,41 @@
 
         button.choice:active {
             transform: translateY(1px);
+        }
+
+        /* Locked state: buttons dimmed until circle is hovered */
+        button.choice.locked {
+            opacity: 0.35;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        /* Center circle */
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.5); }
+            50%       { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); }
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e53e3e;
+            cursor: crosshair;
+            z-index: 20;
+            transition: background 0.25s, box-shadow 0.25s;
+            animation: pulse-red 1.4s infinite;
+        }
+
+        .center-circle.unlocked {
+            background: #28c76f;
+            animation: none;
+            box-shadow: 0 0 0 4px rgba(40, 199, 111, 0.35);
+            pointer-events: none; /* let clicks reach the buttons */
         }
 
         @keyframes shake {
@@ -211,7 +247,6 @@
                 <label><b>Režim precvičovania:</b></label>
                 <select id="modeSelect">
                     <option value="normal">Normálny</option>
-                    <option value="slow">Najpomalšie slová</option>
                     <option value="wrong" selected>Nesprávne slová</option>
                 </select>
             </div>
@@ -225,10 +260,11 @@
         <div id="word">loading...</div>
 
         <div class="button-container">
-            <button class="choice" onclick="chooseLetter('i')">i</button>
-            <button class="choice" onclick="chooseLetter('y')">y</button>
-            <button class="choice" onclick="chooseLetter('í')">í</button>
-            <button class="choice" onclick="chooseLetter('ý')">ý</button>
+            <button class="choice locked" id="btn-i" onclick="chooseLetter('i')">i</button>
+            <button class="choice locked" id="btn-y" onclick="chooseLetter('y')">y</button>
+            <div id="centerCircle" class="center-circle" title="Prejdi kurzorom sem!"></div>
+            <button class="choice locked" id="btn-ii" onclick="chooseLetter('í')">í</button>
+            <button class="choice locked" id="btn-yy" onclick="chooseLetter('ý')">ý</button>
         </div>
 
         <button class="action-btn" onclick="speakWord()">🔊 Prehrať slovo</button>
@@ -252,6 +288,7 @@
         document.addEventListener('keydown', (e) => {
             let key = e.key.toLowerCase();
             if (['i', 'y', 'í', 'ý'].includes(key)) {
+                if (!buttonsEnabled) return;
                 let buttons = document.querySelectorAll('.choice');
                 for (let btn of buttons) {
                     if (btn.textContent === key) {
@@ -261,6 +298,18 @@
                 }
             }
         });
+
+        // Centre-circle: unlock buttons when cursor (or touch) passes through
+        function unlockButtons() {
+            buttonsEnabled = true;
+            const circle = document.getElementById('centerCircle');
+            circle.classList.add('unlocked');
+            document.querySelectorAll('button.choice').forEach(b => b.classList.remove('locked'));
+        }
+
+        document.getElementById('centerCircle').addEventListener('mouseenter', unlockButtons);
+        document.getElementById('centerCircle').addEventListener('touchstart', unlockButtons, { passive: true });
+
 
         // STORAGE
 
@@ -310,7 +359,10 @@
 
         // VARIABLES
 
-        const REPEAT_SPACING_MAX = 4; // Wrong words reappear after 1..REPEAT_SPACING_MAX other words (random each time)
+        const REPEAT_SPACING_MAX = 4;    // wrong words reappear after 2..N other words
+        const SLOW_MODE_POOL_SIZE = 15;  // slow mode drills from the N slowest words
+        const SLOW_FEATURED_SIZE = 5;    // every SLOW_FEATURED_EVERY words, force one of the top N slowest
+        const SLOW_FEATURED_EVERY = 5;   // how often a top-slowest word is forced in slow mode
 
         let stats = {};
         let wrongMap = {};
@@ -329,8 +381,10 @@
         let mistakesThisWord = 0;
         let lastWord = "";
         let recentWords = [];
-        let activeDeck = [];
-        let wrongModeSkip = 0; // filler words to show before next wrong word in "wrong" mode
+        let wrongModeSkip = 0;     // filler words to show before next wrong word in "wrong" mode
+        let buttonsEnabled = false; // unlocked only after cursor passes through center circle
+        let slowModeCounter = 0;   // counts words shown in normal mode
+        let slowModeForced = false; // true when current word was force-selected as a top-slowest word
 
         // LOAD
 
@@ -471,10 +525,6 @@
             return chars.join("");
         }
 
-        // DECK SHUFFLE TO ENSURE EVEN DISTRIBUTION WITHOUT REPETITION
-        function refillDeck() {
-            activeDeck = [...words].sort(() => Math.random() - 0.5);
-        }
 
         // SHOW WORD
         function showWord() {
@@ -520,26 +570,30 @@
                     selectedWord = available[Math.floor(Math.random() * available.length)];
                 }
             } 
-            else if (mode === "slow") {
-                let slowWords = Object.keys(stats).filter(w => stats[w] && stats[w].attempts > 0);
-                slowWords.sort((a, b) => {
-                    let avgA = stats[a].totalTime / stats[a].attempts;
-                    let avgB = stats[b].totalTime / stats[b].attempts;
-                    return avgB - avgA;
-                });
-                let pool = slowWords.slice(0, 15);
+            else { // "normal" — drills from top slowest, every Nth forces a top-5 word
+                slowModeCounter++;
+                slowModeForced = false;
+
+                let allSortedBySlowness = Object.keys(stats)
+                    .filter(w => stats[w] && stats[w].attempts > 0)
+                    .sort((a, b) =>
+                        (stats[b].totalTime / stats[b].attempts) -
+                        (stats[a].totalTime / stats[a].attempts));
+
+                let pool;
+                if (slowModeCounter % SLOW_FEATURED_EVERY === 0 && allSortedBySlowness.length > 0) {
+                    // Every Nth word: force one of the absolute slowest to give it a fresh chance
+                    pool = allSortedBySlowness.slice(0, SLOW_FEATURED_SIZE);
+                    slowModeForced = true;
+                } else {
+                    pool = allSortedBySlowness.slice(0, SLOW_MODE_POOL_SIZE);
+                }
                 if (pool.length === 0) pool = words;
-                
+
                 let available = pool.filter(w => !recentWords.includes(w));
                 if (available.length === 0) available = pool.filter(w => w !== lastWord);
                 if (available.length === 0) available = words.filter(w => w !== lastWord);
                 selectedWord = available[Math.floor(Math.random() * available.length)];
-            } 
-            else { // "normal"
-                if (activeDeck.length === 0) {
-                    refillDeck();
-                }
-                selectedWord = activeDeck.shift();
             }
 
             currentWord = selectedWord;
@@ -561,12 +615,26 @@
             totalPausedTime = 0;
             mistakesThisWord = 0;
 
+            // Reset center circle: lock buttons, circle back to red
+            buttonsEnabled = false;
+            const circle = document.getElementById('centerCircle');
+            circle.classList.remove('unlocked');
+            circle.style.pointerEvents = 'auto';
+            document.querySelectorAll('button.choice').forEach(b => b.classList.add('locked'));
+
+            // If the cursor is already over the circle when the new word appears,
+            // mouseenter won't fire — so check immediately and unlock if so.
+            if (circle.matches(':hover')) {
+                unlockButtons();
+            }
+
             resetIdleTimer();
         }
 
         // INPUT
 
         function chooseLetter(letter) {
+            if (!buttonsEnabled) return; // circle not yet hovered
             resetIdleTimer();
 
             // Resume pause if needed
@@ -656,6 +724,15 @@
             if (!stats[currentWord]) {
                 stats[currentWord] = { totalTime: 0, attempts: 0, countdown: targetN };
             }
+
+            // If this was a forced top-slowest word in slow mode, reset its accumulated stats
+            // so the new time replaces the old average instead of being dragged down by it.
+            if (slowModeForced) {
+                stats[currentWord].totalTime = 0;
+                stats[currentWord].attempts = 0;
+                slowModeForced = false;
+            }
+
             stats[currentWord].attempts += 1;
             stats[currentWord].totalTime += time;
 
@@ -677,29 +754,6 @@
                 }
             }
 
-            // Reschedule incorrect words to reappear randomly after 1..REPEAT_SPACING_MAX other words
-            if (mistakesThisWord > 0) {
-                // CRITICAL: remove all existing copies of currentWord from the deck first.
-                // refillDeck() includes every word (incl. currentWord), so without this filter
-                // currentWord could land at position 0 and appear immediately as the next word,
-                // creating the predictable "every second word" pattern.
-                activeDeck = activeDeck.filter(w => w !== currentWord);
-
-                if (activeDeck.length < REPEAT_SPACING_MAX + 2) {
-                    refillDeck();
-                    // Strip again — refill re-adds currentWord into the shuffled deck
-                    activeDeck = activeDeck.filter(w => w !== currentWord);
-                }
-
-                // Random spacing: 2 to REPEAT_SPACING_MAX
-                // Minimum 2 is required: spacing=1 risks two wrong words becoming adjacent
-                // and alternating in an infinite loop (W1→W2→W1→W2...).
-                // The unpredictability vs. the old bug comes from the filter fix above,
-                // not from allowing spacing=1.
-                let spacing = Math.floor(Math.random() * (REPEAT_SPACING_MAX - 1)) + 2;
-                spacing = Math.min(spacing, activeDeck.length); // guard against tiny decks
-                activeDeck.splice(spacing, 0, currentWord);
-            }
 
             updateStats();
             saveProgress();
@@ -892,7 +946,6 @@
             loadProgress();
             updateStats();
             displayDailyHistory();
-            refillDeck();
             showWord();
         };
     </script>
