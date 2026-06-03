@@ -126,8 +126,15 @@
 
         /* Center circle */
         @keyframes pulse-red {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.5); }
-            50%       { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(229, 62, 62, 0);
+            }
         }
 
         .center-circle {
@@ -149,7 +156,8 @@
             background: #28c76f;
             animation: none;
             box-shadow: 0 0 0 4px rgba(40, 199, 111, 0.35);
-            pointer-events: none; /* let clicks reach the buttons */
+            pointer-events: none;
+            /* let clicks reach the buttons */
         }
 
         @keyframes shake {
@@ -350,11 +358,11 @@
             "ulica", "polica", "polička", "králik", "králiček", "malina", "malinový", "slina", "hlina", "hliník", "dolinka",
             "blikať", "blízko", "blízkemu", "blížiť sa",
             "oliva", "palica", "palička", "tulipán", "velikán",
-            "milý", "milión", "milionár",
+            "milión", "milionár",
             "slimák", "slimáčik", "slivka", "slizký", "kalina", "klinec", "klinček",
             "balík", "balíček", "liter", "literatúra", "maliar", "pilina",
             "kúpalisko", "bielizeň", "bielidlo",
-            "solili", "blížili", "plnili", "chválili", "platili", "kúpili", "kreslili", "nosili", "varili", "robili"
+            "solila", "blížil", "chválil", "kreslil", "nosil", "varil", "robil"
         ];
 
         // VARIABLES
@@ -569,7 +577,7 @@
                     if (available.length === 0) available = words;
                     selectedWord = available[Math.floor(Math.random() * available.length)];
                 }
-            } 
+            }
             else { // "normal" — drills from top slowest, every Nth forces a top-5 word
                 slowModeCounter++;
                 slowModeForced = false;
