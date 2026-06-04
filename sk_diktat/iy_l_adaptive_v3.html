@@ -241,6 +241,138 @@
         #wrongWords span {
             font-weight: 600;
         }
+
+        .top-panel-container {
+            display: flex;
+            flex-direction: row;
+            gap: 25px;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        .left-panel {
+            flex: 0 0 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.45);
+            border-radius: 16px;
+            padding: 18px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            min-height: 280px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .word-matrix {
+            background: transparent;
+            padding: 5px;
+            margin-bottom: auto;
+        }
+
+        .matrix-cell {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            background-color: #cbd5e0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .matrix-cell:hover {
+            transform: scale(1.3);
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #hovered-word-info {
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            padding: 4px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .matrix-legend {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .legend-swatch {
+            width: 50px;
+            height: 11px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .legend-swatch-gray {
+            background: #cbd5e0;
+        }
+
+        /* Discrete 6-step teal scale for correct words */
+        .legend-swatch-teal {
+            display: flex;
+            gap: 2px;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        .legend-swatch-red {
+            display: flex;
+            gap: 2px;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        .ls-step {
+            width: 9px;
+            height: 11px;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .top-panel-container {
+                flex-direction: column-reverse;
+                gap: 20px;
+            }
+
+            .left-panel {
+                flex: 1 1 auto;
+                width: 100%;
+                min-height: auto;
+            }
+        }
     </style>
 
 </head>
@@ -248,36 +380,68 @@
 <body>
 
     <div class="card">
-        <h1>I / Y po L - Trenažér</h1>
-
-        <div class="controls">
-            <div>
-                <label><b>Režim precvičovania:</b></label>
-                <select id="modeSelect">
-                    <option value="normal">Normálny</option>
-                    <option value="wrong" selected>Nesprávne slová</option>
-                </select>
+        <div class="top-panel-container">
+            <div class="left-panel">
+                <div
+                    style="font-weight: 800; font-size: 15px; margin-bottom: 10px; color: #1a202c; text-align: center;">
+                    Pokrok slov</div>
+                <div id="wordMatrix" class="word-matrix"></div>
+                <div id="hovered-word-info">Prejdi po mriežke...</div>
+                <div class="matrix-legend">
+                    <div class="legend-row">
+                        <div class="legend-swatch legend-swatch-gray"></div>
+                        <span>Neprecvičené / Reset</span>
+                    </div>
+                    <div class="legend-row" style="margin-top:4px">
+                        <div class="legend-swatch legend-swatch-teal">
+                            <div class="ls-step" style="background:hsl(174,70%,82%)"></div>
+                            <div class="ls-step" style="background:hsl(174,70%,72%)"></div>
+                            <div class="ls-step" style="background:hsl(174,70%,62%)"></div>
+                            <div class="ls-step" style="background:hsl(174,70%,52%)"></div>
+                            <div class="ls-step" style="background:hsl(174,70%,42%)"></div>
+                            <div class="ls-step" style="background:hsl(174,70%,32%)"></div>
+                        </div>
+                        <span>Správne (1–6)</span>
+                    </div>
+                    <div class="legend-row">
+                        <div class="legend-swatch legend-swatch-red">
+                            <div class="ls-step" style="background:hsl(0,70%,82%)"></div>
+                            <div class="ls-step" style="background:hsl(0,70%,72%)"></div>
+                            <div class="ls-step" style="background:hsl(0,70%,62%)"></div>
+                            <div class="ls-step" style="background:hsl(0,70%,52%)"></div>
+                            <div class="ls-step" style="background:hsl(0,70%,42%)"></div>
+                            <div class="ls-step" style="background:hsl(0,70%,32%)"></div>
+                        </div>
+                        <span>S chybou (1–6)</span>
+                    </div>
+                </div>
             </div>
-            <div>
-                <label><b>Vyradenie po:</b></label>
-                <input type="number" id="successThreshold" value="4" min="1" max="50" style="width: 60px;">
-                <b>úspechoch</b>
+            <div class="right-panel">
+                <h1>I / Y po L - Trenažér</h1>
+
+                <div class="controls">
+                    <div>
+                        <label><b>Vyradenie po:</b></label>
+                        <input type="number" id="successThreshold" value="4" min="1" max="50" style="width: 60px;">
+                        <b>úspechoch</b>
+                    </div>
+                </div>
+
+                <div id="word">loading...</div>
+
+                <div class="button-container">
+                    <button class="choice locked" id="btn-i" onclick="chooseLetter('i')">i</button>
+                    <button class="choice locked" id="btn-y" onclick="chooseLetter('y')">y</button>
+                    <div id="centerCircle" class="center-circle" title="Prejdi kurzorom sem!"></div>
+                    <button class="choice locked" id="btn-ii" onclick="chooseLetter('í')">í</button>
+                    <button class="choice locked" id="btn-yy" onclick="chooseLetter('ý')">ý</button>
+                </div>
+
+                <button class="action-btn" onclick="speakWord()">🔊 Prehrať slovo</button>
+
+                <div id="stats"></div>
             </div>
         </div>
-
-        <div id="word">loading...</div>
-
-        <div class="button-container">
-            <button class="choice locked" id="btn-i" onclick="chooseLetter('i')">i</button>
-            <button class="choice locked" id="btn-y" onclick="chooseLetter('y')">y</button>
-            <div id="centerCircle" class="center-circle" title="Prejdi kurzorom sem!"></div>
-            <button class="choice locked" id="btn-ii" onclick="chooseLetter('í')">í</button>
-            <button class="choice locked" id="btn-yy" onclick="chooseLetter('ý')">ý</button>
-        </div>
-
-        <button class="action-btn" onclick="speakWord()">🔊 Prehrať slovo</button>
-
-        <div id="stats"></div>
     </div>
 
     <div class="card">
@@ -342,15 +506,15 @@
             "lysý", "lysina", "lyska",
             "lýra", "lyrický", "lyrik",
             "lýceum", "lyceálny",
-            "plyn", "plynový", "plynovod", "plynáreň", "plynár", "plynúť", "plynutie", "plynulý", "plynule", "rozplynúť sa", "uplynúť",
+            "plyn", "plynový", "plynovod", "plynáreň", "plynár", "plynúť", "plynutie", "plynulo", "plynule", "rozplynúť sa", "uplynúť",
             "plytký", "plytčina", "plytvať", "plytvanie",
             "mlyn", "mlynár", "mlynárka", "mlynček", "mlynárik",
             "blýskať sa", "zablýskať sa", "blýskavica", "blýskavý", "blysnúť sa", "blyšťať sa",
             "vzlykať", "vzlyk", "povzlyknúť si",
-            "pomaly", "zlyhať", "zlyhanie",
-            "vplyv", "vplyvný", "vplývať",
-            "splývať", "splývavý", "splývanie",
-            "plyš", "plyšový", "plyšák", "oplývať",
+            "zlyhať", "zlyhanie",
+            "vplyv", "vplyvno", "vplývať",
+            "splývať", "splývavo", "splývanie",
+            "plyš", "plyšovo", "plyšák", "oplývať",
 
             // Mäkké slabiky po L (i/í)
             "list", "lístok", "lístie", "listina", "liana", "limonáda", "linajka", "lipa", "lipový", "lízať", "lízanka", "líška", "líščia", "línia", "lícovať", "líce", "liga", "liatina", "liatinový", "liať",
@@ -359,21 +523,23 @@
             "blikať", "blízko", "blízkemu", "blížiť sa",
             "oliva", "palica", "palička", "tulipán", "velikán",
             "milión", "milionár",
-            "slimák", "slimáčik", "slivka", "slizký", "kalina", "klinec", "klinček",
+            "slimák", "slimáčik", "slivka", "slizko", "kalina", "klinec", "klinček",
             "balík", "balíček", "liter", "literatúra", "maliar", "pilina",
             "kúpalisko", "bielizeň", "bielidlo",
-            "solila", "blížil", "chválil", "kreslil", "nosil", "varil", "robil"
+            "solila", "blížil", "chválil", "kreslil"
         ];
 
         // VARIABLES
 
-        const REPEAT_SPACING_MAX = 4;    // wrong words reappear after 2..N other words
-        const SLOW_MODE_POOL_SIZE = 15;  // slow mode drills from the N slowest words
-        const SLOW_FEATURED_SIZE = 5;    // every SLOW_FEATURED_EVERY words, force one of the top N slowest
-        const SLOW_FEATURED_EVERY = 5;   // how often a top-slowest word is forced in slow mode
+        const REPEAT_SPACING_MAX = 4;      // minimum spacing between repeats of the same wrong word
+        const SLOW_FEATURED_SIZE = 5;      // max number of slow/wrong words to draw from when injecting
+        const SLOW_FEATURED_EVERY = 5;     // inject a slow/wrong word every N turns
+        const SLOW_SPEED_MULTIPLIER = 1.8; // word is "slow" if avg_time > MULTIPLIER * mean_speed
 
         let stats = {};
         let wrongMap = {};
+        let matrixCount = {};  // per-word count in the current Tetris cycle
+        let wrongCount = {};   // how many times each wrong word has been practiced while still wrong
 
         let correctCount = 0;
         let incorrectCount = 0;
@@ -404,6 +570,8 @@
                 let data = JSON.parse(saved);
                 stats = data.stats || {};
                 wrongMap = data.wrongMap || {};
+                matrixCount = data.matrixCount || {};
+                wrongCount = data.wrongCount || {};
 
                 if (data.lastPlayedDate !== today) {
                     correctCount = 0;
@@ -417,13 +585,13 @@
                 recentTimes = data.recentTimes || [];
             }
 
-            // Ensure all current words exist in stats
+            // Ensure all current words exist in stats and matrixCount
             words.forEach(w => {
                 if (!stats[w]) {
-                    stats[w] = {
-                        totalTime: 0,
-                        attempts: 0
-                    };
+                    stats[w] = { totalTime: 0, attempts: 0 };
+                }
+                if (matrixCount[w] === undefined) {
+                    matrixCount[w] = 0;
                 }
             });
         }
@@ -434,6 +602,8 @@
             let data = {
                 stats: stats,
                 wrongMap: wrongMap,
+                matrixCount: matrixCount,
+                wrongCount: wrongCount,
                 correctCount: correctCount,
                 incorrectCount: incorrectCount,
                 speedSamples: speedSamples,
@@ -442,6 +612,22 @@
             };
 
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // TETRIS RESET
+        // Called after any matrixCount increment.
+        // If every word has count >= 1, subtract 1 from all (like a Tetris line clear).
+        function tetrisCheck() {
+            let allFilled = words.every(w => matrixCount[w] >= 1);
+            if (allFilled) {
+                words.forEach(w => { matrixCount[w] -= 1; });
+            }
+        }
+
+        // Increment matrixCount for word w, then run Tetris check.
+        function matrixCountIncrement(w) {
+            matrixCount[w] = (matrixCount[w] || 0) + 1;
+            tetrisCheck();
         }
 
         // DAILY HISTORY
@@ -536,73 +722,60 @@
 
         // SHOW WORD
         function showWord() {
-            let mode = document.getElementById("modeSelect").value;
             let selectedWord = "";
 
             let wrongKeys = Object.keys(wrongMap);
 
-            if (mode === "wrong") {
-                // Determine the featured pool:
-                //   • wrong words if any exist
-                //   • otherwise fall back to the top slowest words so the session stays productive
-                let featuredPool;
-                if (wrongKeys.length > 0) {
-                    featuredPool = wrongKeys;
-                } else {
-                    let slowWords = Object.keys(stats)
-                        .filter(w => stats[w] && stats[w].attempts > 0)
-                        .sort((a, b) =>
-                            (stats[b].totalTime / stats[b].attempts) -
-                            (stats[a].totalTime / stats[a].attempts))
-                        .slice(0, 5);
-                    featuredPool = slowWords.length > 0 ? slowWords : null;
-                }
-
-                if (wrongModeSkip > 0 && featuredPool) {
-                    // Filler word — breaks predictable repetition pattern
-                    wrongModeSkip--;
-                    let fillerPool = words.filter(w => !featuredPool.includes(w) && w !== lastWord);
-                    if (fillerPool.length === 0) fillerPool = words.filter(w => w !== lastWord);
-                    if (fillerPool.length === 0) fillerPool = words;
-                    selectedWord = fillerPool[Math.floor(Math.random() * fillerPool.length)];
-                } else if (featuredPool) {
-                    // Featured word (wrong or slowest), then schedule filler spacing
-                    let available = featuredPool.filter(w => w !== lastWord);
-                    if (available.length === 0) available = featuredPool;
-                    selectedWord = available[Math.floor(Math.random() * available.length)];
-                    wrongModeSkip = Math.floor(Math.random() * (REPEAT_SPACING_MAX - 1)) + 2;
-                } else {
-                    // No stats yet and no wrong words — pick any word
-                    let available = words.filter(w => w !== lastWord);
-                    if (available.length === 0) available = words;
-                    selectedWord = available[Math.floor(Math.random() * available.length)];
-                }
+            // Compute mean avg speed across all practiced words
+            let practicedWords = words.filter(w => stats[w] && stats[w].attempts > 0);
+            let meanSpeed = 0;
+            if (practicedWords.length > 0) {
+                let sum = practicedWords.reduce((acc, w) => acc + stats[w].totalTime / stats[w].attempts, 0);
+                meanSpeed = sum / practicedWords.length;
             }
-            else { // "normal" — drills from top slowest, every Nth forces a top-5 word
-                slowModeCounter++;
-                slowModeForced = false;
+            let slowThreshold = SLOW_SPEED_MULTIPLIER * meanSpeed;
 
-                let allSortedBySlowness = Object.keys(stats)
-                    .filter(w => stats[w] && stats[w].attempts > 0)
-                    .sort((a, b) =>
-                        (stats[b].totalTime / stats[b].attempts) -
-                        (stats[a].totalTime / stats[a].attempts));
+            // Slow words: practiced words whose avg time exceeds the threshold, excluding wrong words
+            let slowWords = practicedWords
+                .filter(w => !wrongKeys.includes(w) && (stats[w].totalTime / stats[w].attempts) > slowThreshold)
+                .sort((a, b) => (stats[b].totalTime / stats[b].attempts) - (stats[a].totalTime / stats[a].attempts))
+                .slice(0, SLOW_FEATURED_SIZE);
 
-                let pool;
-                if (slowModeCounter % SLOW_FEATURED_EVERY === 0 && allSortedBySlowness.length > 0) {
-                    // Every Nth word: force one of the absolute slowest to give it a fresh chance
-                    pool = allSortedBySlowness.slice(0, SLOW_FEATURED_SIZE);
-                    slowModeForced = true;
-                } else {
-                    pool = allSortedBySlowness.slice(0, SLOW_MODE_POOL_SIZE);
-                }
+            // Zero-cells: words not yet seen this Tetris cycle, excluding wrong and slow words
+            let zeroCells = words.filter(w =>
+                (matrixCount[w] || 0) === 0 &&
+                !wrongKeys.includes(w) &&
+                !slowWords.includes(w)
+            );
+
+            slowModeCounter++;
+            let isInjectionTurn = (slowModeCounter % SLOW_FEATURED_EVERY === 0);
+
+            let pool;
+            if (isInjectionTurn && (wrongKeys.length > 0 || slowWords.length > 0)) {
+                // Injection turn: prioritise wrong words, fall back to slow words
+                pool = wrongKeys.length > 0 ? wrongKeys : slowWords;
+            } else if (wrongKeys.length > 0 && zeroCells.length === 0) {
+                // No zero-cells left — inject a wrong word before Tetris reset
+                pool = wrongKeys;
+            } else if (zeroCells.length > 0) {
+                // Fill phase: pick from unseen words this cycle
+                pool = zeroCells;
+            } else {
+                // All cells filled — tetrisCheck() will have reset counts.
+                // Pick from lowest matrixCount words, excluding wrong and slow
+                let minCount = Math.min(...words.map(w => matrixCount[w] || 0));
+                pool = words.filter(w =>
+                    (matrixCount[w] || 0) === minCount &&
+                    !wrongKeys.includes(w)
+                );
                 if (pool.length === 0) pool = words;
-
-                let available = pool.filter(w => !recentWords.includes(w));
-                if (available.length === 0) available = pool.filter(w => w !== lastWord);
-                if (available.length === 0) available = words.filter(w => w !== lastWord);
-                selectedWord = available[Math.floor(Math.random() * available.length)];
             }
+
+            let available = pool.filter(w => w !== lastWord && !recentWords.slice(-3).includes(w));
+            if (available.length === 0) available = pool.filter(w => w !== lastWord);
+            if (available.length === 0) available = pool;
+            selectedWord = available[Math.floor(Math.random() * available.length)];
 
             currentWord = selectedWord;
             lastWord = currentWord;
@@ -744,11 +917,13 @@
             stats[currentWord].attempts += 1;
             stats[currentWord].totalTime += time;
 
-            if (!wrongMap[currentWord]) {
+            let wasInWrongMap = wrongMap[currentWord] !== undefined;
+
+            if (!wasInWrongMap) {
                 correctCount++;
             }
 
-            if (mistakesThisWord === 0 && wrongMap[currentWord]) {
+            if (mistakesThisWord === 0 && wasInWrongMap) {
                 if (stats[currentWord].countdown === undefined) stats[currentWord].countdown = targetN;
                 stats[currentWord].countdown -= 1;
 
@@ -759,7 +934,19 @@
                     }
                     incorrectCount = Math.max(0, incorrectCount - mistakesForgiven);
                     delete wrongMap[currentWord];
+                    delete wrongCount[currentWord]; // graduated — reset wrong reference count
+                    // Wrong word is now cleared — count it as 1 normal appearance in the matrix cycle
+                    matrixCountIncrement(currentWord);
+                } else {
+                    // Still in wrongMap — increment wrong reference count
+                    wrongCount[currentWord] = (wrongCount[currentWord] || 0) + 1;
                 }
+            } else if (wasInWrongMap) {
+                // Had mistakes on a wrong word — still count the practice attempt
+                wrongCount[currentWord] = (wrongCount[currentWord] || 0) + 1;
+            } else {
+                // Normal word completed — increment its matrix cycle count
+                matrixCountIncrement(currentWord);
             }
 
 
@@ -815,6 +1002,141 @@
                 (list.length > 0 ? list.join(", ") : "Žiadne zatiaľ.");
         }
 
+        // OPTIMAL GRID LAYOUT CALCULATOR
+        function calculateOptimalGrid(N) {
+            let bestC = N;
+            let bestR = 1;
+            let minUnused = N;
+            let bestRatioDiff = Infinity;
+            const targetRatio = 1.33; // 4:3 aspect ratio is visually pleasant
+
+            for (let r = 1; r <= N; r++) {
+                let c = Math.ceil(N / r);
+                let unused = (c * r) - N;
+                let ratio = c / r;
+
+                // Keep aspect ratio within reasonable range (0.5 to 2.5)
+                if (ratio < 0.5 || ratio > 2.5) continue;
+
+                if (unused < minUnused) {
+                    minUnused = unused;
+                    bestC = c;
+                    bestR = r;
+                    bestRatioDiff = Math.abs(ratio - targetRatio);
+                } else if (unused === minUnused) {
+                    let ratioDiff = Math.abs(ratio - targetRatio);
+                    if (ratioDiff < bestRatioDiff) {
+                        bestC = c;
+                        bestR = r;
+                        bestRatioDiff = ratioDiff;
+                    }
+                }
+            }
+
+            if (bestC * bestR < N) {
+                bestC = Math.ceil(Math.sqrt(N));
+                bestR = Math.ceil(N / bestC);
+            }
+
+            return { cols: bestC, rows: bestR };
+        }
+
+        // RENDER WORD PRACTICE MATRIX
+        function renderMatrix() {
+            const container = document.getElementById("wordMatrix");
+            if (!container) return;
+
+            container.innerHTML = "";
+
+            let N = words.length;
+            let grid = calculateOptimalGrid(N);
+
+            container.style.display = "grid";
+            container.style.gridTemplateColumns = `repeat(${grid.cols}, 1fr)`;
+            container.style.gap = "3px";
+
+            // Discrete 6-step color palettes
+            // Teal steps for correct words (light → dark)
+            const TEAL_STEPS = [
+                "hsl(174,70%,82%)",
+                "hsl(174,70%,72%)",
+                "hsl(174,70%,62%)",
+                "hsl(174,70%,52%)",
+                "hsl(174,70%,42%)",
+                "hsl(174,70%,32%)"
+            ];
+            // Red steps for wrong words (light → dark)
+            const RED_STEPS = [
+                "hsl(0,70%,82%)",
+                "hsl(0,70%,72%)",
+                "hsl(0,70%,62%)",
+                "hsl(0,70%,52%)",
+                "hsl(0,70%,42%)",
+                "hsl(0,70%,32%)"
+            ];
+
+            words.forEach(w => {
+                let mc = matrixCount[w] || 0;           // current Tetris-cycle count (normal words)
+                let rawAtt = stats[w]?.attempts || 0;   // all-time attempts (for tooltip)
+                let isWrong = wrongMap[w] !== undefined;
+                // Remaining correct answers needed before word graduates (countdown)
+                let remaining = isWrong ? (stats[w]?.countdown ?? 0) : 0;
+                let cell = document.createElement("div");
+                cell.className = "matrix-cell";
+
+                // Tooltip
+                if (isWrong) {
+                    cell.title = `Slovo: ${w}\n❌ Nesprávne — zostáva: ${remaining}x správne\nCelkom: ${rawAtt}x`;
+                } else {
+                    cell.title = `Slovo: ${w}\nCyklus: ${mc}x | Celkom: ${rawAtt}x`;
+                }
+
+                // Discrete color scale
+                if (isWrong) {
+                    // Red scale: dark = many remaining, light = almost done
+                    // remaining=1 → stepIndex=0 (lightest), remaining=6+ → stepIndex=5 (darkest)
+                    let stepIndex = Math.min(5, remaining - 1);
+                    cell.style.backgroundColor = RED_STEPS[Math.max(0, stepIndex)];
+                } else if (mc === 0) {
+                    // Not yet seen this cycle: light gray
+                    cell.style.backgroundColor = "#cbd5e0";
+                } else {
+                    // Teal scale: driven by matrixCount
+                    let stepIndex = Math.min(5, mc - 1);
+                    cell.style.backgroundColor = TEAL_STEPS[stepIndex];
+                }
+
+                // Hover: show word details
+                cell.addEventListener("mouseenter", () => {
+                    if (isWrong) {
+                        document.getElementById("hovered-word-info").innerHTML =
+                            `Slovo: <b>${w}</b> <span style='color:#e53e3e;'>[❌ zostáva: ${remaining}x]</span> &mdash; celkom: ${rawAtt}x`;
+                    } else {
+                        document.getElementById("hovered-word-info").innerHTML =
+                            `Slovo: <b>${w}</b> &mdash; cyklus: ${mc}x, celkom: ${rawAtt}x`;
+                    }
+                });
+
+                cell.addEventListener("mouseleave", () => {
+                    document.getElementById("hovered-word-info").innerHTML = "Prejdi po mriežke...";
+                });
+
+                container.appendChild(cell);
+            });
+
+            // Unused placeholder cells — fully transparent, no border
+            let totalCells = grid.cols * grid.rows;
+            for (let i = N; i < totalCells; i++) {
+                let placeholder = document.createElement("div");
+                placeholder.className = "matrix-cell";
+                placeholder.style.backgroundColor = "transparent";
+                placeholder.style.border = "none";
+                placeholder.style.cursor = "default";
+                placeholder.style.pointerEvents = "none";
+                container.appendChild(placeholder);
+            }
+        }
+
         // STATS
 
         function updateStats() {
@@ -829,6 +1151,7 @@
             displayWrongWords();
             displaySlowWords();
             drawChart();
+            renderMatrix();
         }
 
         function displaySlowWords() {
