@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zahlenpyramide – Mathe lernen</title>
+<meta name="description" content="Mathe-Übungen mit Zahlenpyramiden für Kinder. Addition und Multiplikation spielerisch üben.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg:       #0f0c29;
+    --bg2:      #1a1650;
+    --accent:   #f7c948;
+    --accent2:  #ff6b6b;
+    --green:    #4ade80;
+    --purple:   #a78bfa;
+    --blue:     #60a5fa;
+    --glass:    rgba(255,255,255,0.06);
+    --glass-b:  rgba(255,255,255,0.12);
+    --radius:   18px;
+    --cell:     clamp(52px, 12vw, 82px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 60%, #2d1b69 100%);
+    min-height: 100vh;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 12px 40px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  header h1 {
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--accent), #ff9f43, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  header p {
+    color: rgba(255,255,255,0.55);
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+    margin-top: 4px;
+  }
+
+  /* ── SETTINGS CARD ── */
+  .settings-card {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-b);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 24px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 680px;
+  }
+
+  .setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .setting-group label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+
+  .setting-group select,
+  .setting-group input[type="number"] {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 10px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .setting-group select:focus,
+  .setting-group input[type="number"]:focus {
+    border-color: var(--accent);
+    background: rgba(247,201,72,0.1);
+  }
+
+  .setting-group select option { background: #1a1650; color: #fff; }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  button {
+    font-family: inherit;
+    font-weight: 800;
+    font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  button:active { transform: scale(0.95); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #ff9f43);
+    color: #1a1650;
+    box-shadow: 0 6px 24px rgba(247,201,72,0.35);
+  }
+
+  .btn-primary:hover { filter: brightness(1.1); box-shadow: 0 8px 28px rgba(247,201,72,0.5); }
+
+  .btn-secondary {
+    background: var(--glass-b);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .btn-secondary:hover { background: rgba(255,255,255,0.18); }
+
+  .btn-check {
+    background: linear-gradient(135deg, var(--green), #22c55e);
+    color: #052e16;
+    box-shadow: 0 6px 24px rgba(74,222,128,0.3);
+  }
+
+  .btn-check:hover { filter: brightness(1.08); }
+
+  /* ── SCORE BAR ── */
+  .score-bar {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 22px;
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  }
+
+  .score-pill {
+    background: var(--glass);
+    border: 1px solid var(--glass-b);
+    border-radius: 50px;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+  }
+
+  .score-pill .count { font-size: 1.25em; }
+  .score-pill.correct .count { color: var(--green); }
+  .score-pill.wrong .count { color: var(--accent2); }
+
+  /* ── PYRAMID AREA ── */
+  #pyramid-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 30px;
+    width: 100%;
+  }
+
+  .pyramid-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── CELL ── */
+  .cell {
+    width: var(--cell);
+    height: var(--cell);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  /* given (fixed) cell */
+  .cell-given {
+    background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(96,165,250,0.2));
+    border: 2px solid rgba(167,139,250,0.5);
+    color: #e9d5ff;
+    cursor: default;
+    box-shadow: 0 4px 14px rgba(167,139,250,0.15);
+  }
+
+  /* input cell */
+  .cell-input {
+    background: rgba(255,255,255,0.05);
+    border: 2px dashed rgba(255,255,255,0.25);
+  }
+
+  .cell-input input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-family: inherit;
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    font-weight: 800;
+    color: #fff;
+    caret-color: var(--accent);
+    -webkit-text-fill-color: #fff;
+  }
+
+  /* Remove number spinners */
+  .cell-input input::-webkit-outer-spin-button,
+  .cell-input input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .cell-input input[type=number] { -moz-appearance: textfield; }
+
+  /* states */
+  .cell-correct {
+    background: linear-gradient(135deg, rgba(74,222,128,0.25), rgba(34,197,94,0.15)) !important;
+    border: 2px solid rgba(74,222,128,0.6) !important;
+    animation: popIn 0.3s ease;
+  }
+
+  .cell-correct input { -webkit-text-fill-color: var(--green) !important; color: var(--green) !important; }
+
+  .cell-wrong {
+    background: linear-gradient(135deg, rgba(255,107,107,0.25), rgba(239,68,68,0.15)) !important;
+    border: 2px solid rgba(255,107,107,0.6) !important;
+    animation: shake 0.4s ease;
+  }
+
+  .cell-wrong input { -webkit-text-fill-color: var(--accent2) !important; }
+
+  .cell-revealed {
+    background: linear-gradient(135deg, rgba(247,201,72,0.22), rgba(255,159,67,0.15)) !important;
+    border: 2px solid rgba(247,201,72,0.55) !important;
+  }
+
+  .cell-revealed input { -webkit-text-fill-color: var(--accent) !important; color: var(--accent) !important; }
+
+  @keyframes popIn {
+    0%   { transform: scale(0.85); }
+    60%  { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-5px); }
+    75%      { transform: translateX(5px); }
+  }
+
+  /* ── OPERATOR CONNECTOR ── */
+  .connector {
+    color: rgba(255,255,255,0.35);
+    font-size: clamp(0.75rem, 2vw, 0.95rem);
+    font-weight: 700;
+    width: 18px;
+    text-align: center;
+    user-select: none;
+  }
+
+  /* ── FEEDBACK ── */
+  #feedback {
+    min-height: 36px;
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-align: center;
+    transition: opacity 0.3s;
+  }
+
+  #feedback.ok  { color: var(--green); }
+  #feedback.bad { color: var(--accent2); }
+  #feedback.hint { color: var(--accent); }
+
+  /* ── RULE HINT ── */
+  .rule-hint {
+    background: var(--glass);
+    border: 1px solid var(--glass-b);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    font-size: clamp(0.85rem, 2.5vw, 0.98rem);
+    color: rgba(255,255,255,0.6);
+    line-height: 1.55;
+    margin-bottom: 22px;
+  }
+
+  .rule-hint strong { color: var(--accent); }
+
+  /* ── LEVEL BADGE ── */
+  .level-badge {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--purple), var(--blue));
+    border-radius: 50px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+
+  /* ── STARS ── */
+  #stars {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    min-height: 2.5rem;
+    text-align: center;
+    letter-spacing: 4px;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50px;
+    height: 8px;
+    margin-bottom: 26px;
+    overflow: hidden;
+  }
+
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #ff9f43);
+    border-radius: 50px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔺 Zahlenpyramide</h1>
+  <p id="header-sub">Fülle die Pyramide aus!</p>
+</header>
+
+<!-- SETTINGS -->
+<div class="settings-card">
+  <div class="setting-group">
+    <label>Rechenart</label>
+    <select id="operation">
+      <option value="mul" selected>✖ Multiplikation</option>
+      <option value="add">➕ Addition</option>
+    </select>
+  </div>
+
+  <div class="setting-group">
+    <label>Anzahl Reihen</label>
+    <input type="number" id="level" value="3" min="2" max="7" style="width:70px">
+  </div>
+
+  <div class="setting-group">
+    <label>Max Grundzahl</label>
+    <input type="number" id="range" value="9" min="1" max="1000" style="width:70px">
+  </div>
+
+  <div class="setting-group">
+    <label>Max Spitzenwert</label>
+    <input type="number" id="maxResult" value="100" min="10" max="100000" style="width:80px">
+  </div>
+
+  <div class="setting-group">
+    <label>Hinweise</label>
+    <select id="hints">
+      <option value="full">Viele Vorgaben</option>
+      <option value="some" selected>Wenige Vorgaben</option>
+      <option value="min">Minimale Vorgaben</option>
+    </select>
+  </div>
+</div>
+
+<!-- SCORE -->
+<div class="score-bar">
+  <div class="score-pill correct">✅ <span class="count" id="correct-count">0</span></div>
+  <div class="score-pill wrong">❌ <span class="count" id="wrong-count">0</span></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap"><div id="progress-bar"></div></div>
+
+<!-- STARS -->
+<div id="stars"></div>
+
+<!-- FEEDBACK -->
+<div id="feedback"></div>
+
+<!-- PYRAMID -->
+<div id="pyramid-container"></div>
+
+<!-- BUTTONS -->
+<div class="btn-row">
+  <button class="btn-primary" id="btn-new" onclick="newPyramid()">🔀 Neue Aufgabe</button>
+  <button class="btn-check" id="btn-check" onclick="checkAll()">✔ Prüfen</button>
+  <button class="btn-secondary" onclick="reveal()">💡 Lösung</button>
+</div>
+
+<!-- RULE HINT -->
+<div class="rule-hint" id="rule-hint">
+  Tippe die fehlenden Zahlen in die leeren Felder und drücke <strong>✔ Prüfen</strong>.
+</div>
+
+<script>
+  // ── STATE ──
+  let correctTotal = 0;
+  let wrongTotal   = 0;
+  let solved       = 0;
+  let totalCells   = 0;
+  let pyramidData  = []; // rows of numbers (complete solution)
+  let cellEls      = []; // parallel structure to pyramidData
+  let isGiven      = []; // which cells are pre-filled
+
+  const feedbackEl = document.getElementById('feedback');
+  const starsEl    = document.getElementById('stars');
+  const progressEl = document.getElementById('progress-bar');
+
+  // ── SETTINGS HELPERS ──
+  function getRows() {
+    const v = parseInt(document.getElementById('level').value, 10);
+    return Math.max(2, Math.min(7, isNaN(v) ? 3 : v));
+  }
+
+  function getOperation() {
+    return document.getElementById('operation').value; // 'add' | 'mul'
+  }
+
+  function getMax() {
+    return parseInt(document.getElementById('range').value, 10);
+  }
+
+  function getHintRatio() {
+    const h = document.getElementById('hints').value;
+    if (h === 'full') return 0.65;
+    if (h === 'min')  return 0.25;
+    return 0.45;
+  }
+
+  function rand(a, b) {
+    return Math.floor(Math.random() * (b - a + 1)) + a;
+  }
+
+  // Returns a base number biased away from 1 (1 appears ~10% of the time).
+  // (Replaced by per-puzzle logic in buildPyramid — kept as no-op)
+
+  function combine(a, b) {
+    return getOperation() === 'mul' ? a * b : a + b;
+  }
+
+  function getMaxResult() {
+    const v = parseInt(document.getElementById('maxResult').value, 10);
+    return isNaN(v) ? 100 : Math.max(10, v);
+  }
+
+  // ── BUILD SOLUTION ──
+  // Constraint-aware algorithm — NO brute-force retry for intermediate rows.
+  //
+  // For MULTIPLICATION, values compound exponentially (Pascal's triangle exponents):
+  //   Highest non-apex row (row rows-2) worst-case = effMax ^ (2^(rows-2))
+  //   → effMax = floor(maxVal ^ (1 / 2^(rows-2)))
+  //
+  // For ADDITION, values grow linearly:
+  //   Highest non-apex row worst-case = effMax × 2^(rows-2)
+  //   → effMax = floor(maxVal / 2^(rows-2))
+  //
+  // Generating from 2..effMax guarantees ALL non-apex constraints with 100% certainty.
+  // Only the apex (top cell) is checked against maxResult (at most 100 retries).
+  function buildPyramid(rows, maxVal) {
+    const maxResult = getMaxResult();
+    const isMul = getOperation() === 'mul';
+
+    // Pre-compute guaranteed-safe base range
+    let effMax;
+    if (rows <= 2) {
+      effMax = maxVal;
+    } else if (isMul) {
+      const exp = Math.pow(2, rows - 2);
+      effMax = Math.floor(Math.pow(maxVal, 1 / exp));
+    } else {
+      const div = Math.pow(2, rows - 2);
+      effMax = Math.floor(maxVal / div);
+    }
+    effMax = Math.max(1, effMax);
+    const minBase = effMax >= 2 ? 2 : 1;
+
+    // Build a complete pyramid from a given bottom row
+    function buildFrom(bottom) {
+      const pData = [bottom.slice()];
+      for (let r = 1; r < rows; r++) {
+        const prev = pData[r - 1];
+        const row  = [];
+        for (let c = 0; c < prev.length - 1; c++) row.push(combine(prev[c], prev[c + 1]));
+        pData.push(row);
+      }
+      return pData.reverse();
+    }
+
+    // Generate; intermediate rows always pass — only check apex vs maxResult
+    for (let attempt = 0; attempt < 100; attempt++) {
+      const bottom = Array.from({length: rows}, () => rand(minBase, effMax));
+      // 5% chance per puzzle of exactly one 1 at a random position
+      if (effMax >= 2 && Math.random() < 0.05) {
+        bottom[rand(0, rows - 1)] = 1;
+      }
+      const pyramid = buildFrom(bottom);
+      if (pyramid[0][0] <= maxResult) return pyramid;
+    }
+
+    // Ultimate fallback: minimum valid values, no 1s if possible
+    return buildFrom(Array.from({length: rows}, () => minBase));
+  }
+
+
+  // ── CHOOSE GIVENS ──
+  // We always give bottom row or enough cells so puzzle is uniquely solvable
+  function chooseGivens(data, ratio) {
+    const rows = data.length;
+    const given = data.map(row => row.map(() => false));
+
+    // Always reveal the full bottom row (it anchors the puzzle)
+    data[rows - 1].forEach((_, c) => { given[rows - 1][c] = true; });
+
+    // Optionally un-reveal some bottom cells for harder mode
+    const hintH = document.getElementById('hints').value;
+    if (hintH === 'min') {
+      // hide ~half of bottom row (must keep enough to solve)
+      for (let c = 0; c < data[rows-1].length; c++) {
+        if (Math.random() < 0.4) given[rows-1][c] = false;
+      }
+    }
+
+    // Randomly reveal some interior cells based on ratio
+    for (let r = 0; r < rows - 1; r++) {
+      for (let c = 0; c < data[r].length; c++) {
+        if (Math.random() < ratio) given[r][c] = true;
+      }
+    }
+
+    // Always reveal top (makes it more satisfying)
+    given[0][0] = true;
+
+    return given;
+  }
+
+  // ── RENDER ──
+  function renderPyramid() {
+    const container = document.getElementById('pyramid-container');
+    container.innerHTML = '';
+    cellEls = pyramidData.map(r => r.map(() => null));
+
+    const rows = pyramidData.length;
+    const maxCols = pyramidData[rows - 1].length;
+
+    pyramidData.forEach((row, r) => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'pyramid-row';
+
+      row.forEach((val, c) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+
+        if (isGiven[r][c]) {
+          cell.classList.add('cell-given');
+          cell.textContent = val;
+        } else {
+          cell.classList.add('cell-input');
+          const inp = document.createElement('input');
+          inp.type = 'number';
+          inp.inputMode = 'numeric';
+          inp.autocomplete = 'off';
+          inp.id = `cell-${r}-${c}`;
+          inp.setAttribute('aria-label', `Reihe ${r+1} Feld ${c+1}`);
+          inp.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); checkAll(); }
+          });
+          inp.addEventListener('input', () => {
+            cell.classList.remove('cell-correct', 'cell-wrong', 'cell-revealed');
+          });
+          cell.appendChild(inp);
+        }
+
+        cellEls[r][c] = cell;
+        rowEl.appendChild(cell);
+      });
+
+      container.appendChild(rowEl);
+    });
+
+    updateProgress();
+  }
+
+  // ── NEW PUZZLE ──
+  function newPyramid() {
+    const rows = getRows();
+    const max  = getMax();
+    const op   = getOperation();
+    pyramidData = buildPyramid(rows, max);
+    isGiven     = chooseGivens(pyramidData, getHintRatio());
+    solved      = 0;
+
+    // Count empty cells
+    totalCells = 0;
+    pyramidData.forEach((row, r) => row.forEach((_, c) => {
+      if (!isGiven[r][c]) totalCells++;
+    }));
+
+    setFeedback('', '');
+    starsEl.textContent = '';
+
+    // Update dynamic UI text
+    const opLabel = op === 'mul' ? 'Produkt' : 'Summe';
+    const opSymbol = op === 'mul' ? '✖' : '➕';
+    document.getElementById('header-sub').innerHTML =
+      `Fülle die Pyramide aus – jede Zahl ist das <strong>${opLabel}</strong> der beiden darunter!`;
+    document.getElementById('rule-hint').innerHTML =
+      `<strong>📐 Regel ${opSymbol}:</strong> Jede Zahl = <strong>${opLabel}</strong> der zwei Zahlen direkt darunter.<br>
+      Tippe die fehlenden Zahlen in die leeren Felder und drücke <strong>✔ Prüfen</strong>.`;
+
+    renderPyramid();
+
+    // Focus first input
+    const first = document.querySelector('.cell-input input');
+    if (first) first.focus();
+  }
+
+  // ── CHECK ALL ──
+  function checkAll() {
+    let allCorrect = true;
+    let anyInput   = false;
+    let newCorrect = 0;
+    let newWrong   = 0;
+
+    pyramidData.forEach((row, r) => {
+      row.forEach((val, c) => {
+        if (isGiven[r][c]) return;
+        const inp  = cellEls[r][c].querySelector('input');
+        const cell = cellEls[r][c];
+        if (!inp) return;
+
+        const userVal = inp.value.trim();
+        if (userVal === '') { allCorrect = false; return; }
+
+        anyInput = true;
+        const userNum = parseInt(userVal, 10);
+
+        if (userNum === val) {
+          if (!cell.classList.contains('cell-correct') && !cell.classList.contains('cell-revealed')) {
+            newCorrect++;
+          }
+          cell.classList.remove('cell-wrong', 'cell-revealed');
+          cell.classList.add('cell-correct');
+          inp.disabled = true;
+        } else {
+          allCorrect = false;
+          newWrong++;
+          cell.classList.remove('cell-correct', 'cell-revealed');
+          cell.classList.add('cell-wrong');
+          setTimeout(() => {
+            cell.classList.remove('cell-wrong');
+            inp.value = '';
+          }, 600);
+        }
+      });
+    });
+
+    correctTotal += newCorrect;
+    wrongTotal   += newWrong;
+    document.getElementById('correct-count').textContent = correctTotal;
+    document.getElementById('wrong-count').textContent   = wrongTotal;
+
+    updateProgress();
+
+    if (!anyInput) {
+      setFeedback('Bitte trage zuerst Zahlen ein! ✏️', 'hint');
+      return;
+    }
+
+    if (allCorrect) {
+      setFeedback('Super! Pyramide gelöst! 🎉🏆', 'ok');
+      showStars(3);
+      confettiBurst();
+      setTimeout(newPyramid, 2800);
+    } else if (newCorrect > 0) {
+      setFeedback(`${newCorrect} richtig! Weiter so! 👍`, 'ok');
+    } else {
+      setFeedback('Noch nicht ganz – versuch es nochmal! 💪', 'bad');
+    }
+  }
+
+  // ── REVEAL ──
+  function reveal() {
+    pyramidData.forEach((row, r) => {
+      row.forEach((val, c) => {
+        if (isGiven[r][c]) return;
+        const cell = cellEls[r][c];
+        const inp  = cell.querySelector('input');
+        if (!inp) return;
+        cell.classList.remove('cell-correct', 'cell-wrong');
+        cell.classList.add('cell-revealed');
+        inp.value    = val;
+        inp.disabled = true;
+      });
+    });
+    setFeedback('Hier ist die Lösung! 💡', 'hint');
+    starsEl.textContent = '';
+    updateProgress();
+  }
+
+  // ── PROGRESS ──
+  function updateProgress() {
+    let filled = 0;
+    pyramidData.forEach((row, r) => {
+      row.forEach((val, c) => {
+        if (isGiven[r][c]) return;
+        const inp = cellEls[r][c]?.querySelector('input');
+        if (inp && inp.value !== '' || cellEls[r][c]?.classList.contains('cell-correct') || cellEls[r][c]?.classList.contains('cell-revealed')) {
+          filled++;
+        }
+      });
+    });
+    const pct = totalCells > 0 ? Math.round((filled / totalCells) * 100) : 0;
+    progressEl.style.width = pct + '%';
+  }
+
+  // ── FEEDBACK ──
+  function setFeedback(msg, cls) {
+    feedbackEl.textContent = msg;
+    feedbackEl.className   = cls;
+  }
+
+  // ── STARS ──
+  function showStars(n) {
+    starsEl.textContent = '⭐'.repeat(n);
+    starsEl.style.animation = 'none';
+    starsEl.offsetHeight; // reflow
+    starsEl.style.animation = '';
+  }
+
+  // ── CONFETTI BURST (lightweight CSS) ──
+  function confettiBurst() {
+    const colors = ['#f7c948','#ff6b6b','#4ade80','#60a5fa','#a78bfa','#ff9f43'];
+    for (let i = 0; i < 28; i++) {
+      const dot = document.createElement('div');
+      const size = rand(6, 12);
+      dot.style.cssText = `
+        position: fixed;
+        left: ${rand(20,80)}vw;
+        top: ${rand(10,40)}vh;
+        width: ${size}px;
+        height: ${size}px;
+        background: ${colors[i % colors.length]};
+        border-radius: ${Math.random() > 0.5 ? '50%' : '3px'};
+        pointer-events: none;
+        z-index: 999;
+        animation: confettiFly 1.2s ease-out forwards;
+        animation-delay: ${i * 35}ms;
+        transform-origin: center;
+      `;
+      document.body.appendChild(dot);
+      dot.addEventListener('animationend', () => dot.remove());
+    }
+  }
+
+  // Confetti keyframes injected once
+  const ks = document.createElement('style');
+  ks.textContent = `
+    @keyframes confettiFly {
+      0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: translateY(${window.innerHeight * 0.6}px) rotate(720deg) scale(0.3); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(ks);
+
+  // ── INIT ──
+  newPyramid();
+</script>
+</body>
+</html>
