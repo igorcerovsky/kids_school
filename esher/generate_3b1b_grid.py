@@ -175,7 +175,7 @@ def get_nested_square_grid_lines(grid_size, height, scale_factor):
             
     return lines
 
-def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, recursions=2, image_path=None):
+def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, recursions=2, image_path=None, geom_scale=2.0):
     """
     Generates the pure mathematically transformed grid following the 3b1b logic.
     Plots both the straight unwarped grid and the final Escher warped grid.
@@ -225,8 +225,7 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
         ax1.imshow(nested_img, extent=[-1.0, 1.0, -1.0, 1.0], zorder=0)
         ax2.imshow(warped_img, extent=[-1.0, 1.0, -1.0, 1.0], zorder=0)
     
-    # Base Cartesian grid covering [-1.0, 1.0] but with hole at [-0.5, 0.5]
-    geom_scale = 2.0
+    # Base Cartesian grid covering [-1.0, 1.0] but with hole at [-1/geom_scale, 1/geom_scale]
     base_lines = get_nested_square_grid_lines(grid_size=8, height=1.0, scale_factor=geom_scale)
     
     base_linewidth = 1.5
@@ -236,7 +235,7 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
     level_step = max(1, int(round(math.log(ratio) / math.log(geom_scale))))
     H_val = 1.0 
     
-    for i in range(-4, recursions * 4):
+    for i in range(-level_step, recursions * level_step):
         scale = (1.0 / geom_scale) ** i
         is_base_scale = (i == 0 or i == level_step)
         
@@ -291,6 +290,7 @@ if __name__ == "__main__":
     parser.add_argument("--recursions", type=int, default=3, help="Number of recursions")
     parser.add_argument("--out", type=str, default="3b1b_original_escher_grid", help="Output filename")
     parser.add_argument("--image", type=str, default=None, help="Input image to map")
+    parser.add_argument("--scale_factor", type=float, default=2.0, help="Geometric scale factor for the grid (e.g. 2, 4, 8, 16)")
     args = parser.parse_args()
     
     draw_3b1b_escher_grid(
@@ -299,5 +299,6 @@ if __name__ == "__main__":
         extra_turns=args.turns,
         grid_size=args.grid,
         recursions=args.recursions,
-        image_path=args.image
+        image_path=args.image,
+        geom_scale=args.scale_factor
     )

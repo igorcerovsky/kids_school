@@ -28,9 +28,10 @@ This script outputs the pure, mathematical vector rendering of the grid and imag
 ```bash
 python esher/generate_3b1b_grid.py --ratio 16.0 --turns 1.0 --recursions 6 --image esher/img/pi.png --out my_render
 ```
-- `--ratio`: The geometric factor at which the image tiles (default: `16.0`).
+- `--ratio`: **The Mathematical Zoom Factor** (default: `16.0`). This is the fundamental period of the Escher spiral. In the original Escher lithograph this was `256`, and in 3b1b's version it was `16`. Change this to alter the underlying conformal math of the spiral (e.g., 4, 8, 32, 64).
+- `--scale_factor`: **The Visual Grid Density** (default: `2.0`). This controls how densely the blue grid squares are visually drawn inside one another. A factor of `2.0` means squares are drawn at 1/2 size, 1/4 size, 1/8 size, etc. Changing this only affects the visual density of the grid lines, not the mathematical spiral itself.
 - `--turns`: The number of spiral twists per scaling (default: `1.0`).
-- `--recursions`: How many factors of 2 the grid expands outwards.
+- `--recursions`: How many grid subdivisions the grid expands outwards (default: `3`).
 - `--image`: The path to the texture you want to map (optional).
 
 ## Understanding the "Droste" Image Tiling
