@@ -21,18 +21,8 @@ $$ \beta = \frac{2\pi i}{\ln(16) + 2\pi i} $$
 
 ## Scripts and Usage
 
-### 1. The Worksheet Generator (`generate_escher.py`)
-This is the primary script to generate an educational worksheet. It outputs a side-by-side comparison of the unwarped mathematically scaled grid and the final Escher-warped spiral, complete with customizable axis labels and tick marks.
-
-**Usage:**
-```bash
-python esher/generate_escher.py --image esher/img/motyl.jpg --preset tight
-```
-- `--image`: The path to the texture you want to map.
-- `--preset`: Automatically configures the grid size and scaling ratio (`tight` uses a factor of 16, `esher` uses the original 256).
-
-### 2. The Pristine 3b1b Renderer (`generate_3b1b_grid.py`)
-This script strips away the worksheet formatting (labels, ticks, titles) to output the pure, mathematical vector rendering of the grid and image mapping, matching the exact aesthetic of the 3Blue1Brown video. 
+### The Pristine 3b1b Renderer (`generate_3b1b_grid.py`)
+This script outputs the pure, mathematical vector rendering of the grid and image mapping, matching the exact aesthetic of the 3Blue1Brown video. It perfectly anchors the mathematical origin to the bottom-left corner of the output image.
 
 **Usage:**
 ```bash
@@ -41,6 +31,7 @@ python esher/generate_3b1b_grid.py --ratio 16.0 --turns 1.0 --recursions 6 --ima
 - `--ratio`: The geometric factor at which the image tiles (default: `16.0`).
 - `--turns`: The number of spiral twists per scaling (default: `1.0`).
 - `--recursions`: How many factors of 2 the grid expands outwards.
+- `--image`: The path to the texture you want to map (optional).
 
 ## Understanding the "Droste" Image Tiling
 If you input a standard photograph (like `motyl.jpg`), you will notice a square "tear" spiraling through the image. **This is mathematically correct.**
