@@ -22,7 +22,18 @@ class EscherMap:
         # where ln(256) is log_ratio
         numerator = complex(0, extra_turns * 2 * math.pi)
         denominator = complex(self.log_ratio, extra_turns * 2 * math.pi)
-        self.beta = numerator / denominator
+        if abs(denominator) == 0:
+            self.beta = complex(1.0, 0.0)
+        else:
+            self.beta = numerator / denominator
+            
+        # Compute rotation factor C so that (-1, -1) maps to (-1, -1)
+        z_corner = -1.0 - 1.0j
+        r = math.hypot(z_corner.real, z_corner.imag)
+        theta = math.atan2(z_corner.imag, z_corner.real)
+        log_z = complex(math.log(r), theta)
+        w_corner = cmath.exp(self.beta * log_z)
+        self.C = z_corner / w_corner
 
 def bilinear_sample(img_arr: np.ndarray, px: np.ndarray, py: np.ndarray) -> np.ndarray:
     H, W, C = img_arr.shape
@@ -55,19 +66,13 @@ def warp_image_conformal(img_array: np.ndarray, emap: EscherMap, width: int = 12
     y = np.linspace(1.0, -1.0, height)
     xx, yy = np.meshgrid(x, y)
     w = xx + 1j * yy
-
-    mod_w = np.abs(w)
-    phase_w = np.angle(w)
-    mod_w = np.maximum(mod_w, 1e-12)
-    log_w = np.log(mod_w) + 1j * phase_w
-
-    s = log_w / emap.beta
-    u = np.real(s)
-    v = np.imag(s)
-
-    # Beta already includes the twist, so no manual v adjustment is needed here!
-
-    z_unscaled = np.exp(u + 1j * v)
+    w_unrotated = w / emap.C
+    w_unrotated = np.where(w_unrotated == 0, 1e-12 + 1e-12j, w_unrotated)
+    
+    # We want z such that w_unrotated = z^beta
+    # ln(w_unrotated) = beta * ln(z) -> ln(z) = ln(w_unrotated) / beta
+    z_unscaled = np.exp(np.log(w_unrotated) / emap.beta)
+    
     N = np.maximum(np.abs(np.real(z_unscaled)), np.abs(np.imag(z_unscaled)))
     N_safe = np.maximum(N, 1e-12)
 
@@ -130,11 +135,9 @@ def apply_func_to_line(x0, y0, x1, y1, emap, num_points=200):
     # This fixes the "overlapping" criss-crossing lines in Matplotlib.
     theta = np.unwrap(theta)
     
-    # log_z = ln(r) + i * theta
+    # Calculate log(z) and then the conformal mapping w = exp(beta * log(z)) * C
     log_z = np.log(r) + 1j * theta
-    
-    # w = exp(beta * log_z)
-    w = np.exp(emap.beta * log_z)
+    w = np.exp(emap.beta * log_z) * emap.C
     
     return w.real, w.imag
 
@@ -188,6 +191,29 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
     
     emap = EscherMap(r1=1.0/ratio, r2=1.0, extra_turns=extra_turns)
     
+    import matplotlib.patches as patches
+    
+    # Mark the lower left square on the original grid and its mapped version
+    cell_size = 0.25 
+    
+    # Draw original lower left square
+    lower_left_rect = patches.Rectangle((-1.0, -1.0), cell_size, cell_size, 
+                                        linewidth=0, facecolor="#F2C94C", alpha=0.7, zorder=1)
+    ax1.add_patch(lower_left_rect)
+    
+    # Draw warped lower left square
+    w_poly_x, w_poly_y = [], []
+    for px0, py0, px1, py1 in [
+        (-1.0, -1.0, -1.0 + cell_size, -1.0),
+        (-1.0 + cell_size, -1.0, -1.0 + cell_size, -1.0 + cell_size),
+        (-1.0 + cell_size, -1.0 + cell_size, -1.0, -1.0 + cell_size),
+        (-1.0, -1.0 + cell_size, -1.0, -1.0)
+    ]:
+        wx, wy = apply_func_to_line(px0, py0, px1, py1, emap, num_points=50)
+        w_poly_x.extend(wx)
+        w_poly_y.extend(wy)
+    ax2.fill(w_poly_x, w_poly_y, color="#F2C94C", alpha=0.7, zorder=1)
+    
     if image_path:
         with Image.open(image_path) as img:
             img_rgb = img.convert("RGB")
@@ -196,11 +222,9 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
         nested_img = create_nested_image(img_array, emap, 1200, 1200)
         warped_img = warp_image_conformal(img_array, emap, 1200, 1200)
         
-        ax1.imshow(nested_img, extent=[-1.0, 1.0, -1.0, 1.0], zorder=1)
-        ax2.imshow(warped_img, extent=[-1.0, 1.0, -1.0, 1.0], zorder=1)
+        ax1.imshow(nested_img, extent=[-1.0, 1.0, -1.0, 1.0], zorder=0)
+        ax2.imshow(warped_img, extent=[-1.0, 1.0, -1.0, 1.0], zorder=0)
     
-    # Base Cartesian grid covering [-1.0, 1.0] but with hole at [-0.5, 0.5]
-    # This creates the dense logarithmic grid spacing exactly as in the 3b1b video
     # Base Cartesian grid covering [-1.0, 1.0] but with hole at [-0.5, 0.5]
     geom_scale = 2.0
     base_lines = get_nested_square_grid_lines(grid_size=8, height=1.0, scale_factor=geom_scale)
@@ -209,10 +233,8 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
     decay_factor = 0.85
     
     # Apply recursive scaling and non-linear line width decay
-    # We iterate from -4 to recursions*4 since we scale by 2.0 at each step.
-    # 4 geometric steps outward (2^4 = 16) matches the previous ratio=16.0 outward expansion.
     level_step = max(1, int(round(math.log(ratio) / math.log(geom_scale))))
-    H_val = 1.0 # height from get_nested_square_grid_lines
+    H_val = 1.0 
     
     for i in range(-4, recursions * 4):
         scale = (1.0 / geom_scale) ** i
@@ -248,11 +270,11 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
             ax1.plot([sx0, sx1], [sy0, sy1], color=color_ax1, linewidth=cur_lw_ax1, alpha=alpha_ax1, zorder=z_ax1)
             ax2.plot(wx, wy, color="#B91F1F", linewidth=lw, alpha=0.9, zorder=2)
 
-    # Set fixed framing exactly to [-1.0, 1.0] to completely eliminate empty border space!
-    ax1.set_xlim(-1.0, 1.0)
-    ax1.set_ylim(-1.0, 1.0)
-    ax2.set_xlim(-1.0, 1.0)
-    ax2.set_ylim(-1.0, 1.0)
+    # Set fixed framing
+    ax1.set_xlim(left=-1.0, right=1.0)
+    ax1.set_ylim(bottom=-1.0, top=1.0)
+    ax2.set_xlim(left=-1.0, right=1.0)
+    ax2.set_ylim(bottom=-1.0, top=1.0)
     
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / f"{filename}.svg"
