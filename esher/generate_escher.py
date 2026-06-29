@@ -247,10 +247,15 @@ def plot_nested_grid_vector(ax, n_major, n_minor, ratio, depth_levels):
         lw_factor = scale ** 0.35
         lw_maj = max(1.5 * lw_factor, 0.15)
         lw_min = max(0.7 * lw_factor, 0.07)
+        
+        level_step = max(1, int(round(math.log(ratio) / math.log(geom_scale))))
+        is_base = (level == 0 or level == level_step)
 
         # Helper to plot a segment
-        def plot_seg(x0, y0, x1, y1, color, width):
-            ax.plot([x0, x1], [y0, y1], color=color, linewidth=width, zorder=2 if width > 1.0 else 1)
+        def plot_seg(x0, y0, x1, y1, color, width, is_thick=False):
+            z = 4 if is_thick else (2 if width > 1.0 else 1)
+            c = "#27AE60" if is_thick else color
+            ax.plot([x0, x1], [y0, y1], color=c, linewidth=width, zorder=z)
 
         # 1. Minor lines
         n_total = n_major * n_minor
@@ -277,19 +282,23 @@ def plot_nested_grid_vector(ax, n_major, n_minor, ratio, depth_levels):
         # 2. Major lines
         for col in range(-n_major, n_major + 1):
             x = col * step_maj
+            is_thick = is_base and abs(col) == n_major
+            cur_lw = lw_maj * 2.5 if is_thick else lw_maj
             if abs(x) >= r1 - 1e-9:
-                plot_seg(x, -r2, x, r2, col_maj, lw_maj)
+                plot_seg(x, -r2, x, r2, col_maj, cur_lw, is_thick)
             else:
-                plot_seg(x, -r2, x, -r1, col_maj, lw_maj)
-                plot_seg(x, r1, x, r2, col_maj, lw_maj)
+                plot_seg(x, -r2, x, -r1, col_maj, cur_lw, is_thick)
+                plot_seg(x, r1, x, r2, col_maj, cur_lw, is_thick)
                 
         for row in range(-n_major, n_major + 1):
             y = row * step_maj
+            is_thick = is_base and abs(row) == n_major
+            cur_lw = lw_maj * 2.5 if is_thick else lw_maj
             if abs(y) >= r1 - 1e-9:
-                plot_seg(-r2, y, r2, y, col_maj, lw_maj)
+                plot_seg(-r2, y, r2, y, col_maj, cur_lw, is_thick)
             else:
-                plot_seg(-r2, y, -r1, y, col_maj, lw_maj)
-                plot_seg(r1, y, r2, y, col_maj, lw_maj)
+                plot_seg(-r2, y, -r1, y, col_maj, cur_lw, is_thick)
+                plot_seg(r1, y, r2, y, col_maj, cur_lw, is_thick)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

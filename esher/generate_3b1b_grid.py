@@ -211,8 +211,12 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
     # Apply recursive scaling and non-linear line width decay
     # We iterate from -4 to recursions*4 since we scale by 2.0 at each step.
     # 4 geometric steps outward (2^4 = 16) matches the previous ratio=16.0 outward expansion.
+    level_step = max(1, int(round(math.log(ratio) / math.log(geom_scale))))
+    H_val = 1.0 # height from get_nested_square_grid_lines
+    
     for i in range(-4, recursions * 4):
         scale = (1.0 / geom_scale) ** i
+        is_base_scale = (i == 0 or i == level_step)
         
         lw = max(0.1, base_linewidth * (decay_factor ** i)) if i >= 0 else base_linewidth
         
@@ -225,11 +229,23 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
             sx0, sy0 = x0 * scale, y0 * scale
             sx1, sy1 = x1 * scale, y1 * scale
             
+            # Identify if this is a perimeter line of the fundamental domain square
+            # A vertical line has x0 == x1, and is on perimeter if abs(x0) == H_val
+            # A horizontal line has y0 == y1, and is on perimeter if abs(y0) == H_val
+            is_perimeter = ((abs(x0 - x1) < 1e-9 and abs(abs(x0) - H_val) < 1e-9) or 
+                            (abs(y0 - y1) < 1e-9 and abs(abs(y0) - H_val) < 1e-9))
+            
+            is_thick = is_base_scale and is_perimeter
+            cur_lw_ax1 = lw * 3.0 if is_thick else lw
+            z_ax1 = 4 if is_thick else 2
+            color_ax1 = "#27AE60" if is_thick else "#1F5DB9"
+            alpha_ax1 = 1.0 if is_thick else 0.9
+            
             # Map through the Escher transform
             wx, wy = apply_func_to_line(sx0, sy0, sx1, sy1, emap)
             
             # Draw lines
-            ax1.plot([sx0, sx1], [sy0, sy1], color="#1F5DB9", linewidth=lw, alpha=0.9, zorder=2)
+            ax1.plot([sx0, sx1], [sy0, sy1], color=color_ax1, linewidth=cur_lw_ax1, alpha=alpha_ax1, zorder=z_ax1)
             ax2.plot(wx, wy, color="#B91F1F", linewidth=lw, alpha=0.9, zorder=2)
 
     # Set fixed framing exactly to [-1.0, 1.0] to completely eliminate empty border space!
