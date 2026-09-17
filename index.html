@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kubi Kids School | Vzdelávacie hry a trenažéry</title>
+  <meta name="description" content="Interaktívne vzdelávacie aplikácie pre deti: matematika, násobilka, slovenský pravopis, nemčina a hudobná výchova.">
+  <meta name="theme-color" content="#0f172a">
+
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(22, 30, 49, 0.75);
+      --bg-card-hover: rgba(30, 42, 69, 0.9);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --border-card-hover: rgba(129, 140, 248, 0.4);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-math: #38bdf8;
+      --accent-sk: #34d399;
+      --accent-de: #fbbf24;
+      --accent-music: #f472b6;
+      --radius: 20px;
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient background gradient glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 10%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(56, 189, 248, 0.08) 50%, transparent 70%);
+      filter: blur(80px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -10%;
+      right: 5%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(236, 72, 153, 0.12) 0%, rgba(52, 211, 153, 0.06) 50%, transparent 70%);
+      filter: blur(90px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px 0 10px;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(129, 140, 248, 0.3);
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 3.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, #93c5fd 80%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Featured Hero Banner: Math Trainer */
+    .hero-card {
+      background: linear-gradient(135deg, rgba(30, 41, 77, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.25);
+      border-radius: 24px;
+      padding: 36px 32px;
+      margin-bottom: 48px;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .hero-card:hover {
+      border-color: rgba(56, 189, 248, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .hero-card::after {
+      content: '⚡ Odporúčané';
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 4px 10px;
+      border-radius: 9999px;
+    }
+
+    .hero-content h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-content p {
+      color: #cbd5e1;
+      font-size: 1.05rem;
+      margin-bottom: 20px;
+      max-width: 650px;
+    }
+
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .feature-tag {
+      font-size: 0.85rem;
+      padding: 5px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+    }
+
+    .btn-launch {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 16px 30px;
+      border-radius: 16px;
+      text-decoration: none;
+      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .btn-launch:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
+      transform: scale(1.03);
+      box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.7);
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 9px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #fff;
+    }
+
+    .filter-btn.active {
+      background: #38bdf8;
+      border-color: #38bdf8;
+      color: #090d16;
+      font-weight: 700;
+    }
+
+    /* Grid layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: var(--shadow);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-card-hover);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .category-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-math {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-math);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .badge-sk {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent-sk);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .badge-de {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--accent-de);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+    }
+
+    .badge-music {
+      background: rgba(244, 114, 182, 0.12);
+      color: var(--accent-music);
+      border: 1px solid rgba(244, 114, 182, 0.25);
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #93c5fd;
+    }
+
+    .card:hover .card-footer {
+      color: #60a5fa;
+    }
+
+    .arrow-icon {
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover .arrow-icon {
+      transform: translateX(4px);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 30px 20px;
+      color: #64748b;
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-card {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 26px 20px;
+      }
+      .btn-launch {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="badge-pill">
+        <span>✨</span> Vzdelávací portál pre deti
+      </div>
+      <h1>Kubi Kids School</h1>
+      <p class="subtitle">Interaktívne trenažéry, hry na precvičovanie násobilky, slovenského pravopisu, nemeckej gramatiky a hudby.</p>
+    </header>
+
+    <!-- Featured Math Trainer Hero -->
+    <section class="hero-card">
+      <div class="hero-content">
+        <h2>
+          <span>✖️</span> Math Trainer (Násobilka)
+        </h2>
+        <p>Interaktívny trenažér aritmetiky s meraním rýchlosti odpovedí, sledovaním chýb, časovačom a nastaviteľnými rozsahmi čísel.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">⏱️ Meranie rýchlosti</span>
+          <span class="feature-tag">📊 Štatistika problematických príkladov</span>
+          <span class="feature-tag">⚙️ Vlastné rozsahy & operátory</span>
+          <span class="feature-tag">📱 Optimalizované pre mobil</span>
+        </div>
+      </div>
+      <div class="hero-action">
+        <a href="multiply/index.html" class="btn-launch" id="btn-hero-multiply">
+          Spustiť Math Trainer →
+        </a>
+      </div>
+    </section>
+
+    <!-- Filter Buttons -->
+    <nav class="filter-bar" aria-label="Filter aplikácií">
+      <button class="filter-btn active" data-filter="all">Všetky aktivity</button>
+      <button class="filter-btn" data-filter="math">Matematika</button>
+      <button class="filter-btn" data-filter="slovak">Slovenčina</button>
+      <button class="filter-btn" data-filter="german">Nemčina</button>
+      <button class="filter-btn" data-filter="music">Hudobná výchova</button>
+    </nav>
+
+    <!-- Apps Grid -->
+    <main class="grid" id="apps-grid">
+
+      <!-- Math Trainer (also in grid for completeness) -->
+      <a href="multiply/index.html" class="card" data-category="math">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">✖️</div>
+            <span class="category-badge badge-math">Matematika</span>
+          </div>
+          <h3 class="card-title">Math Trainer</h3>
+          <p class="card-desc">Precvičovanie násobenia a základnej aritmetiky s okamžitým vyhodnotením a tréningom rýchlosti.</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+      <!-- Zahlenpyramide -->
+      <a href="multiply/pyramide.html" class="card" data-category="math">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">🔺</div>
+            <span class="category-badge badge-math">Matematika</span>
+          </div>
+          <h3 class="card-title">Zahlenpyramide</h3>
+          <p class="card-desc">Číselné pyramídy pre sčítanie a násobenie. Zábavná logicko-matematická výzva pre deti.</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+      <!-- I/Y Adaptívny trenažér Full -->
+      <a href="sk_diktat/iy_adaptive_full_v3.html" class="card" data-category="slovak">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">🇸🇰</div>
+            <span class="category-badge badge-sk">Slovenčina</span>
+          </div>
+          <h3 class="card-title">I / Y Adaptívny Trenažér</h3>
+          <p class="card-desc">Kompletné precvičovanie vybraných slov a pravopisu i/y s adaptívnym algoritmom opakovania.</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+      <!-- I/Y po L -->
+      <a href="sk_diktat/iy_l_adaptive_v3.html" class="card" data-category="slovak">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">📘</div>
+            <span class="category-badge badge-sk">Slovenčina</span>
+          </div>
+          <h3 class="card-title">I / Y po obojakom L</h3>
+          <p class="card-desc">Zamerané na vybrané a odvodené slová po písmene L s okamžitou spätnou väzbou.</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+      <!-- Dopĺňanie I/Y -->
+      <a href="sk_diktat/dopln_iy.html" class="card" data-category="slovak">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">⚡</div>
+            <span class="category-badge badge-sk">Slovenčina</span>
+          </div>
+          <h3 class="card-title">Rýchle dopĺňanie I / Y</h3>
+          <p class="card-desc">Tréning postrehu a správneho písania i/y v slovách s veľkými tlačidlami pre mobil.</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+      <!-- Diktát 1 -->
+      <a href="sk_diktat/diktat_1.html" class="card" data-category="slovak">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">✍️</div>
+            <span class="category-badge badge-sk">Slovenčina</span>
+          </div>
+          <h3 class="card-title">Interaktívny Diktát</h3>
+          <p class="card-desc">Písanie a overovanie celých viet zo slovenského jazyka.</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+      <!-- Noun Verb Adjektiv -->
+      <a href="noun_verb_adjektiv/index.html" class="card" data-category="german">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">🇩🇪</div>
+            <span class="category-badge badge-de">Nemčina</span>
+          </div>
+          <h3 class="card-title">Wortarten Lernspiel</h3>
+          <p class="card-desc">Nemecká gramatika hrou: určovanie a triedenie slovných druhov (Nomen, Verben, Adjektive).</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+      <!-- Instrumente 1 -->
+      <a href="musik/instrumente_1.html" class="card" data-category="music">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">🎹</div>
+            <span class="category-badge badge-music">Hudba</span>
+          </div>
+          <h3 class="card-title">Tasteninstrumente Quiz</h3>
+          <p class="card-desc">Poznávanie klávesových hudobných nástrojov a kvíz z hudobnej výchovy.</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+      <!-- Instrumente 2 -->
+      <a href="musik/instrumente_2.html" class="card" data-category="music">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">🎻</div>
+            <span class="category-badge badge-music">Hudba</span>
+          </div>
+          <h3 class="card-title">Saiteninstrumente Quiz 1</h3>
+          <p class="card-desc">Kvíz o strunových hudobných nástrojoch pre deti (1. časť).</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+      <!-- Instrumente 3 -->
+      <a href="musik/instrumente_3.html" class="card" data-category="music">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">🎸</div>
+            <span class="category-badge badge-music">Hudba</span>
+          </div>
+          <h3 class="card-title">Saiteninstrumente Quiz 2</h3>
+          <p class="card-desc">Pokračovanie kvízu o strunových hudobných nástrojoch (2. časť).</p>
+        </div>
+        <div class="card-footer">
+          <span>Spustiť aplikáciu</span>
+          <span class="arrow-icon">→</span>
+        </div>
+      </a>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>Kubi Kids School • Vzdelávací softvér</p>
+    </footer>
+  </div>
+
+  <!-- Interactive Filter Logic -->
+  <script>
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.card');
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.getAttribute('data-filter');
+        cards.forEach(card => {
+          if (filter === 'all' || card.getAttribute('data-category') === filter) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
