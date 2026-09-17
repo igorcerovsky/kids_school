@@ -228,10 +228,9 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
     # Base Cartesian grid covering [-1.0, 1.0] but with hole at [-1/geom_scale, 1/geom_scale]
     base_lines = get_nested_square_grid_lines(grid_size=8, height=1.0, scale_factor=geom_scale)
     
-    base_linewidth = 1.5
-    decay_factor = 0.85
+    base_linewidth = 1.0
     
-    # Apply recursive scaling and non-linear line width decay
+    # Apply recursive scaling so line width is strictly proportional to geometric scale
     level_step = max(1, int(round(math.log(ratio) / math.log(geom_scale))))
     H_val = 1.0 
     
@@ -239,10 +238,11 @@ def draw_3b1b_escher_grid(filename, ratio=16.0, extra_turns=1.0, grid_size=16, r
         scale = (1.0 / geom_scale) ** i
         is_base_scale = (i == 0 or i == level_step)
         
-        lw = max(0.1, base_linewidth * (decay_factor ** i)) if i >= 0 else base_linewidth
+        # Line width scales strictly with the geometric scale
+        lw = base_linewidth * scale
         
         # We only draw if the line is thick enough to be visible
-        if lw < 0.05:
+        if lw < 0.001:
             continue
             
         for (x0, y0, x1, y1) in base_lines:
