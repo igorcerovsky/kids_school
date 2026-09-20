@@ -1,312 +1,428 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Math Trainer</title>
-
-<style>
-
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: #f0f8ff;
-    margin: 0;
-    padding: 10px;
-}
-
-h1 { font-size: 6vw; }
-
-.problem {
-    font-size: 12vw;
-    margin: 20px 0;
-}
-
-/* TEXT INPUT — no spin buttons */
-
-input[type=text] {
-
-    font-size: 8vw;
-    width: 40vw;
-    padding: 10px;
-    text-align: center;
-
-}
-
-/* numeric keyboard on mobile */
-
-input[inputmode="numeric"] {
-    ime-mode: disabled;
-}
-
-button {
-
-    font-size: 5vw;
-    padding: 10px 20px;
-    margin: 5px;
-
-}
-
-.correct { color: green; }
-.wrong { color: red; }
-
-.panel {
-
-    margin-top: 15px;
-    font-size: 4.5vw;
-
-}
-
-.review-section {
-
-    margin-top: 30px;
-    text-align: left;
-
-}
-
-.review-box {
-
-    background: white;
-    padding: 10px;
-    border-radius: 10px;
-    margin-top: 5px;
-    word-wrap: break-word;
-
-}
-
-.mode-box {
-
-    margin-top: 10px;
-
-}
-
-.range-box {
-
-    margin-top: 5px;
-
-}
-
-.range-box input {
-
-    width: 60px;
-    font-size: 16px;
-
-}
-
-@media (min-width: 600px) {
-
-    h1 { font-size: 32px; }
-    .problem { font-size: 50px; }
-    input { font-size: 28px; width: 150px; }
-    button { font-size: 18px; }
-    .panel { font-size: 18px; }
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-<h1>Math Trainer ✏️</h1>
-
-<!-- MODES -->
-
-<div class="mode-box">
-
-<label>
-<input type="checkbox" id="modeMul" checked>
-✖ Multiplication
-</label>
-
-<div class="range-box">
-Range:
-<input type="number" id="mulMin" value="1">
-to
-<input type="number" id="mulMax" value="10">
-</div>
-
-<label>
-<input type="checkbox" id="modeAdd">
-➕ Addition
-</label>
-
-<div class="range-box">
-Range:
-<input type="number" id="addMin" value="1">
-to
-<input type="number" id="addMax" value="20">
-</div>
-
-<label>
-<input type="checkbox" id="modeSub">
-➖ Subtraction
-</label>
-
-<div class="range-box">
-Range:
-<input type="number" id="subMin" value="1">
-to
-<input type="number" id="subMax" value="20">
-</div>
-
-<label>
-<input type="checkbox" id="modeDiv">
-➗ Division
-</label>
-
-<div class="range-box">
-Range:
-<input type="number" id="divMin" value="1">
-to
-<input type="number" id="divMax" value="10">
-</div>
-
-</div>
-
-<!-- PROBLEM -->
-
-<div class="problem" id="problem">
-Press Start
-</div>
-
-<input
-type="text"
-id="answer"
-inputmode="numeric"
-autocomplete="off"
->
-
-<br>
-
-<button onclick="startResume()">▶️ Start</button>
-<button onclick="pause()">⏸ Pause</button>
-<button onclick="resetStats()">🧹 Reset</button>
-
-<div id="feedback"></div>
-
-<div class="panel">
-⏱ Time:
-<span id="timer">0.0</span>s
-</div>
-
-<div class="panel">
-✅ Correct:
-<span id="correctCount">0</span>
-
-|
-
-❌ Wrong:
-<span id="wrongCount">0</span>
-</div>
-
-<div class="review-section">
-
-<div><b>❌ Latest Wrong:</b></div>
-<div class="review-box" id="wrongList"></div>
-
-<div><b>🐢 Slowest Problems:</b></div>
-<div class="review-box" id="slowList"></div>
-
-</div>
-
-<script>
-
-// CONSTANTS
-
-const OUTLIER_MIN = 0.3;
-const OUTLIER_MAX = 20;
-const SLOW_THRESHOLD = 4;
-const MAX_LIST = 12;
-
-const STORAGE_KEY = "mathTrainerData";
-
-
-// STATE
-
-let num1, num2;
-let operator;
-let correctAnswer;
-
-let correctCount = 0;
-let wrongCount = 0;
-
-let startTime;
-let timerInterval;
-
-let paused = true;
-
-let problemStats = {};
-let wrongHistory = [];
-let slowHistory = [];
-
-
-// ELEMENTS
-
-const problemEl = document.getElementById("problem");
-const answerEl = document.getElementById("answer");
-const feedbackEl = document.getElementById("feedback");
-
-const correctEl =
-    document.getElementById("correctCount");
-
-const wrongEl =
-    document.getElementById("wrongCount");
-
-const wrongListEl =
-    document.getElementById("wrongList");
-
-const slowListEl =
-    document.getElementById("slowList");
-
-const timerEl =
-    document.getElementById("timer");
-
-
-// ENTER KEY FIX — Firefox safe
-
-answerEl.addEventListener(
-"keydown",
-function(e) {
-
-    if (e.key === "Enter") {
-
-        e.preventDefault();
-        checkAnswer();
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Trainer | Kubi Kids School</title>
+  
+  <link rel="stylesheet" href="../css/theme.css">
+  <script src="../css/theme.js"></script>
+
+  <style>
+    .trainer-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
-});
+    /* Modes & Ranges Panel */
+    .modes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
 
+    .mode-item {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-// STORAGE
+    .mode-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      cursor: pointer;
+    }
 
-function saveData() {
+    .mode-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
 
-    localStorage.setItem(
+    .range-inputs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .range-inputs input[type="number"] {
+      width: 58px;
+      padding: 4px 8px;
+      font-size: 0.9rem;
+      text-align: center;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Active Problem Stage */
+    .stage-card {
+      text-align: center;
+      padding: 36px 20px;
+      background: var(--surface-elevated);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .problem-display {
+      font-size: clamp(2.8rem, 8vw, 4.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      min-height: 1.3em;
+      margin-bottom: 20px;
+      font-family: var(--font-sans);
+    }
+
+    .answer-input {
+      font-size: clamp(2rem, 6vw, 3.2rem) !important;
+      font-weight: 700;
+      width: clamp(180px, 45vw, 260px) !important;
+      height: 70px;
+      text-align: center;
+      border: 3px solid var(--border-strong) !important;
+      border-radius: var(--radius-md) !important;
+      background: var(--surface) !important;
+      color: var(--text) !important;
+      box-shadow: var(--shadow-sm);
+      outline: none;
+      margin-bottom: 24px;
+      transition: var(--transition);
+    }
+
+    .answer-input:focus {
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 4px var(--primary-subtle);
+    }
+
+    /* Action buttons */
+    .controls-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* Feedback */
+    #feedback {
+      min-height: 36px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #feedback.correct {
+      color: var(--success);
+      animation: pop 0.25s ease-out;
+    }
+
+    #feedback.wrong {
+      color: var(--danger);
+      animation: shake 0.25s ease-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    /* Scoreboard Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .stat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 10px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .stat-correct { color: var(--success); }
+    .stat-wrong { color: var(--danger); }
+
+    /* Review section */
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .review-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .review-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .review-content {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text);
+      min-height: 40px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      word-break: break-word;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="kubi-top-bar">
+    <div class="kubi-nav-left">
+      <a href="../index.html" class="kubi-back-link">
+        ← Prehľad aktivít
+      </a>
+      <span class="kubi-page-title">Math Trainer ✏️</span>
+    </div>
+    <div class="kubi-nav-right">
+      <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
+    </div>
+  </header>
+
+  <main class="app-container">
+    <div class="trainer-layout">
+
+      <!-- Operations & Range Settings -->
+      <section class="card-panel">
+        <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 4px;">
+          ⚙️ Nastavenie operácií a rozsahov
+        </h2>
+        <div class="modes-grid">
+          
+          <div class="mode-item">
+            <label class="mode-label">
+              <input type="checkbox" id="modeMul" checked>
+              <span>✖ Násobenie</span>
+            </label>
+            <div class="range-inputs">
+              <span>Rozsah:</span>
+              <input type="number" id="mulMin" value="1">
+              <span>do</span>
+              <input type="number" id="mulMax" value="10">
+            </div>
+          </div>
+
+          <div class="mode-item">
+            <label class="mode-label">
+              <input type="checkbox" id="modeAdd">
+              <span>➕ Sčítanie</span>
+            </label>
+            <div class="range-inputs">
+              <span>Rozsah:</span>
+              <input type="number" id="addMin" value="1">
+              <span>do</span>
+              <input type="number" id="addMax" value="20">
+            </div>
+          </div>
+
+          <div class="mode-item">
+            <label class="mode-label">
+              <input type="checkbox" id="modeSub">
+              <span>➖ Odčítanie</span>
+            </label>
+            <div class="range-inputs">
+              <span>Rozsah:</span>
+              <input type="number" id="subMin" value="1">
+              <span>do</span>
+              <input type="number" id="subMax" value="20">
+            </div>
+          </div>
+
+          <div class="mode-item">
+            <label class="mode-label">
+              <input type="checkbox" id="modeDiv">
+              <span>➗ Delenie</span>
+            </label>
+            <div class="range-inputs">
+              <span>Rozsah:</span>
+              <input type="number" id="divMin" value="1">
+              <span>do</span>
+              <input type="number" id="divMax" value="10">
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Active Problem Area -->
+      <section class="stage-card">
+        <div class="problem-display" id="problem">
+          Stlač Štart
+        </div>
+
+        <input
+          type="text"
+          id="answer"
+          class="answer-input"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="?"
+        >
+
+        <div class="controls-row">
+          <button class="btn btn-primary btn-lg" onclick="startResume()">▶️ Štart</button>
+          <button class="btn btn-secondary btn-lg" onclick="pause()">⏸ Pauza</button>
+          <button class="btn btn-secondary" onclick="resetStats()" style="color: var(--danger-text);">🧹 Reset</button>
+        </div>
+
+        <div id="feedback"></div>
+      </section>
+
+      <!-- Scoreboard -->
+      <section class="stats-row">
+        <div class="stat-pill">
+          <div class="stat-label">⏱️ Čas</div>
+          <div class="stat-value"><span id="timer">0.0</span>s</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-label">✅ Správne</div>
+          <div class="stat-value stat-correct"><span id="correctCount">0</span></div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-label">❌ Nesprávne</div>
+          <div class="stat-value stat-wrong"><span id="wrongCount">0</span></div>
+        </div>
+      </section>
+
+      <!-- Review Section -->
+      <section class="review-grid">
+        <div class="review-panel">
+          <div class="review-title">❌ Posledné chyby</div>
+          <div class="review-content" id="wrongList">Žiadne chyby</div>
+        </div>
+
+        <div class="review-panel">
+          <div class="review-title">🐢 Najpomalšie príklady</div>
+          <div class="review-content" id="slowList">Zatiaľ žiadne</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // CONSTANTS
+    const OUTLIER_MIN = 0.3;
+    const OUTLIER_MAX = 20;
+    const SLOW_THRESHOLD = 4;
+    const MAX_LIST = 12;
+
+    const STORAGE_KEY = "mathTrainerData";
+
+    // STATE
+    let num1, num2;
+    let operator;
+    let correctAnswer;
+
+    let correctCount = 0;
+    let wrongCount = 0;
+
+    let startTime;
+    let timerInterval;
+
+    let paused = true;
+
+    let problemStats = {};
+    let wrongHistory = [];
+    let slowHistory = [];
+
+    // ELEMENTS
+    const problemEl = document.getElementById("problem");
+    const answerEl = document.getElementById("answer");
+    const feedbackEl = document.getElementById("feedback");
+
+    const correctEl = document.getElementById("correctCount");
+    const wrongEl = document.getElementById("wrongCount");
+    const wrongListEl = document.getElementById("wrongList");
+    const slowListEl = document.getElementById("slowList");
+    const timerEl = document.getElementById("timer");
+
+    // ENTER KEY FIX — Safe
+    answerEl.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        checkAnswer();
+      }
+    });
+
+    // STORAGE
+    function saveData() {
+      localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
-            correctCount,
-            wrongCount,
-            problemStats,
-            wrongHistory,
-            slowHistory
+          correctCount,
+          wrongCount,
+          problemStats,
+          wrongHistory,
+          slowHistory
         })
-    );
+      );
+    }
 
-}
-
-function loadData() {
-
-    let saved =
-        localStorage.getItem(STORAGE_KEY);
-
-    if (saved) {
-
+    function loadData() {
+      let saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
         let data = JSON.parse(saved);
-
         correctCount = data.correctCount || 0;
         wrongCount = data.wrongCount || 0;
         problemStats = data.problemStats || {};
@@ -317,320 +433,189 @@ function loadData() {
 
         correctEl.innerText = correctCount;
         wrongEl.innerText = wrongCount;
-
+      }
     }
 
-}
-
-
-// RANDOM
-
-function rand(min,max) {
-
-    return Math.floor(
-        Math.random()*(max-min+1)
-    )+min;
-
-}
-
-
-// MODES
-
-function getSelectedModes() {
-
-    let modes=[];
-
-    if (modeMul.checked) modes.push("×");
-    if (modeAdd.checked) modes.push("+");
-    if (modeSub.checked) modes.push("-");
-    if (modeDiv.checked) modes.push("÷");
-
-    if (modes.length===0)
-        modes.push("×");
-
-    return modes;
-
-}
-
-
-// PROBLEM GENERATION
-
-function chooseProblem() {
-
-    let modes=getSelectedModes();
-
-    let op=
-        modes[
-            Math.floor(Math.random()*modes.length)
-        ];
-
-    let a,b,answer;
-
-    if (op==="×") {
-
-        let min=+mulMin.value;
-        let max=+mulMax.value;
-
-        a=rand(min,max);
-        b=rand(min,max);
-
-        answer=a*b;
-
+    // RANDOM
+    function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    if (op==="+") {
+    // MODES
+    function getSelectedModes() {
+      let modes = [];
+      if (modeMul.checked) modes.push("×");
+      if (modeAdd.checked) modes.push("+");
+      if (modeSub.checked) modes.push("-");
+      if (modeDiv.checked) modes.push("÷");
 
-        let min=+addMin.value;
-        let max=+addMax.value;
-
-        a=rand(min,max);
-        b=rand(min,max);
-
-        answer=a+b;
-
+      if (modes.length === 0) modes.push("×");
+      return modes;
     }
 
-    if (op==="-") {
+    // PROBLEM GENERATION
+    function chooseProblem() {
+      let modes = getSelectedModes();
+      let op = modes[Math.floor(Math.random() * modes.length)];
+      let a, b, answer;
 
-        let min=+subMin.value;
-        let max=+subMax.value;
+      if (op === "×") {
+        let min = +mulMin.value;
+        let max = +mulMax.value;
+        a = rand(min, max);
+        b = rand(min, max);
+        answer = a * b;
+      }
 
-        a=rand(min,max);
-        b=rand(min,a);
+      if (op === "+") {
+        let min = +addMin.value;
+        let max = +addMax.value;
+        a = rand(min, max);
+        b = rand(min, max);
+        answer = a + b;
+      }
 
-        answer=a-b;
+      if (op === "-") {
+        let min = +subMin.value;
+        let max = +subMax.value;
+        a = rand(min, max);
+        b = rand(min, a);
+        answer = a - b;
+      }
 
+      if (op === "÷") {
+        let min = +divMin.value;
+        let max = +divMax.value;
+        b = rand(min, max);
+        answer = rand(min, max);
+        a = b * answer;
+      }
+
+      return { a, b, op, answer };
     }
 
-    if (op==="÷") {
-
-        let min=+divMin.value;
-        let max=+divMax.value;
-
-        b=rand(min,max);
-        answer=rand(min,max);
-
-        a=b*answer;
-
+    // TIMER
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        let t = (Date.now() - startTime) / 1000;
+        timerEl.innerText = t.toFixed(1);
+      }, 100);
     }
 
-    return {a,b,op,answer};
+    function stopTimer() {
+      clearInterval(timerInterval);
+      return (Date.now() - startTime) / 1000;
+    }
 
-}
+    // LISTS
+    function addWrong(problem) {
+      wrongHistory.unshift(problem);
+      if (wrongHistory.length > MAX_LIST) wrongHistory.pop();
+    }
 
+    function addSlow(problem, time) {
+      slowHistory.push({ problem, time });
+      slowHistory.sort((a, b) => b.time - a.time);
+      slowHistory = slowHistory.slice(0, MAX_LIST);
+    }
 
-// TIMER
+    function updateLists() {
+      wrongListEl.innerText = wrongHistory.length > 0 
+        ? wrongHistory.map(p => p + ";").join(" ")
+        : "Žiadne chyby";
 
-function startTimer() {
+      slowListEl.innerText = slowHistory.length > 0
+        ? slowHistory.map(x => x.problem + " (" + x.time.toFixed(1) + "s);").join(" ")
+        : "Zatiaľ žiadne";
+    }
 
-    startTime=Date.now();
+    // CONTROL
+    function startResume() {
+      if (!paused) return;
+      paused = false;
+      newProblem();
+    }
 
-    timerInterval=setInterval(()=>{
+    function pause() {
+      paused = true;
+      clearInterval(timerInterval);
+      problemEl.innerText = "Pauza";
+    }
 
-        let t=(Date.now()-startTime)/1000;
+    function resetStats() {
+      if (!confirm("Naozaj resetovať všetky štatistiky?")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
 
-        timerEl.innerText=t.toFixed(1);
+    // MAIN FLOW
+    function newProblem() {
+      if (paused) return;
+      let p = chooseProblem();
 
-    },100);
+      num1 = p.a;
+      num2 = p.b;
+      operator = p.op;
+      correctAnswer = p.answer;
 
-}
+      problemEl.innerText = num1 + " " + operator + " " + num2 + " =";
+      answerEl.value = "";
+      answerEl.focus();
 
-function stopTimer() {
+      startTimer();
+    }
 
-    clearInterval(timerInterval);
+    function checkAnswer() {
+      if (paused) return;
+      let user = parseInt(answerEl.value);
+      if (isNaN(user)) return;
 
-    return (Date.now()-startTime)/1000;
+      let key = num1 + operator + num2;
 
-}
-
-
-// LISTS
-
-function addWrong(problem) {
-
-    wrongHistory.unshift(problem);
-
-    if (wrongHistory.length>MAX_LIST)
-        wrongHistory.pop();
-
-}
-
-function addSlow(problem,time) {
-
-    slowHistory.push({
-        problem,
-        time
-    });
-
-    slowHistory.sort(
-        (a,b)=>b.time-a.time
-    );
-
-    slowHistory=
-        slowHistory.slice(0,MAX_LIST);
-
-}
-
-function updateLists() {
-
-    wrongListEl.innerText =
-        wrongHistory.map(p=>p+";").join(" ");
-
-    slowListEl.innerText =
-        slowHistory
-        .map(x =>
-            x.problem+
-            "("+
-            x.time.toFixed(1)+
-            "s);"
-        )
-        .join(" ");
-
-}
-
-
-// CONTROL
-
-function startResume() {
-
-    if (!paused) return;
-
-    paused=false;
-
-    newProblem();
-
-}
-
-function pause() {
-
-    paused=true;
-
-    clearInterval(timerInterval);
-
-    problemEl.innerText="Paused";
-
-}
-
-function resetStats() {
-
-    if (!confirm("Reset all data?"))
-        return;
-
-    localStorage.removeItem(STORAGE_KEY);
-    location.reload();
-
-}
-
-
-// MAIN FLOW
-
-function newProblem() {
-
-    if (paused) return;
-
-    let p=chooseProblem();
-
-    num1=p.a;
-    num2=p.b;
-    operator=p.op;
-    correctAnswer=p.answer;
-
-    problemEl.innerText =
-        num1+" "+operator+" "+num2+" =";
-
-    answerEl.value="";
-    answerEl.focus();
-
-    startTimer();
-
-}
-
-
-function checkAnswer() {
-
-    if (paused) return;
-
-    let user=parseInt(answerEl.value);
-
-    if (isNaN(user))
-        return;
-
-    let key =
-        num1+operator+num2;
-
-    if (!problemStats[key]) {
-
-        problemStats[key]={
-            wrong:0,
-            times:[]
+      if (!problemStats[key]) {
+        problemStats[key] = {
+          wrong: 0,
+          times: []
         };
+      }
 
-    }
+      if (user === correctAnswer) {
+        let elapsed = stopTimer();
 
-    if (user===correctAnswer) {
-
-        let elapsed=stopTimer();
-
-        if (
-            elapsed>=OUTLIER_MIN &&
-            elapsed<=OUTLIER_MAX
-        ) {
-
-            problemStats[key].times.push(elapsed);
-
-            if (elapsed>SLOW_THRESHOLD) {
-
-                addSlow(
-                    key,
-                    elapsed
-                );
-
-            }
-
+        if (elapsed >= OUTLIER_MIN && elapsed <= OUTLIER_MAX) {
+          problemStats[key].times.push(elapsed);
+          if (elapsed > SLOW_THRESHOLD) {
+            addSlow(key, elapsed);
+          }
         }
 
         correctCount++;
-
-        feedbackEl.innerText="Correct! 🎉";
-        feedbackEl.className="correct";
-
-        correctEl.innerText=correctCount;
+        feedbackEl.innerText = "Správne! 🎉";
+        feedbackEl.className = "correct";
+        correctEl.innerText = correctCount;
 
         updateLists();
         saveData();
 
-        setTimeout(newProblem,800);
-
-    }
-
-    else {
-
+        setTimeout(newProblem, 700);
+      } else {
         wrongCount++;
-
         problemStats[key].wrong++;
-
         addWrong(key);
 
-        feedbackEl.innerText="Try again ❌";
-        feedbackEl.className="wrong";
-
-        wrongEl.innerText=wrongCount;
+        feedbackEl.innerText = "Skús znova ❌";
+        feedbackEl.className = "wrong";
+        wrongEl.innerText = wrongCount;
 
         updateLists();
         saveData();
-
-        answerEl.value="";
-
+        answerEl.value = "";
+      }
     }
 
-}
-
-
-// INIT
-
-loadData();
-
-</script>
-
+    // INIT
+    loadData();
+  </script>
 </body>
 </html>

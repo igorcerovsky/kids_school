@@ -3,109 +3,223 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wortarten Lernspiel</title>
+<title>Wortarten Lernspiel | Kubi Kids School</title>
+
+<link rel="stylesheet" href="../css/theme.css">
+<script src="../css/theme.js"></script>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  max-width: 700px;
-  margin: auto;
-  padding: 15px;
-  text-align: center;
-}
+  .grammar-card {
+    text-align: center;
+    padding: 30px 20px;
+    max-width: 720px;
+    margin: 0 auto 20px;
+  }
 
-h2 { margin-bottom: 10px; }
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
 
-.controls {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
+  .type-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: var(--transition);
+  }
 
-button {
-  flex: 1;
-  margin: 5px;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 10px;
-  border: none;
-  font-weight: bold;
-}
+  .type-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
 
-.active-blue { background: lightblue; border: 2px solid blue; }
-.active-red { background: lightcoral; border: 2px solid red; }
-.active-green { background: lightgreen; border: 2px solid green; }
+  /* Color selection active states */
+  .active-blue {
+    background: rgba(59, 130, 246, 0.2) !important;
+    border-color: #3b82f6 !important;
+    color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  }
 
-.word {
-  display: inline-block;
-  margin: 4px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 20px;
-}
+  .active-red {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: #ef4444 !important;
+    color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+  }
 
-.blue { background: lightblue; }
-.red { background: lightcoral; }
-.green { background: lightgreen; }
+  .active-green {
+    background: rgba(34, 197, 94, 0.2) !important;
+    border-color: #22c55e !important;
+    color: #16a34a !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+  }
 
-.shake { animation: shake 0.2s; }
+  /* Dark mode text adjustment for active buttons */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .active-blue { color: #60a5fa !important; }
+    :root:not([data-theme="light"]) .active-red { color: #f87171 !important; }
+    :root:not([data-theme="light"]) .active-green { color: #4ade80 !important; }
+  }
+  [data-theme="dark"] .active-blue { color: #60a5fa !important; }
+  [data-theme="dark"] .active-red { color: #f87171 !important; }
+  [data-theme="dark"] .active-green { color: #4ade80 !important; }
 
-@keyframes shake {
-  50% { transform: translateX(4px); }
-}
+  /* Word tokens */
+  .sentence-box {
+    min-height: 80px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px 18px;
+    margin: 20px 0;
+    line-height: 2.2;
+  }
 
-.score {
-  margin-top: 10px;
-  font-size: 18px;
-}
+  .word {
+    display: inline-block;
+    margin: 4px 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text);
+    border: 1px solid transparent;
+    transition: var(--transition);
+    user-select: none;
+  }
 
-.nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #fff;
-  padding: 10px;
-  display: flex;
-  justify-content: space-around;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-}
+  .word:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+    transform: scale(1.05);
+  }
 
-.message {
-  height: 24px;
-  margin-top: 10px;
-  font-weight: bold;
-}
+  .blue {
+    background: rgba(59, 130, 246, 0.25) !important;
+    border-color: #3b82f6 !important;
+    color: #2563eb !important;
+  }
+
+  .red {
+    background: rgba(239, 68, 68, 0.25) !important;
+    border-color: #ef4444 !important;
+    color: #dc2626 !important;
+  }
+
+  .green {
+    background: rgba(34, 197, 94, 0.25) !important;
+    border-color: #22c55e !important;
+    color: #16a34a !important;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .blue { color: #93c5fd !important; }
+    :root:not([data-theme="light"]) .red { color: #fca5a5 !important; }
+    :root:not([data-theme="light"]) .green { color: #86efac !important; }
+  }
+  [data-theme="dark"] .blue { color: #93c5fd !important; }
+  [data-theme="dark"] .red { color: #fca5a5 !important; }
+  [data-theme="dark"] .green { color: #86efac !important; }
+
+  .shake { animation: shake 0.25s ease; }
+  @keyframes shake {
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  .score-panel {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin: 18px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .message {
+    min-height: 28px;
+    margin: 12px 0;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--primary);
+  }
+
+  .sentence-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
 </style>
 </head>
 
 <body>
 
-<h2>Markiere: Nomen (blau), Verben (rot), Adjektive (grün)</h2>
+  <!-- Top Navigation -->
+  <header class="kubi-top-bar">
+    <div class="kubi-nav-left">
+      <a href="../index.html" class="kubi-back-link">
+        ← Prehľad aktivít
+      </a>
+      <span class="kubi-page-title">Wortarten Lernspiel 🇩🇪</span>
+    </div>
+    <div class="kubi-nav-right">
+      <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
+    </div>
+  </header>
 
-<div class="controls">
-  <button id="blueBtn" onclick="setColor('blue')">Nomen - Blau</button>
-  <button id="redBtn" onclick="setColor('red')">Verb - Rot</button>
-  <button id="greenBtn" onclick="setColor('green')">Adjektiv - Grün</button>
-</div>
+  <main class="app-container">
+    <div class="card-panel-elevated grammar-card">
+      <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 6px;">
+        Wortarten bestimmen
+      </h1>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Wähle eine Wortart und klicke auf das passende Wort im Satz:
+      </p>
 
-<p id="text"></p>
+      <div class="controls">
+        <button id="blueBtn" class="type-btn" onclick="setColor('blue')">Nomen (Blau)</button>
+        <button id="redBtn" class="type-btn" onclick="setColor('red')">Verb (Rot)</button>
+        <button id="greenBtn" class="type-btn" onclick="setColor('green')">Adjektiv (Grün)</button>
+      </div>
 
-<div class="score">
-  📄 Satz: <span id="index">1</span>/100 |
-  🎯 Level: <span id="level">1</span><br>
-  ✅ Richtig: <span id="correct">0</span> |
-  ❌ Falsch: <span id="wrong">0</span> |
-  ⭐ Sterne: <span id="stars">0</span>
-</div>
+      <div class="sentence-box">
+        <p id="text"></p>
+      </div>
 
-<div class="message" id="message"></div>
+      <div class="score-panel">
+        <div>📄 Satz: <span id="index" style="color: var(--text);">1</span>/100</div>
+        <div>🎯 Level: <span id="level" style="color: var(--text);">1</span></div>
+        <div>✅ Richtig: <span id="correct" style="color: var(--success);">0</span></div>
+        <div>❌ Falsch: <span id="wrong" style="color: var(--danger);">0</span></div>
+        <div>⭐ Sterne: <span id="stars" style="color: var(--warning);">0</span></div>
+      </div>
 
-<div class="nav">
-  <button onclick="prevSentence()">⬅️ Zurück</button>
-  <button onclick="nextSentence()">➡️ Weiter</button>
-</div>
+      <div class="message" id="message"></div>
+
+      <div class="sentence-nav">
+        <button class="btn btn-secondary" onclick="prevSentence()">⬅️ Zurück</button>
+        <button class="btn btn-primary" onclick="nextSentence()">➡️ Weiter</button>
+      </div>
+    </div>
+  </main>
 
 <!-- LOAD DATASET -->
 <script src="sentences.js"></script>

@@ -3,76 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zahlenpyramide – Mathe lernen</title>
+<title>Zahlenpyramide – Mathe lernen | Kubi Kids School</title>
 <meta name="description" content="Mathe-Übungen mit Zahlenpyramiden für Kinder. Addition und Multiplikation spielerisch üben.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/theme.css">
+<script src="../css/theme.js"></script>
 
 <style>
   :root {
-    --bg:       #0f0c29;
-    --bg2:      #1a1650;
-    --accent:   #f7c948;
-    --accent2:  #ff6b6b;
-    --green:    #4ade80;
-    --purple:   #a78bfa;
-    --blue:     #60a5fa;
-    --glass:    rgba(255,255,255,0.06);
-    --glass-b:  rgba(255,255,255,0.12);
+    --accent:   #f59e0b;
+    --accent2:  #ef4444;
+    --green:    #22c55e;
+    --purple:   #8b5cf6;
+    --blue:     #3b82f6;
     --radius:   18px;
     --cell:     clamp(52px, 12vw, 82px);
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* Dark mode specific pyramid colors */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --cell-given-bg: rgba(139, 92, 246, 0.2);
+      --cell-given-border: rgba(139, 92, 246, 0.5);
+      --cell-given-text: #ddd6fe;
+      --cell-input-bg: var(--surface);
+      --cell-input-border: var(--border-strong);
+      --cell-input-text: #ffffff;
+    }
+  }
 
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 60%, #2d1b69 100%);
-    min-height: 100vh;
-    color: #fff;
+  [data-theme="dark"] {
+    --cell-given-bg: rgba(139, 92, 246, 0.2);
+    --cell-given-border: rgba(139, 92, 246, 0.5);
+    --cell-given-text: #ddd6fe;
+    --cell-input-bg: var(--surface);
+    --cell-input-border: var(--border-strong);
+    --cell-input-text: #ffffff;
+  }
+
+  /* Light mode specific pyramid colors */
+  :root, [data-theme="light"] {
+    --cell-given-bg: #ede9fe;
+    --cell-given-border: #a78bfa;
+    --cell-given-text: #5b21b6;
+    --cell-input-bg: #ffffff;
+    --cell-input-border: #cbd5e1;
+    --cell-input-text: #0f172a;
+  }
+
+  .pyramid-page-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px 12px 40px;
+    width: 100%;
+    padding: 16px 8px 40px;
   }
 
   /* ── HEADER ── */
-  header {
+  .pyramid-header {
     text-align: center;
     margin-bottom: 24px;
   }
 
-  header h1 {
-    font-size: clamp(1.8rem, 6vw, 2.8rem);
-    font-weight: 900;
-    background: linear-gradient(90deg, var(--accent), #ff9f43, var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .pyramid-header h1 {
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    font-weight: 800;
+    color: var(--text);
     letter-spacing: -0.5px;
+    margin-bottom: 4px;
   }
 
-  header p {
-    color: rgba(255,255,255,0.55);
-    font-size: clamp(0.85rem, 2.5vw, 1rem);
-    margin-top: 4px;
+  .pyramid-header p {
+    color: var(--text-secondary);
+    font-size: clamp(0.9rem, 2.5vw, 1.05rem);
   }
 
   /* ── SETTINGS CARD ── */
   .settings-card {
-    background: var(--glass);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-b);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: var(--radius);
     padding: 18px 22px;
     display: flex;
     flex-wrap: wrap;
-    gap: 14px 24px;
+    gap: 14px 20px;
     align-items: center;
     justify-content: center;
     margin-bottom: 24px;
     width: 100%;
-    max-width: 680px;
+    max-width: 720px;
   }
 
   .setting-group {
@@ -86,31 +106,33 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--accent);
+    color: var(--primary);
   }
 
   .setting-group select,
   .setting-group input[type="number"] {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 10px;
-    color: #fff;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--text);
     font-family: inherit;
     font-size: 0.95rem;
-    font-weight: 700;
+    font-weight: 600;
     padding: 6px 12px;
     cursor: pointer;
     outline: none;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.2s;
   }
 
   .setting-group select:focus,
   .setting-group input[type="number"]:focus {
-    border-color: var(--accent);
-    background: rgba(247,201,72,0.1);
+    border-color: var(--primary);
   }
 
-  .setting-group select option { background: #1a1650; color: #fff; }
+  .setting-group select option {
+    background: var(--surface);
+    color: var(--text);
+  }
 
   /* ── BUTTONS ── */
   .btn-row {
@@ -121,81 +143,44 @@
     margin-bottom: 28px;
   }
 
-  button {
-    font-family: inherit;
-    font-weight: 800;
-    font-size: clamp(0.9rem, 2.5vw, 1.05rem);
-    border: none;
-    border-radius: 50px;
-    padding: 12px 28px;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
-    letter-spacing: 0.02em;
-  }
-
-  button:active { transform: scale(0.95); }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), #ff9f43);
-    color: #1a1650;
-    box-shadow: 0 6px 24px rgba(247,201,72,0.35);
-  }
-
-  .btn-primary:hover { filter: brightness(1.1); box-shadow: 0 8px 28px rgba(247,201,72,0.5); }
-
-  .btn-secondary {
-    background: var(--glass-b);
-    backdrop-filter: blur(8px);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.2);
-  }
-
-  .btn-secondary:hover { background: rgba(255,255,255,0.18); }
-
-  .btn-check {
-    background: linear-gradient(135deg, var(--green), #22c55e);
-    color: #052e16;
-    box-shadow: 0 6px 24px rgba(74,222,128,0.3);
-  }
-
-  .btn-check:hover { filter: brightness(1.08); }
-
   /* ── SCORE BAR ── */
   .score-bar {
     display: flex;
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 22px;
-    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    font-size: clamp(0.9rem, 2.5vw, 1.05rem);
   }
 
   .score-pill {
-    background: var(--glass);
-    border: 1px solid var(--glass-b);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: 50px;
     padding: 8px 20px;
     display: flex;
     align-items: center;
     gap: 8px;
     font-weight: 700;
+    color: var(--text);
   }
 
   .score-pill .count { font-size: 1.25em; }
-  .score-pill.correct .count { color: var(--green); }
-  .score-pill.wrong .count { color: var(--accent2); }
+  .score-pill.correct .count { color: var(--success); }
+  .score-pill.wrong .count { color: var(--danger); }
 
   /* ── PYRAMID AREA ── */
   #pyramid-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     margin-bottom: 30px;
     width: 100%;
   }
 
   .pyramid-row {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     align-items: center;
     justify-content: center;
   }
@@ -216,17 +201,18 @@
 
   /* given (fixed) cell */
   .cell-given {
-    background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(96,165,250,0.2));
-    border: 2px solid rgba(167,139,250,0.5);
-    color: #e9d5ff;
+    background: var(--cell-given-bg);
+    border: 2px solid var(--cell-given-border);
+    color: var(--cell-given-text);
     cursor: default;
-    box-shadow: 0 4px 14px rgba(167,139,250,0.15);
+    box-shadow: var(--shadow-sm);
   }
 
   /* input cell */
   .cell-input {
-    background: rgba(255,255,255,0.05);
-    border: 2px dashed rgba(255,255,255,0.25);
+    background: var(--cell-input-bg);
+    border: 2px dashed var(--cell-input-border);
+    box-shadow: var(--shadow-sm);
   }
 
   .cell-input input {
@@ -237,11 +223,11 @@
     outline: none;
     text-align: center;
     font-family: inherit;
-    font-size: clamp(1rem, 4vw, 1.5rem);
+    font-size: clamp(1.1rem, 4vw, 1.6rem);
     font-weight: 800;
-    color: #fff;
-    caret-color: var(--accent);
-    -webkit-text-fill-color: #fff;
+    color: var(--cell-input-text);
+    caret-color: var(--primary);
+    -webkit-text-fill-color: var(--cell-input-text);
   }
 
   /* Remove number spinners */
@@ -251,27 +237,36 @@
 
   /* states */
   .cell-correct {
-    background: linear-gradient(135deg, rgba(74,222,128,0.25), rgba(34,197,94,0.15)) !important;
-    border: 2px solid rgba(74,222,128,0.6) !important;
+    background: var(--success-subtle) !important;
+    border: 2px solid var(--success) !important;
     animation: popIn 0.3s ease;
   }
 
-  .cell-correct input { -webkit-text-fill-color: var(--green) !important; color: var(--green) !important; }
+  .cell-correct input {
+    -webkit-text-fill-color: var(--success) !important;
+    color: var(--success) !important;
+  }
 
   .cell-wrong {
-    background: linear-gradient(135deg, rgba(255,107,107,0.25), rgba(239,68,68,0.15)) !important;
-    border: 2px solid rgba(255,107,107,0.6) !important;
+    background: var(--danger-subtle) !important;
+    border: 2px solid var(--danger) !important;
     animation: shake 0.4s ease;
   }
 
-  .cell-wrong input { -webkit-text-fill-color: var(--accent2) !important; }
-
-  .cell-revealed {
-    background: linear-gradient(135deg, rgba(247,201,72,0.22), rgba(255,159,67,0.15)) !important;
-    border: 2px solid rgba(247,201,72,0.55) !important;
+  .cell-wrong input {
+    -webkit-text-fill-color: var(--danger) !important;
+    color: var(--danger) !important;
   }
 
-  .cell-revealed input { -webkit-text-fill-color: var(--accent) !important; color: var(--accent) !important; }
+  .cell-revealed {
+    background: var(--warning-subtle) !important;
+    border: 2px solid var(--warning) !important;
+  }
+
+  .cell-revealed input {
+    -webkit-text-fill-color: var(--warning-text) !important;
+    color: var(--warning-text) !important;
+  }
 
   @keyframes popIn {
     0%   { transform: scale(0.85); }
@@ -287,7 +282,7 @@
 
   /* ── OPERATOR CONNECTOR ── */
   .connector {
-    color: rgba(255,255,255,0.35);
+    color: var(--text-muted);
     font-size: clamp(0.75rem, 2vw, 0.95rem);
     font-weight: 700;
     width: 18px;
@@ -305,39 +300,26 @@
     transition: opacity 0.3s;
   }
 
-  #feedback.ok  { color: var(--green); }
-  #feedback.bad { color: var(--accent2); }
-  #feedback.hint { color: var(--accent); }
+  #feedback.ok  { color: var(--success); }
+  #feedback.bad { color: var(--danger); }
+  #feedback.hint { color: var(--warning-text); }
 
   /* ── RULE HINT ── */
   .rule-hint {
-    background: var(--glass);
-    border: 1px solid var(--glass-b);
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px 20px;
-    max-width: 480px;
+    max-width: 520px;
     width: 100%;
     text-align: center;
     font-size: clamp(0.85rem, 2.5vw, 0.98rem);
-    color: rgba(255,255,255,0.6);
+    color: var(--text-secondary);
     line-height: 1.55;
     margin-bottom: 22px;
   }
 
-  .rule-hint strong { color: var(--accent); }
-
-  /* ── LEVEL BADGE ── */
-  .level-badge {
-    display: inline-block;
-    background: linear-gradient(90deg, var(--purple), var(--blue));
-    border-radius: 50px;
-    padding: 4px 14px;
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    margin-bottom: 18px;
-    text-transform: uppercase;
-  }
+  .rule-hint strong { color: var(--primary); }
 
   /* ── STARS ── */
   #stars {
@@ -352,7 +334,7 @@
   .progress-wrap {
     width: 100%;
     max-width: 400px;
-    background: rgba(255,255,255,0.08);
+    background: var(--border);
     border-radius: 50px;
     height: 8px;
     margin-bottom: 26px;
@@ -361,7 +343,7 @@
 
   #progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), #ff9f43);
+    background: var(--primary);
     border-radius: 50px;
     width: 0%;
     transition: width 0.5s ease;
@@ -370,10 +352,24 @@
 </head>
 <body>
 
-<header>
-  <h1>🔺 Zahlenpyramide</h1>
-  <p id="header-sub">Fülle die Pyramide aus!</p>
-</header>
+  <!-- Top Navigation -->
+  <header class="kubi-top-bar">
+    <div class="kubi-nav-left">
+      <a href="../index.html" class="kubi-back-link">
+        ← Prehľad aktivít
+      </a>
+      <span class="kubi-page-title">Zahlenpyramide 🔺</span>
+    </div>
+    <div class="kubi-nav-right">
+      <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
+    </div>
+  </header>
+
+  <div class="pyramid-page-wrapper">
+    <div class="pyramid-header">
+      <h1>🔺 Zahlenpyramide</h1>
+      <p id="header-sub">Fülle die Pyramide aus!</p>
+    </div>
 
 <!-- SETTINGS -->
 <div class="settings-card">
@@ -430,15 +426,17 @@
 
 <!-- BUTTONS -->
 <div class="btn-row">
-  <button class="btn-primary" id="btn-new" onclick="newPyramid()">🔀 Neue Aufgabe</button>
-  <button class="btn-check" id="btn-check" onclick="checkAll()">✔ Prüfen</button>
-  <button class="btn-secondary" onclick="reveal()">💡 Lösung</button>
+  <button class="btn btn-primary" id="btn-new" onclick="newPyramid()">🔀 Neue Aufgabe</button>
+  <button class="btn btn-success" id="btn-check" onclick="checkAll()">✔ Prüfen</button>
+  <button class="btn btn-secondary" onclick="reveal()">💡 Lösung</button>
 </div>
 
 <!-- RULE HINT -->
 <div class="rule-hint" id="rule-hint">
   Tippe die fehlenden Zahlen in die leeren Felder und drücke <strong>✔ Prüfen</strong>.
 </div>
+
+</div><!-- /.pyramid-page-wrapper -->
 
 <script>
   // ── STATE ──

@@ -5,87 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kubi Kids School | Vzdelávacie hry a trenažéry</title>
   <meta name="description" content="Interaktívne vzdelávacie aplikácie pre deti: matematika, násobilka, slovenský pravopis, nemčina a hudobná výchova.">
-  <meta name="theme-color" content="#0f172a">
 
-  <!-- Modern Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Shared Theme & Components -->
+  <link rel="stylesheet" href="css/theme.css">
+  <script src="css/theme.js"></script>
 
   <style>
-    :root {
-      --bg-dark: #090d16;
-      --bg-card: rgba(22, 30, 49, 0.75);
-      --bg-card-hover: rgba(30, 42, 69, 0.9);
-      --border-card: rgba(255, 255, 255, 0.08);
-      --border-card-hover: rgba(129, 140, 248, 0.4);
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --accent-math: #38bdf8;
-      --accent-sk: #34d399;
-      --accent-de: #fbbf24;
-      --accent-music: #f472b6;
-      --radius: 20px;
-      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-dark);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.5;
-      overflow-x: hidden;
+    /* Portal Specific Styling */
+    .portal-header {
+      text-align: center;
+      margin-bottom: 36px;
+      padding: 24px 0 10px;
       position: relative;
     }
 
-    /* Ambient background gradient glow */
-    body::before {
-      content: '';
-      position: fixed;
-      top: -20%;
-      left: 10%;
-      width: 60vw;
-      height: 60vw;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(56, 189, 248, 0.08) 50%, transparent 70%);
-      filter: blur(80px);
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: -10%;
-      right: 5%;
-      width: 50vw;
-      height: 50vw;
-      background: radial-gradient(circle, rgba(236, 72, 153, 0.12) 0%, rgba(52, 211, 153, 0.06) 50%, transparent 70%);
-      filter: blur(90px);
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 32px 20px 60px;
-    }
-
-    /* Header */
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding: 20px 0 10px;
+    .top-controls {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
     }
 
     .badge-pill {
@@ -93,78 +30,73 @@
       align-items: center;
       gap: 8px;
       padding: 6px 14px;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(129, 140, 248, 0.3);
-      border-radius: 9999px;
+      background: var(--primary-subtle);
+      border: 1px solid var(--primary-border);
+      border-radius: var(--radius-full);
       font-size: 0.85rem;
       font-weight: 600;
-      color: #a5b4fc;
-      margin-bottom: 16px;
+      color: var(--primary-text);
+      margin-bottom: 14px;
       letter-spacing: 0.02em;
     }
 
-    h1 {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(2.4rem, 6vw, 3.8rem);
+    h1.portal-title {
+      font-size: clamp(2.2rem, 5.5vw, 3.4rem);
       font-weight: 800;
       letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #ffffff 40%, #93c5fd 80%, #c084fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 12px;
-      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.2;
     }
 
-    .subtitle {
-      font-size: clamp(1.05rem, 2.5vw, 1.25rem);
-      color: var(--text-muted);
-      max-width: 600px;
+    .portal-subtitle {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--text-secondary);
+      max-width: 620px;
       margin: 0 auto;
     }
 
     /* Featured Hero Banner: Math Trainer */
     .hero-card {
-      background: linear-gradient(135deg, rgba(30, 41, 77, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.25);
-      border-radius: 24px;
-      padding: 36px 32px;
-      margin-bottom: 48px;
-      position: relative;
-      overflow: hidden;
+      background: var(--surface);
+      border: 2px solid var(--primary-border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-md);
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 28px;
+      gap: 24px;
       align-items: center;
-      transition: all 0.3s ease;
+      position: relative;
+      transition: var(--transition);
     }
 
     .hero-card:hover {
-      border-color: rgba(56, 189, 248, 0.6);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-lg);
       transform: translateY(-2px);
     }
 
-    .hero-card::after {
-      content: '⚡ Odporúčané';
+    .hero-tag {
       position: absolute;
       top: 16px;
       right: 20px;
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #38bdf8;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      letter-spacing: 0.06em;
+      color: var(--primary-text);
+      background: var(--primary-subtle);
+      border: 1px solid var(--primary-border);
       padding: 4px 10px;
-      border-radius: 9999px;
+      border-radius: var(--radius-full);
     }
 
     .hero-content h2 {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+      font-size: clamp(1.6rem, 3.5vw, 2.1rem);
       font-weight: 700;
-      color: #fff;
+      color: var(--text);
       margin-bottom: 10px;
       display: flex;
       align-items: center;
@@ -173,49 +105,26 @@
     }
 
     .hero-content p {
-      color: #cbd5e1;
+      color: var(--text-secondary);
       font-size: 1.05rem;
-      margin-bottom: 20px;
-      max-width: 650px;
+      margin-bottom: 18px;
+      max-width: 640px;
     }
 
     .feature-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
 
     .feature-tag {
       font-size: 0.85rem;
-      padding: 5px 12px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #e2e8f0;
-    }
-
-    .btn-launch {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-      color: #ffffff;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 1.1rem;
-      padding: 16px 30px;
-      border-radius: 16px;
-      text-decoration: none;
-      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
-      transition: all 0.25s ease;
-      white-space: nowrap;
-    }
-
-    .btn-launch:hover {
-      background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
-      transform: scale(1.03);
-      box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.7);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-weight: 500;
     }
 
     /* Filter Bar */
@@ -224,174 +133,117 @@
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 36px;
+      gap: 8px;
+      margin-bottom: 32px;
     }
 
     .filter-btn {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-card);
-      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
       font-family: inherit;
       font-size: 0.95rem;
       font-weight: 600;
-      padding: 9px 18px;
-      border-radius: 12px;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: var(--transition);
     }
 
     .filter-btn:hover {
-      background: rgba(255, 255, 255, 0.09);
-      color: #fff;
+      background: var(--surface-hover);
+      color: var(--text);
+      border-color: var(--border-strong);
     }
 
     .filter-btn.active {
-      background: #38bdf8;
-      border-color: #38bdf8;
-      color: #090d16;
-      font-weight: 700;
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
     }
 
-    /* Grid layout */
+    /* Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-      gap: 22px;
+      gap: 20px;
     }
 
-    .card {
-      background: var(--bg-card);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-card);
-      border-radius: var(--radius);
+    .app-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       padding: 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       text-decoration: none;
       color: inherit;
-      box-shadow: var(--shadow);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
     }
 
-    .card:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-card-hover);
-      transform: translateY(-5px);
-      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+    .app-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-strong);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
     }
 
-    .card-header {
+    .card-top {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .card-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .category-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .badge-math {
-      background: rgba(56, 189, 248, 0.12);
-      color: var(--accent-math);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-    }
-
-    .badge-sk {
-      background: rgba(52, 211, 153, 0.12);
-      color: var(--accent-sk);
-      border: 1px solid rgba(52, 211, 153, 0.25);
-    }
-
-    .badge-de {
-      background: rgba(251, 191, 36, 0.12);
-      color: var(--accent-de);
-      border: 1px solid rgba(251, 191, 36, 0.25);
-    }
-
-    .badge-music {
-      background: rgba(244, 114, 182, 0.12);
-      color: var(--accent-music);
-      border: 1px solid rgba(244, 114, 182, 0.25);
+      font-size: 1.6rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
     }
 
     .card-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 8px;
+      color: var(--text);
+      margin-bottom: 6px;
     }
 
     .card-desc {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.5;
-      margin-bottom: 20px;
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.45;
+      margin-bottom: 18px;
     }
 
-    .card-footer {
+    .card-action {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-top: 1px solid var(--border);
       padding-top: 14px;
       font-size: 0.9rem;
       font-weight: 600;
-      color: #93c5fd;
+      color: var(--primary-text);
     }
 
-    .card:hover .card-footer {
-      color: #60a5fa;
+    .app-card:hover .card-action {
+      color: var(--primary);
     }
 
-    .arrow-icon {
-      transition: transform 0.2s ease;
-    }
-
-    .card:hover .arrow-icon {
-      transform: translateX(4px);
-    }
-
-    /* Footer */
-    footer {
-      margin-top: auto;
-      text-align: center;
-      padding: 30px 20px;
-      color: #64748b;
-      font-size: 0.85rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    /* Responsive */
     @media (max-width: 768px) {
       .hero-card {
         grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 26px 20px;
+        padding: 24px 20px;
       }
-      .btn-launch {
+      .btn-hero {
         width: 100%;
       }
     }
@@ -399,32 +251,37 @@
 </head>
 <body>
 
-  <div class="container">
+  <div class="app-container-wide">
+    <div class="top-controls">
+      <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
+    </div>
+
     <!-- Header -->
-    <header>
+    <header class="portal-header">
       <div class="badge-pill">
         <span>✨</span> Vzdelávací portál pre deti
       </div>
-      <h1>Kubi Kids School</h1>
-      <p class="subtitle">Interaktívne trenažéry, hry na precvičovanie násobilky, slovenského pravopisu, nemeckej gramatiky a hudby.</p>
+      <h1 class="portal-title">Kubi Kids School</h1>
+      <p class="portal-subtitle">Interaktívne vzdelávacie aplikácie: matematika, slovenský pravopis, nemecká gramatika a hudobná výchova.</p>
     </header>
 
     <!-- Featured Math Trainer Hero -->
     <section class="hero-card">
+      <span class="hero-tag">⚡ Hlavný trenažér</span>
       <div class="hero-content">
         <h2>
-          <span>✖️</span> Math Trainer (Násobilka)
+          <span>✖️</span> Math Trainer (Násobilka & Počítanie)
         </h2>
         <p>Interaktívny trenažér aritmetiky s meraním rýchlosti odpovedí, sledovaním chýb, časovačom a nastaviteľnými rozsahmi čísel.</p>
         <div class="feature-tags">
           <span class="feature-tag">⏱️ Meranie rýchlosti</span>
           <span class="feature-tag">📊 Štatistika problematických príkladov</span>
           <span class="feature-tag">⚙️ Vlastné rozsahy & operátory</span>
-          <span class="feature-tag">📱 Optimalizované pre mobil</span>
+          <span class="feature-tag">📱 Optimalizované pre mobil aj PC</span>
         </div>
       </div>
       <div class="hero-action">
-        <a href="multiply/index.html" class="btn-launch" id="btn-hero-multiply">
+        <a href="multiply/index.html" class="btn btn-primary btn-lg btn-hero" id="btn-hero-multiply">
           Spustiť Math Trainer →
         </a>
       </div>
@@ -442,178 +299,176 @@
     <!-- Apps Grid -->
     <main class="grid" id="apps-grid">
 
-      <!-- Math Trainer (also in grid for completeness) -->
-      <a href="multiply/index.html" class="card" data-category="math">
+      <!-- Math Trainer -->
+      <a href="multiply/index.html" class="app-card" data-category="math">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">✖️</div>
-            <span class="category-badge badge-math">Matematika</span>
+            <span class="badge badge-primary">Matematika</span>
           </div>
           <h3 class="card-title">Math Trainer</h3>
-          <p class="card-desc">Precvičovanie násobenia a základnej aritmetiky s okamžitým vyhodnotením a tréningom rýchlosti.</p>
+          <p class="card-desc">Precvičovanie násobenia, delenia, sčítania a odčítania s meraním času a štatistikou.</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
       <!-- Zahlenpyramide -->
-      <a href="multiply/pyramide.html" class="card" data-category="math">
+      <a href="multiply/pyramide.html" class="app-card" data-category="math">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">🔺</div>
-            <span class="category-badge badge-math">Matematika</span>
+            <span class="badge badge-primary">Matematika</span>
           </div>
           <h3 class="card-title">Zahlenpyramide</h3>
           <p class="card-desc">Číselné pyramídy pre sčítanie a násobenie. Zábavná logicko-matematická výzva pre deti.</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
       <!-- I/Y Adaptívny trenažér Full -->
-      <a href="sk_diktat/iy_adaptive_full_v3.html" class="card" data-category="slovak">
+      <a href="sk_diktat/iy_adaptive_full_v3.html" class="app-card" data-category="slovak">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">🇸🇰</div>
-            <span class="category-badge badge-sk">Slovenčina</span>
+            <span class="badge badge-success">Slovenčina</span>
           </div>
           <h3 class="card-title">I / Y Adaptívny Trenažér</h3>
           <p class="card-desc">Kompletné precvičovanie vybraných slov a pravopisu i/y s adaptívnym algoritmom opakovania.</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
       <!-- I/Y po L -->
-      <a href="sk_diktat/iy_l_adaptive_v3.html" class="card" data-category="slovak">
+      <a href="sk_diktat/iy_l_adaptive_v3.html" class="app-card" data-category="slovak">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">📘</div>
-            <span class="category-badge badge-sk">Slovenčina</span>
+            <span class="badge badge-success">Slovenčina</span>
           </div>
           <h3 class="card-title">I / Y po obojakom L</h3>
           <p class="card-desc">Zamerané na vybrané a odvodené slová po písmene L s okamžitou spätnou väzbou.</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
       <!-- Dopĺňanie I/Y -->
-      <a href="sk_diktat/dopln_iy.html" class="card" data-category="slovak">
+      <a href="sk_diktat/dopln_iy.html" class="app-card" data-category="slovak">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">⚡</div>
-            <span class="category-badge badge-sk">Slovenčina</span>
+            <span class="badge badge-success">Slovenčina</span>
           </div>
           <h3 class="card-title">Rýchle dopĺňanie I / Y</h3>
           <p class="card-desc">Tréning postrehu a správneho písania i/y v slovách s veľkými tlačidlami pre mobil.</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
       <!-- Diktát 1 -->
-      <a href="sk_diktat/diktat_1.html" class="card" data-category="slovak">
+      <a href="sk_diktat/diktat_1.html" class="app-card" data-category="slovak">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">✍️</div>
-            <span class="category-badge badge-sk">Slovenčina</span>
+            <span class="badge badge-success">Slovenčina</span>
           </div>
           <h3 class="card-title">Interaktívny Diktát</h3>
-          <p class="card-desc">Písanie a overovanie celých viet zo slovenského jazyka.</p>
+          <p class="card-desc">Písanie a overovanie celých viet zo slovenského jazyka s hlasovým diktovaním.</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
       <!-- Noun Verb Adjektiv -->
-      <a href="noun_verb_adjektiv/index.html" class="card" data-category="german">
+      <a href="noun_verb_adjektiv/index.html" class="app-card" data-category="german">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">🇩🇪</div>
-            <span class="category-badge badge-de">Nemčina</span>
+            <span class="badge badge-warning">Nemčina</span>
           </div>
           <h3 class="card-title">Wortarten Lernspiel</h3>
           <p class="card-desc">Nemecká gramatika hrou: určovanie a triedenie slovných druhov (Nomen, Verben, Adjektive).</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
       <!-- Instrumente 1 -->
-      <a href="musik/instrumente_1.html" class="card" data-category="music">
+      <a href="musik/instrumente_1.html" class="app-card" data-category="music">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">🎹</div>
-            <span class="category-badge badge-music">Hudba</span>
+            <span class="badge" style="background: rgba(244, 114, 182, 0.12); color: #ec4899; border: 1px solid rgba(244, 114, 182, 0.28);">Hudba</span>
           </div>
           <h3 class="card-title">Tasteninstrumente Quiz</h3>
           <p class="card-desc">Poznávanie klávesových hudobných nástrojov a kvíz z hudobnej výchovy.</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
       <!-- Instrumente 2 -->
-      <a href="musik/instrumente_2.html" class="card" data-category="music">
+      <a href="musik/instrumente_2.html" class="app-card" data-category="music">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">🎻</div>
-            <span class="category-badge badge-music">Hudba</span>
+            <span class="badge" style="background: rgba(244, 114, 182, 0.12); color: #ec4899; border: 1px solid rgba(244, 114, 182, 0.28);">Hudba</span>
           </div>
           <h3 class="card-title">Saiteninstrumente Quiz 1</h3>
           <p class="card-desc">Kvíz o strunových hudobných nástrojoch pre deti (1. časť).</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
       <!-- Instrumente 3 -->
-      <a href="musik/instrumente_3.html" class="card" data-category="music">
+      <a href="musik/instrumente_3.html" class="app-card" data-category="music">
         <div>
-          <div class="card-header">
+          <div class="card-top">
             <div class="card-icon">🎸</div>
-            <span class="category-badge badge-music">Hudba</span>
+            <span class="badge" style="background: rgba(244, 114, 182, 0.12); color: #ec4899; border: 1px solid rgba(244, 114, 182, 0.28);">Hudba</span>
           </div>
           <h3 class="card-title">Saiteninstrumente Quiz 2</h3>
           <p class="card-desc">Pokračovanie kvízu o strunových hudobných nástrojoch (2. časť).</p>
         </div>
-        <div class="card-footer">
+        <div class="card-action">
           <span>Spustiť aplikáciu</span>
-          <span class="arrow-icon">→</span>
+          <span>→</span>
         </div>
       </a>
 
     </main>
 
-    <!-- Footer -->
-    <footer>
+    <footer class="app-footer">
       <p>Kubi Kids School • Vzdelávací softvér</p>
     </footer>
   </div>
 
-  <!-- Interactive Filter Logic -->
   <script>
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const cards = document.querySelectorAll('.card');
+    const cards = document.querySelectorAll('.app-card');
 
     filterButtons.forEach(btn => {
       btn.addEventListener('click', () => {

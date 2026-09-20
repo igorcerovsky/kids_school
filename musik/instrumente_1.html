@@ -2,54 +2,111 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Tasteninstrumente Quiz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasteninstrumente Quiz | Kubi Kids School</title>
+
+<link rel="stylesheet" href="../css/theme.css">
+<script src="../css/theme.js"></script>
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 30px;
-    background-color: #f5f5f5;
-}
-
-h1 {
-    text-align: center;
+.quiz-container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
 }
 
 .question {
-    background: white;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.question p {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text);
+    margin-bottom: 12px;
+}
+
+.question label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: var(--transition);
+}
+
+.question label:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+}
+
+.question input[type="checkbox"],
+.question input[type="radio"] {
+    accent-color: var(--primary);
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
 }
 
 .correct {
-    background-color: #c8f7c5;
+    background: var(--success-subtle) !important;
+    border: 1px solid var(--success) !important;
 }
 
 .wrong {
-    background-color: #f7c5c5;
-}
-
-button {
-    padding: 12px 20px;
-    font-size: 16px;
-    margin-top: 20px;
+    background: var(--danger-subtle) !important;
+    border: 1px solid var(--danger) !important;
 }
 
 #result {
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: 20px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-top: 24px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
 }
 </style>
-
 </head>
 
 <body>
 
-<h1>🎹 Tasteninstrumente Quiz</h1>
+  <!-- Top Navigation -->
+  <header class="kubi-top-bar">
+    <div class="kubi-nav-left">
+      <a href="../index.html" class="kubi-back-link">
+        ← Prehľad aktivít
+      </a>
+      <span class="kubi-page-title">Tasteninstrumente Quiz 🎹</span>
+    </div>
+    <div class="kubi-nav-right">
+      <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
+    </div>
+  </header>
 
-<form id="quizForm">
+  <main class="quiz-container">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--text); margin-bottom: 6px;">
+        🎹 Tasteninstrumente Quiz
+      </h1>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Beantworte die Fragen und prüfe dein Wissen!
+      </p>
+    </div>
+
+    <form id="quizForm">
 
 <div class="question">
 <p>1. Beim Klavier entstehen Töne durch …</p>
@@ -191,11 +248,16 @@ button {
 <label><input type="checkbox" name="q20" value="c"> Nur Geräusche</label>
 </div>
 
-<button type="button" onclick="checkAnswers()">Antworten prüfen</button>
+<div style="text-align: center; margin: 28px 0 10px;">
+  <button type="button" class="btn btn-primary btn-lg" onclick="checkAnswers()">
+    ✔ Antworten prüfen
+  </button>
+</div>
 
 </form>
 
 <div id="result"></div>
+</main>
 
 <script>
 

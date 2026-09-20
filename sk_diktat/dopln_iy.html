@@ -2,77 +2,152 @@
 <html lang="sk">
 <head>
 <meta charset="UTF-8">
-<title>Adaptive I/Y Practice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rýchle dopĺňanie I / Y | Kubi Kids School</title>
+
+<link rel="stylesheet" href="../css/theme.css">
+<script src="../css/theme.js"></script>
 
 <style>
-
-body {
-    font-family: Arial;
+  .word-stage {
     text-align: center;
-    padding: 30px;
-    background-color: #f5f7fb;
-}
+    padding: 32px 20px;
+    margin-bottom: 24px;
+  }
 
-#word {
-    font-size: 44px;
-    margin: 30px;
+  #word {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 800;
+    margin: 20px 0 30px;
     letter-spacing: 4px;
-}
+    color: var(--text);
+    font-family: var(--font-sans);
+  }
 
-button.choice {
-    font-size: 26px;
-    padding: 12px 24px;
-    margin: 10px;
+  .choice-row {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  button.choice {
+    font-family: inherit;
+    font-size: 2rem;
+    font-weight: 700;
+    width: 80px;
+    height: 72px;
     cursor: pointer;
-}
+    background: var(--surface);
+    border: 2px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-#stats {
-    margin-top: 20px;
-    font-size: 18px;
-}
+  button.choice:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--surface-hover);
+  }
 
-#slowWords,
-#wrongWords,
-#speedTrend {
-    margin-top: 20px;
-    font-size: 16px;
-}
+  button.choice:active {
+    transform: translateY(1px);
+  }
 
-.correctWord {
-    color: green;
-}
+  #stats {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 16px 0;
+  }
 
-.resetBtn {
-    margin-top: 20px;
-    padding: 8px 16px;
-}
+  .correctWord {
+    color: var(--success) !important;
+  }
 
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-top: 14px;
+    font-size: 0.95rem;
+    text-align: left;
+    color: var(--text-secondary);
+  }
+
+  .resetBtn {
+    margin-top: 24px;
+    padding: 8px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .resetBtn:hover {
+    background: var(--surface-hover);
+    color: var(--danger-text);
+    border-color: var(--danger-border);
+  }
 </style>
-
 </head>
 
 <body>
 
-<h1>📝 Adaptive I / Y Practice</h1>
+  <!-- Top Navigation -->
+  <header class="kubi-top-bar">
+    <div class="kubi-nav-left">
+      <a href="../index.html" class="kubi-back-link">
+        ← Prehľad aktivít
+      </a>
+      <span class="kubi-page-title">Rýchle dopĺňanie I / Y ⚡</span>
+    </div>
+    <div class="kubi-nav-right">
+      <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
+    </div>
+  </header>
 
-<div id="word">loading...</div>
+  <main class="app-container">
+    <div class="card-panel-elevated word-stage">
+      <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 8px;">
+        📝 Doplň správne i / y
+      </h1>
 
-<div>
-<button class="choice" onclick="chooseLetter('i')">i</button>
-<button class="choice" onclick="chooseLetter('y')">y</button>
-<button class="choice" onclick="chooseLetter('í')">í</button>
-<button class="choice" onclick="chooseLetter('ý')">ý</button>
-</div>
+      <div id="word">Načítavam...</div>
 
-<div id="stats"></div>
+      <div class="choice-row">
+        <button class="choice" onclick="chooseLetter('i')">i</button>
+        <button class="choice" onclick="chooseLetter('y')">y</button>
+        <button class="choice" onclick="chooseLetter('í')">í</button>
+        <button class="choice" onclick="chooseLetter('ý')">ý</button>
+      </div>
 
-<div id="slowWords"></div>
-<div id="wrongWords"></div>
-<div id="speedTrend"></div>
+      <div id="stats"></div>
+    </div>
 
-<button class="resetBtn" onclick="resetProgress()">
-Reset Progress
-</button>
+    <div id="slowWords" class="info-card"></div>
+    <div id="wrongWords" class="info-card"></div>
+    <div id="speedTrend" class="info-card"></div>
+
+    <div style="text-align: center;">
+      <button class="resetBtn" onclick="resetProgress()">
+        Vynulovať pokrok
+      </button>
+    </div>
+  </main>
 
 <script>
 
