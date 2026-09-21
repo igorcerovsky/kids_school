@@ -9,164 +9,193 @@
   <script src="../css/theme.js"></script>
 
   <style>
-    .trainer-layout {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+    /* Compact Single-Screen Layout */
+    body {
+      overflow-x: hidden;
     }
 
-    /* Modes & Ranges Panel */
-    .modes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
+    .app-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 10px 14px;
     }
 
-    .mode-item {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .mode-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--text);
-      cursor: pointer;
-    }
-
-    .mode-label input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--primary);
-      cursor: pointer;
-    }
-
-    .range-inputs {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-    }
-
-    .range-inputs input[type="number"] {
-      width: 54px;
-      padding: 4px 6px;
-      font-size: 0.85rem;
-      text-align: center;
-      border-radius: var(--radius-sm);
-    }
-
-    .practice-controls-row {
+    /* Top Navigation bar compact */
+    .kubi-top-bar {
+      padding: 6px 14px;
+      min-height: 44px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
     }
 
-    .control-item {
+    .nav-actions {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
+    }
+
+    /* Language Switcher */
+    .lang-selector {
+      display: flex;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      font-size: 0.76rem;
+      font-weight: 700;
       color: var(--text-secondary);
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      line-height: 1.2;
+    }
+
+    .lang-btn:hover {
+      color: var(--text);
+    }
+
+    .lang-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Compact Toolbar */
+    .trainer-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 10px;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--text);
     }
 
     .preset-btn {
-      font-size: 0.82rem;
-      padding: 5px 11px;
+      font-size: 0.78rem;
+      padding: 3px 9px;
       border-radius: var(--radius-sm);
       cursor: pointer;
       font-weight: 600;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text);
       transition: var(--transition);
+    }
+
+    .preset-btn:hover {
+      border-color: var(--border-strong);
     }
 
     .preset-btn.active {
       background: var(--primary);
       color: #ffffff;
       border-color: var(--primary);
-      box-shadow: 0 2px 6px var(--primary-subtle);
     }
 
-    /* Top Split Layout: Heatmap Matrix + Active Problem Stage */
-    .top-panel-container {
-      display: flex;
-      flex-direction: row;
-      gap: 24px;
-      align-items: stretch;
-      justify-content: center;
-    }
-
-    .left-panel {
-      flex: 0 0 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      background: var(--bg-subtle);
-      border-radius: var(--radius-lg);
-      padding: 16px 12px;
-      border: 1px solid var(--border);
-      min-height: 410px;
-    }
-
-    .right-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: var(--surface-elevated);
-      border: 2px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 30px 20px;
-      box-shadow: var(--shadow-sm);
+    .toolbar-input {
+      width: 44px;
+      padding: 2px 4px;
+      font-size: 0.82rem;
       text-align: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
     }
 
-    /* Matrix Heatmap Grid */
+    .toolbar-select {
+      padding: 2px 6px;
+      font-size: 0.82rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    /* 3-Column Dashboard Grid (Fits 1 Screen) */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 228px minmax(320px, 1fr) 280px;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Left Panel: 2D Matrix */
+    .matrix-panel {
+      align-items: center;
+      justify-content: flex-start;
+      background: var(--bg-subtle);
+    }
+
+    .panel-title {
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .word-matrix {
       background: transparent;
-      padding: 4px;
-      margin: 6px 0 auto;
-      max-height: 290px;
-      overflow-x: auto;
-      overflow-y: auto;
-      width: 100%;
+      padding: 2px;
+      margin: 2px auto auto;
+      user-select: none;
     }
 
     .matrix-hdr {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 800;
       color: var(--text-muted);
-      width: 21px;
-      height: 21px;
-      border-radius: 3px;
+      width: 17px;
+      height: 17px;
+      border-radius: 2px;
       background: transparent;
       user-select: none;
     }
 
     .matrix-cell {
-      width: 21px;
-      height: 21px;
-      border-radius: 3px;
+      width: 17px;
+      height: 17px;
+      border-radius: 2.5px;
       background-color: var(--border-strong);
       transition: all 0.15s ease;
       cursor: pointer;
@@ -175,20 +204,20 @@
     }
 
     .matrix-cell:hover {
-      transform: scale(1.38);
+      transform: scale(1.4);
       z-index: 10;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
     }
 
     @keyframes activePulse {
       0%, 100% {
-        transform: scale(1.15);
+        transform: scale(1.18);
         box-shadow: 0 0 0 2px var(--primary), 0 0 8px var(--primary);
         z-index: 5;
       }
       50% {
-        transform: scale(1.03);
-        box-shadow: 0 0 0 3px var(--primary), 0 0 14px var(--primary);
+        transform: scale(1.05);
+        box-shadow: 0 0 0 3px var(--primary), 0 0 12px var(--primary);
         z-index: 5;
       }
     }
@@ -199,12 +228,25 @@
       z-index: 4;
     }
 
+    .matrix-cell.is-slow::after {
+      content: "";
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      width: 4.5px;
+      height: 4.5px;
+      border-radius: 50%;
+      background-color: #f59e0b;
+      box-shadow: 0 0 3px #f59e0b;
+      z-index: 2;
+    }
+
     #hovered-word-info {
-      margin-top: 8px;
-      font-size: 12px;
+      margin-top: 6px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-secondary);
-      min-height: 38px;
+      min-height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -212,32 +254,32 @@
       width: 100%;
       background: var(--surface);
       border-radius: var(--radius-sm);
-      padding: 4px 8px;
+      padding: 3px 6px;
       border: 1px solid var(--border);
-      line-height: 1.35;
+      line-height: 1.25;
     }
 
     .matrix-legend {
-      margin-top: 10px;
+      margin-top: 6px;
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 3px;
     }
 
     .legend-row {
       display: flex;
       align-items: center;
-      gap: 7px;
-      font-size: 11px;
+      gap: 6px;
+      font-size: 10px;
       color: var(--text-secondary);
       font-weight: 600;
     }
 
     .legend-swatch {
-      width: 48px;
-      height: 11px;
-      border-radius: 3px;
+      width: 42px;
+      height: 9px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
@@ -248,10 +290,9 @@
     .legend-swatch-teal,
     .legend-swatch-red {
       display: flex;
-      gap: 2px;
-      padding: 0;
+      gap: 1px;
       overflow: hidden;
-      border-radius: 3px;
+      border-radius: 2px;
     }
 
     .ls-step {
@@ -259,51 +300,64 @@
       height: 100%;
     }
 
-    /* Active Problem Area */
+    /* Center Panel: Active Problem */
+    .center-panel {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: var(--surface-elevated);
+      padding: 16px 20px;
+    }
+
     .problem-display {
-      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-size: clamp(2.4rem, 4.5vw, 3.4rem);
       font-weight: 800;
       letter-spacing: -0.02em;
       color: var(--text);
-      min-height: 1.25em;
-      margin-bottom: 16px;
+      min-height: 1.15em;
+      margin: 8px 0 14px;
       font-family: var(--font-sans);
     }
 
     .answer-input {
-      font-size: clamp(1.8rem, 5vw, 2.8rem) !important;
+      font-size: clamp(1.8rem, 3.8vw, 2.5rem) !important;
       font-weight: 700;
-      width: clamp(160px, 35vw, 240px) !important;
-      height: 64px;
+      width: clamp(140px, 30vw, 190px) !important;
+      height: 52px;
       text-align: center;
-      border: 3px solid var(--border-strong) !important;
+      border: 2.5px solid var(--border-strong) !important;
       border-radius: var(--radius-md) !important;
       background: var(--surface) !important;
       color: var(--text) !important;
       box-shadow: var(--shadow-sm);
       outline: none;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       transition: var(--transition);
     }
 
     .answer-input:focus {
       border-color: var(--primary) !important;
-      box-shadow: 0 0 0 4px var(--primary-subtle);
+      box-shadow: 0 0 0 3px var(--primary-subtle);
     }
 
     .controls-row {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.85rem;
     }
 
     #feedback {
-      min-height: 32px;
-      font-size: 1.25rem;
+      min-height: 26px;
+      font-size: 1.05rem;
       font-weight: 800;
-      margin-top: 4px;
+      margin-top: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -326,331 +380,560 @@
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-6px); }
-      75% { transform: translateX(6px); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
     }
 
     #stats {
-      font-size: 1rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: var(--text-secondary);
-      margin-top: 12px;
+      margin-top: 8px;
     }
 
-    /* Diagnostics & History Cards */
-    .info-box {
-      background: var(--surface);
+    /* Right Panel: Analytics & Speed Sparkline */
+    .right-analytics-panel {
+      font-size: 0.82rem;
+      gap: 8px;
+    }
+
+    .info-box-compact {
+      background: var(--bg-subtle);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px 20px;
-      font-size: 0.95rem;
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      line-height: 1.4;
       text-align: left;
-      color: var(--text);
-      box-shadow: var(--shadow-sm);
-      line-height: 1.6;
-    }
-
-    .info-box b {
-      color: var(--text);
-      display: block;
-      margin-bottom: 6px;
     }
 
     .tag-wrong {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       background: var(--danger-subtle);
       border: 1px solid var(--danger-border);
       color: var(--danger-text);
-      padding: 3px 8px;
+      padding: 2px 6px;
       border-radius: var(--radius-sm);
-      margin: 2px 4px;
+      margin: 2px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
     }
 
     .tag-slow {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       background: var(--warning-subtle);
       border: 1px solid var(--warning-border);
       color: var(--warning-text);
-      padding: 3px 8px;
+      padding: 2px 6px;
       border-radius: var(--radius-sm);
-      margin: 2px 4px;
+      margin: 2px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
     }
 
-    canvas {
-      margin-top: 10px;
-      border-radius: var(--radius-md);
+    canvas#speedChart {
+      width: 100%;
+      height: 105px;
+      border-radius: var(--radius-sm);
       background: var(--surface);
       border: 1px solid var(--border);
-      width: 100%;
-      max-width: 100%;
-      height: 240px;
-      box-shadow: var(--shadow-sm);
+      display: block;
     }
 
-    @media (max-width: 820px) {
-      .top-panel-container {
-        flex-direction: column-reverse;
+    /* Secondary collapsible operations */
+    .extra-ops-drawer {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+    }
+
+    .modes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .mode-item {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Responsive Adaptation for Tablets and Phones */
+    @media (max-width: 920px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
       }
-      .left-panel {
-        flex: 1 1 auto;
-        width: 100%;
-        min-height: auto;
+      .center-panel {
+        order: 1;
+      }
+      .matrix-panel {
+        order: 2;
+      }
+      .right-analytics-panel {
+        order: 3;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation -->
+  <!-- Compact Top Navigation Bar with Language Switcher -->
   <header class="kubi-top-bar">
     <div class="kubi-nav-left">
-      <a href="../index.html" class="kubi-back-link">
-        ← Prehľad aktivít
-      </a>
-      <span class="kubi-page-title">Math Trainer ✏️</span>
+      <a href="../index.html" class="kubi-back-link" id="i18nBackLink">← Prehľad aktivít</a>
+      <span class="kubi-page-title" id="i18nTitle" style="font-size: 1.05rem;">Math Trainer ✏️</span>
     </div>
-    <div class="kubi-nav-right">
+    <div class="nav-actions">
+      <!-- Language Switcher: SK | EN | DE -->
+      <div class="lang-selector">
+        <button type="button" class="lang-btn active" data-lang="sk" onclick="setLanguage('sk')">SK</button>
+        <button type="button" class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
+        <button type="button" class="lang-btn" data-lang="de" onclick="setLanguage('de')">DE</button>
+      </div>
       <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
     </div>
   </header>
 
   <main class="app-container">
-    <div class="trainer-layout">
+    
+    <!-- Slim Toolbar (Single Row Controls) -->
+    <section class="trainer-toolbar">
+      <!-- Presets -->
+      <div class="toolbar-group">
+        <button type="button" class="preset-btn active" id="preset1_10" onclick="setMultiplyPreset(1, 10)">1 – 10</button>
+        <button type="button" class="preset-btn" id="preset1_5" onclick="setMultiplyPreset(1, 5)">1 – 5</button>
+        <button type="button" class="preset-btn" id="preset6_10" onclick="setMultiplyPreset(6, 10)">6 – 10</button>
+      </div>
 
-      <!-- Operations & Range Settings Card -->
-      <section class="card-panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
-          <div>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin: 0; display: flex; align-items: center; gap: 8px;">
-              ✖️ Malá násobilka
-            </h2>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 2px 0 0 0;">
-              Adaptívny trenažér s 2D farebnou tabuľkou zvládnutia a prioritným precvičovaním chýb.
-            </p>
-          </div>
+      <!-- Range -->
+      <div class="toolbar-group">
+        <span id="i18nRangeFrom">Od</span>
+        <input type="number" id="mulMin" class="toolbar-input" value="1" min="1" max="20" onchange="onCustomRangeChange()">
+        <span id="i18nRangeTo">do</span>
+        <input type="number" id="mulMax" class="toolbar-input" value="10" min="1" max="20" onchange="onCustomRangeChange()">
+      </div>
 
-          <!-- Quick Presets -->
-          <div class="preset-group" style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" class="btn btn-secondary btn-sm preset-btn active" id="preset1_10" onclick="setMultiplyPreset(1, 10)">
-              1 – 10 (Celá)
-            </button>
-            <button type="button" class="btn btn-secondary btn-sm preset-btn" id="preset1_5" onclick="setMultiplyPreset(1, 5)">
-              1 – 5 (Základ)
-            </button>
-            <button type="button" class="btn btn-secondary btn-sm preset-btn" id="preset6_10" onclick="setMultiplyPreset(6, 10)">
-              6 – 10 (Ťažšie)
-            </button>
-          </div>
-        </div>
+      <!-- Downweight Easy (1*N) -->
+      <div class="toolbar-group">
+        <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;" id="i18nDownweightLabel" title="Znížiť pravdepodobnosť ľahkých príkladov (1 × N)">
+          <input type="checkbox" id="downweightEasy" checked onchange="saveProgress()" style="accent-color:var(--primary); cursor:pointer;">
+          <span id="i18nDownweightText">📉 Znížiť 1×N</span>
+        </label>
+      </div>
 
-        <!-- Multiplication Range & Downweight Easy Toggle -->
-        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 12px 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius-md);">
-          <div style="display: flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 600; color: var(--text);">
-            <span>Rozsah čísel: od</span>
-            <input type="number" id="mulMin" value="1" min="1" max="20" onchange="onCustomRangeChange()" style="width: 52px; text-align: center; padding: 4px; border-radius: var(--radius-sm);">
-            <span>do</span>
-            <input type="number" id="mulMax" value="10" min="1" max="20" onchange="onCustomRangeChange()" style="width: 52px; text-align: center; padding: 4px; border-radius: var(--radius-sm);">
-          </div>
+      <!-- Practice Mode -->
+      <div class="toolbar-group">
+        <label for="practiceModeSelect"><b id="i18nModeLabel">Režim:</b></label>
+        <select id="practiceModeSelect" class="toolbar-select" onchange="onPracticeModeChange()">
+          <option value="normal" id="i18nModeNormal">Normálny (adaptívny cyklus)</option>
+          <option value="slow" id="i18nModeSlow">Iba najpomalšie</option>
+          <option value="wrong" id="i18nModeWrong">Iba chybné</option>
+        </select>
+      </div>
 
-          <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; color: var(--text); cursor: pointer;">
-            <input type="checkbox" id="downweightEasy" checked onchange="saveProgress()" style="width: 17px; height: 17px; accent-color: var(--primary); cursor: pointer;">
-            <span>📉 Znížiť pravdepodobnosť ľahkých príkladov (1 × N)</span>
+      <!-- N-Slowest & Success Threshold -->
+      <div class="toolbar-group">
+        <span id="i18nSlowN">Pomalé N:</span>
+        <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
+        <span id="i18nGradN">Vyradenie:</span>
+        <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20">
+        <span id="i18nGradSuffix">x</span>
+      </div>
+
+      <!-- Extra Ops Toggle Button -->
+      <button type="button" class="preset-btn" onclick="toggleExtraOps()" id="i18nExtraOpsBtn">⚙️ + − ÷</button>
+    </section>
+
+    <!-- Secondary Collapsible Drawer for Extra Ops -->
+    <div id="extraOpsDrawer" class="extra-ops-drawer" style="display: none;">
+      <div class="modes-grid">
+        <div class="mode-item">
+          <label class="mode-label">
+            <input type="checkbox" id="modeMul" checked onchange="onSettingsChange()">
+            <span>✖ Násobenie</span>
           </label>
         </div>
-
-        <div class="practice-controls-row">
-          <div class="control-item">
-            <label for="practiceModeSelect"><b>Režim tréningu:</b></label>
-            <select id="practiceModeSelect" onchange="onPracticeModeChange()">
-              <option value="normal">Normálny (adaptívny cyklus)</option>
-              <option value="slow">Iba najpomalšie príklady</option>
-              <option value="wrong">Iba chybné príklady</option>
-            </select>
-          </div>
-
-          <div class="control-item">
-            <label for="successThreshold"><b>Vyradenie po:</b></label>
-            <input type="number" id="successThreshold" value="4" min="1" max="20" style="width: 52px; text-align: center;">
-            <span>úspechoch</span>
+        <div class="mode-item">
+          <label class="mode-label">
+            <input type="checkbox" id="modeAdd" onchange="onSettingsChange()">
+            <span>➕ Sčítanie</span>
+          </label>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <span>Od</span>
+            <input type="number" id="addMin" class="toolbar-input" value="1" onchange="onSettingsChange()">
+            <span>do</span>
+            <input type="number" id="addMax" class="toolbar-input" value="20" onchange="onSettingsChange()">
           </div>
         </div>
+        <div class="mode-item">
+          <label class="mode-label">
+            <input type="checkbox" id="modeSub" onchange="onSettingsChange()">
+            <span>➖ Odčítanie</span>
+          </label>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <span>Od</span>
+            <input type="number" id="subMin" class="toolbar-input" value="1" onchange="onSettingsChange()">
+            <span>do</span>
+            <input type="number" id="subMax" class="toolbar-input" value="20" onchange="onSettingsChange()">
+          </div>
+        </div>
+        <div class="mode-item">
+          <label class="mode-label">
+            <input type="checkbox" id="modeDiv" onchange="onSettingsChange()">
+            <span>➗ Delenie</span>
+          </label>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <span>Od</span>
+            <input type="number" id="divMin" class="toolbar-input" value="1" onchange="onSettingsChange()">
+            <span>do</span>
+            <input type="number" id="divMax" class="toolbar-input" value="10" onchange="onSettingsChange()">
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <!-- Secondary Collapsible Drawer for Other Operations -->
-        <details style="margin-top: 14px; font-size: 0.88rem; color: var(--text-secondary);">
-          <summary style="cursor: pointer; font-weight: 600; padding: 4px 0; user-select: none;">
-            ⚙️ Ďalšie operácie (sčítanie, odčítanie, delenie)
-          </summary>
-          <div class="modes-grid" style="margin-top: 10px;">
-            <div class="mode-item">
-              <label class="mode-label">
-                <input type="checkbox" id="modeMul" checked onchange="onSettingsChange()">
-                <span>✖ Násobenie</span>
-              </label>
+    <!-- 3-Column Single-Screen Dashboard -->
+    <div class="dashboard-grid">
+
+      <!-- LEFT COLUMN: 2D Mastery Matrix -->
+      <section class="panel-card matrix-panel">
+        <div class="panel-title" id="i18nMatrixTitle">
+          📊 Mriežka násobilky
+        </div>
+        
+        <div id="wordMatrix" class="word-matrix"></div>
+        <div id="hovered-word-info">Prejdi myšou po tabuľke...</div>
+
+        <!-- Micro-Legend -->
+        <div class="matrix-legend">
+          <div class="legend-row">
+            <div class="legend-swatch legend-swatch-gray"></div>
+            <span id="i18nLegendUnseen">Neprecvičené</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-swatch legend-swatch-teal">
+              <div class="ls-step" style="background:hsl(174,70%,82%)"></div>
+              <div class="ls-step" style="background:hsl(174,70%,72%)"></div>
+              <div class="ls-step" style="background:hsl(174,70%,62%)"></div>
+              <div class="ls-step" style="background:hsl(174,70%,52%)"></div>
+              <div class="ls-step" style="background:hsl(174,70%,42%)"></div>
+              <div class="ls-step" style="background:hsl(174,70%,32%)"></div>
             </div>
-            <div class="mode-item">
-              <label class="mode-label">
-                <input type="checkbox" id="modeAdd" onchange="onSettingsChange()">
-                <span>➕ Sčítanie</span>
-              </label>
-              <div class="range-inputs">
-                <span>Od</span>
-                <input type="number" id="addMin" value="1" onchange="onSettingsChange()">
-                <span>do</span>
-                <input type="number" id="addMax" value="20" onchange="onSettingsChange()">
-              </div>
+            <span id="i18nLegendMastered">Správne (1–6)</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-swatch legend-swatch-red">
+              <div class="ls-step" style="background:hsl(0,70%,82%)"></div>
+              <div class="ls-step" style="background:hsl(0,70%,72%)"></div>
+              <div class="ls-step" style="background:hsl(0,70%,62%)"></div>
+              <div class="ls-step" style="background:hsl(0,70%,52%)"></div>
+              <div class="ls-step" style="background:hsl(0,70%,42%)"></div>
+              <div class="ls-step" style="background:hsl(0,70%,32%)"></div>
             </div>
-            <div class="mode-item">
-              <label class="mode-label">
-                <input type="checkbox" id="modeSub" onchange="onSettingsChange()">
-                <span>➖ Odčítanie</span>
-              </label>
-              <div class="range-inputs">
-                <span>Od</span>
-                <input type="number" id="subMin" value="1" onchange="onSettingsChange()">
-                <span>do</span>
-                <input type="number" id="subMax" value="20" onchange="onSettingsChange()">
-              </div>
+            <span id="i18nLegendWrong">S chybou (1–6)</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-swatch" style="background:hsl(174,70%,62%); position:relative; display:flex; align-items:center; justify-content:center; border-radius:2px;">
+              <span style="position:absolute; top:2px; right:2px; width:5px; height:5px; border-radius:50%; background:#f59e0b; box-shadow:0 0 3px #f59e0b;"></span>
             </div>
-            <div class="mode-item">
-              <label class="mode-label">
-                <input type="checkbox" id="modeDiv" onchange="onSettingsChange()">
-                <span>➗ Delenie</span>
-              </label>
-              <div class="range-inputs">
-                <span>Od</span>
-                <input type="number" id="divMin" value="1" onchange="onSettingsChange()">
-                <span>do</span>
-                <input type="number" id="divMax" value="10" onchange="onSettingsChange()">
-              </div>
-            </div>
+            <span id="i18nLegendSlow">🐢 Pomalé z hotových (&gt; 80. perc.)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CENTER COLUMN: Active Problem Stage -->
+      <section class="panel-card center-panel">
+        <div class="problem-display" id="problem">
+          Stlač Štart
+        </div>
+
+        <input
+          type="text"
+          id="answer"
+          class="answer-input"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="?"
+        >
+
+        <div class="controls-row">
+          <button class="btn btn-primary btn-sm" id="startBtn" onclick="startResume()">▶️ Štart</button>
+          <button class="btn btn-secondary btn-sm" id="pauseBtn" onclick="pauseGame()">⏸ Pauza</button>
+          <button class="btn btn-secondary btn-sm" id="voiceBtn" onclick="speakCurrentProblem()" title="Prehrať hlasom">🔊 Hlas</button>
+        </div>
+
+        <div id="feedback"></div>
+        <div id="stats">Správne: 0 | Nesprávne: 0 | Presnosť: 0%</div>
+      </section>
+
+      <!-- RIGHT COLUMN: Analytics, Speed Sparkline & Mistake Tracking -->
+      <section class="panel-card right-analytics-panel">
+        <div style="font-weight: 700; font-size: 0.86rem; color: var(--text); display:flex; justify-content:space-between; align-items:center;">
+          <span id="i18nSpeedChartTitle">📈 Rýchlosť odpovedí (s)</span>
+        </div>
+        
+        <canvas id="speedChart" width="280" height="105"></canvas>
+
+        <div id="slowWords" class="info-box-compact"></div>
+        <div id="wrongWords" class="info-box-compact"></div>
+
+        <details style="margin-top: auto; font-size: 0.8rem; color: var(--text-secondary);">
+          <summary style="cursor: pointer; font-weight: 700;" id="i18nDailyHistoryTitle">📅 Denná história</summary>
+          <div id="dailyHistory" style="margin-top: 4px; line-height: 1.35;"></div>
+          <div style="text-align: right; margin-top: 6px;">
+            <button type="button" class="preset-btn" onclick="resetProgress()" id="i18nResetBtn" style="color:var(--danger-text); border-color:var(--danger-border); font-size:0.75rem;">
+              🧹 Reset
+            </button>
           </div>
         </details>
       </section>
 
-      <!-- Top Split Stage: Heatmap Matrix + Active Problem Area -->
-      <section class="top-panel-container">
-
-        <!-- Left Heatmap Matrix -->
-        <div class="left-panel">
-          <div style="font-weight: 800; font-size: 15px; margin-bottom: 6px; color: var(--text); text-align: center;">
-            📊 Mriežka násobilky
-          </div>
-          <div id="wordMatrix" class="word-matrix"></div>
-          <div id="hovered-word-info">Prejdi myšou po tabuľke...</div>
-
-          <div class="matrix-legend">
-            <div class="legend-row">
-              <div class="legend-swatch legend-swatch-gray"></div>
-              <span>Neprecvičené v cykle</span>
-            </div>
-            <div class="legend-row">
-              <div class="legend-swatch legend-swatch-teal">
-                <div class="ls-step" style="background:hsl(174,70%,82%)"></div>
-                <div class="ls-step" style="background:hsl(174,70%,72%)"></div>
-                <div class="ls-step" style="background:hsl(174,70%,62%)"></div>
-                <div class="ls-step" style="background:hsl(174,70%,52%)"></div>
-                <div class="ls-step" style="background:hsl(174,70%,42%)"></div>
-                <div class="ls-step" style="background:hsl(174,70%,32%)"></div>
-              </div>
-              <span>Správne (1–6)</span>
-            </div>
-            <div class="legend-row">
-              <div class="legend-swatch legend-swatch-red">
-                <div class="ls-step" style="background:hsl(0,70%,82%)"></div>
-                <div class="ls-step" style="background:hsl(0,70%,72%)"></div>
-                <div class="ls-step" style="background:hsl(0,70%,62%)"></div>
-                <div class="ls-step" style="background:hsl(0,70%,52%)"></div>
-                <div class="ls-step" style="background:hsl(0,70%,42%)"></div>
-                <div class="ls-step" style="background:hsl(0,70%,32%)"></div>
-              </div>
-              <span>S chybou (zostáva 1–6)</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Active Problem Card -->
-        <div class="right-panel">
-          <div class="problem-display" id="problem">
-            Stlač Štart
-          </div>
-
-          <input
-            type="text"
-            id="answer"
-            class="answer-input"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="?"
-          >
-
-          <div class="controls-row">
-            <button class="btn btn-primary btn-lg" id="startBtn" onclick="startResume()">▶️ Štart</button>
-            <button class="btn btn-secondary btn-lg" id="pauseBtn" onclick="pauseGame()">⏸ Pauza</button>
-            <button class="btn btn-secondary" onclick="speakCurrentProblem()" title="Prehrať hlasom">🔊 Hlas</button>
-          </div>
-
-          <div id="feedback"></div>
-          <div id="stats">Správne: 0 | Nesprávne: 0 | Presnosť: 0%</div>
-        </div>
-
-      </section>
-
-      <!-- Review & Analytics Section -->
-      <section class="card-panel">
-        <div id="wrongWords" class="info-box" style="margin-bottom: 14px;"></div>
-        <div id="slowWords" class="info-box" style="margin-bottom: 20px;"></div>
-
-        <div style="font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 8px;">
-          📈 Graf rýchlosti riešenia (posledné príklady):
-        </div>
-        <canvas id="speedChart" width="600" height="240"></canvas>
-
-        <div id="dailyHistory" class="info-box" style="margin-top: 20px;"></div>
-
-        <div style="text-align: center; margin-top: 24px;">
-          <button class="btn btn-secondary" onclick="resetProgress()" style="color: var(--danger-text); border-color: var(--danger-border);">
-            🧹 Vynulovať štatistiky pokroku
-          </button>
-        </div>
-      </section>
-
     </div>
+
   </main>
 
   <script>
-    // CONSTANTS & CONFIG (Matches sk_diktat/iy_l_adaptive_v3.html)
+    // INTERNATIONALIZATION (SK, EN, DE)
+    const I18N = {
+      sk: {
+        backLink: "← Prehľad aktivít",
+        title: "Math Trainer ✏️",
+        rangeFrom: "Od",
+        rangeTo: "do",
+        downweightEasy: "📉 Znížiť 1×N",
+        downweightEasyTitle: "Znížiť pravdepodobnosť ľahkých príkladov (1 × N)",
+        modeLabel: "Režim:",
+        modeNormal: "Normálny (adaptívny cyklus)",
+        modeSlow: "Iba najpomalšie",
+        modeWrong: "Iba chybné",
+        slowN: "Pomalé N:",
+        gradN: "Vyradenie:",
+        gradSuffix: "x",
+        extraOps: "⚙️ + − ÷",
+        matrixTitle: "📊 Mriežka násobilky",
+        hoverPrompt: "Prejdi myšou po tabuľke...",
+        legendUnseen: "Neprecvičené",
+        legendMastered: "Správne (1–6)",
+        legendWrong: "S chybou (1–6)",
+        legendSlow: "🐢 Pomalé z hotových (> 80. perc.)",
+        startBtn: "▶️ Štart",
+        pauseBtn: "⏸ Pauza",
+        voiceBtn: "🔊 Hlas",
+        pausedText: "Pauza",
+        startPrompt: "Stlač Štart",
+        correctFeedback: "Správne! 🎉",
+        wrongFeedback: "Skús znova ❌",
+        graduatedFeedback: (txt) => `Skvelé! Príklad ${txt} vyradený z chýb! 🎓`,
+        speedImproveFeedback: (txt, avg, p80) => `Skvelé! 🚀 ${txt} zrýchlené pod hranicu (${avg}s ≤ ${p80}s)!`,
+        speedQuickFeedback: (el, p80) => `Správne! 🎉 Rýchly pokus (${el}s ≤ ${p80}s)`,
+        remainingSuffix: "zostáva",
+        statsCorrect: "Správne",
+        statsWrong: "Nesprávne",
+        statsAcc: "Presnosť",
+        statsAvg: "Priem. čas",
+        wrongHeader: "❌ Chybné príklady (prioritné):",
+        noWrongs: "Žiadne chyby! Výborne! 🎉",
+        slowHeader: "🐢 Najpomalšie z hotových",
+        p80Boundary: "hranica 80. perc.",
+        noSlow: "Všetky hotové sú pod 80. perc.! 🎉",
+        speedChartTitle: "📈 Rýchlosť odpovedí (s)",
+        chartPlaceholder: "Vyrieš aspoň 2 príklady pre graf!",
+        dailyHistoryTitle: "📅 Denná história",
+        noHistory: "Zatiaľ žiadne záznamy.",
+        resetBtn: "🧹 Reset štatistík",
+        resetConfirm: "Naozaj chceš vynulovať celý štatistický pokrok?",
+        speechLang: "sk-SK",
+        voiceWords: { mul: "krát", add: "plus", sub: "mínus", div: "delené" }
+      },
+      en: {
+        backLink: "← Activities Hub",
+        title: "Math Trainer ✏️",
+        rangeFrom: "From",
+        rangeTo: "to",
+        downweightEasy: "📉 Downweight 1×N",
+        downweightEasyTitle: "Lower probability for easy facts (1 × N)",
+        modeLabel: "Mode:",
+        modeNormal: "Normal (Adaptive cycle)",
+        modeSlow: "Slowest only",
+        modeWrong: "Mistakes only",
+        slowN: "Slow N:",
+        gradN: "Graduate:",
+        gradSuffix: "x",
+        extraOps: "⚙️ + − ÷",
+        matrixTitle: "📊 Multiplication Matrix",
+        hoverPrompt: "Hover over the table...",
+        legendUnseen: "Unpracticed",
+        legendMastered: "Correct (1–6)",
+        legendWrong: "Mistakes (1–6)",
+        legendSlow: "🐢 Slow from done (> 80th perc.)",
+        startBtn: "▶️ Start",
+        pauseBtn: "⏸ Pause",
+        voiceBtn: "🔊 Audio",
+        pausedText: "Paused",
+        startPrompt: "Press Start",
+        correctFeedback: "Correct! 🎉",
+        wrongFeedback: "Try again ❌",
+        graduatedFeedback: (txt) => `Great! ${txt} cleared from mistakes! 🎓`,
+        speedImproveFeedback: (txt, avg, p80) => `Awesome! 🚀 ${txt} speed improved (${avg}s ≤ ${p80}s)!`,
+        speedQuickFeedback: (el, p80) => `Correct! 🎉 Fast attempt (${el}s ≤ ${p80}s)`,
+        remainingSuffix: "remaining",
+        statsCorrect: "Correct",
+        statsWrong: "Mistakes",
+        statsAcc: "Accuracy",
+        statsAvg: "Avg speed",
+        wrongHeader: "❌ Mistakes to practice:",
+        noWrongs: "No mistakes! Excellent! 🎉",
+        slowHeader: "🐢 Slowest mastered facts",
+        p80Boundary: "80th perc. boundary",
+        noSlow: "All mastered are under 80th percentile! 🎉",
+        speedChartTitle: "📈 Response Times (s)",
+        chartPlaceholder: "Solve at least 2 problems for chart!",
+        dailyHistoryTitle: "📅 Daily History",
+        noHistory: "No records yet.",
+        resetBtn: "🧹 Reset Progress",
+        resetConfirm: "Are you sure you want to reset all progress?",
+        speechLang: "en-US",
+        voiceWords: { mul: "times", add: "plus", sub: "minus", div: "divided by" }
+      },
+      de: {
+        backLink: "← Übersicht",
+        title: "Mathe-Trainer ✏️",
+        rangeFrom: "Von",
+        rangeTo: "bis",
+        downweightEasy: "📉 1×N dämpfen",
+        downweightEasyTitle: "Geringere Wahrscheinlichkeit für einfache Aufgaben (1 × N)",
+        modeLabel: "Modus:",
+        modeNormal: "Normal (Adaptiver Zyklus)",
+        modeSlow: "Nur die langsamsten",
+        modeWrong: "Nur Fehler",
+        slowN: "Langsam N:",
+        gradN: "Abschluss:",
+        gradSuffix: "x",
+        extraOps: "⚙️ + − ÷",
+        matrixTitle: "📊 Einmaleins-Matrix",
+        hoverPrompt: "Fahre über die Tabelle...",
+        legendUnseen: "Nicht geübt",
+        legendMastered: "Richtig (1–6)",
+        legendWrong: "Mit Fehlern (1–6)",
+        legendSlow: "🐢 Langsam (> 80. Perz.)",
+        startBtn: "▶️ Start",
+        pauseBtn: "⏸ Pause",
+        voiceBtn: "🔊 Vorlesen",
+        pausedText: "Pause",
+        startPrompt: "Drücke Start",
+        correctFeedback: "Richtig! 🎉",
+        wrongFeedback: "Versuch es noch einmal ❌",
+        graduatedFeedback: (txt) => `Super! ${txt} erfolgreich gemeistert! 🎓`,
+        speedImproveFeedback: (txt, avg, p80) => `Klasse! 🚀 ${txt} schneller gelöst (${avg}s ≤ ${p80}s)!`,
+        speedQuickFeedback: (el, p80) => `Richtig! 🎉 Schneller Versuch (${el}s ≤ ${p80}s)`,
+        remainingSuffix: "übrig",
+        statsCorrect: "Richtig",
+        statsWrong: "Fehler",
+        statsAcc: "Genauigkeit",
+        statsAvg: "Durchschn.",
+        wrongHeader: "❌ Fehlerhafte Aufgaben:",
+        noWrongs: "Keine Fehler! Ausgezeichnet! 🎉",
+        slowHeader: "🐢 Langsamste gelöste Aufgaben",
+        p80Boundary: "80. Perz. Grenze",
+        noSlow: "Alle Aufgaben liegen unter dem 80. Perzentil! 🎉",
+        speedChartTitle: "📈 Antwortzeit (s)",
+        chartPlaceholder: "Löse mindestens 2 Aufgaben für das Diagramm!",
+        dailyHistoryTitle: "📅 Tägliche Historie",
+        noHistory: "Bisher keine Einträge.",
+        resetBtn: "🧹 Fortschritt zurücksetzen",
+        resetConfirm: "Möchtest du den gesamten Fortschritt wirklich zurücksetzen?",
+        speechLang: "de-DE",
+        voiceWords: { mul: "mal", add: "plus", sub: "minus", div: "geteilt durch" }
+      }
+    };
+
+    let currentLang = "sk";
+
+    function setLanguage(lang) {
+      if (!I18N[lang]) return;
+      currentLang = lang;
+      localStorage.setItem("math_trainer_lang", lang);
+      document.documentElement.lang = lang;
+
+      // Update button active state
+      document.querySelectorAll(".lang-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
+      });
+
+      // Update UI Text
+      const t = I18N[lang];
+      document.getElementById("i18nBackLink").innerText = t.backLink;
+      document.getElementById("i18nTitle").innerText = t.title;
+      document.getElementById("i18nRangeFrom").innerText = t.rangeFrom;
+      document.getElementById("i18nRangeTo").innerText = t.rangeTo;
+      document.getElementById("i18nDownweightText").innerText = t.downweightEasy;
+      document.getElementById("i18nDownweightLabel").title = t.downweightEasyTitle;
+      document.getElementById("i18nModeLabel").innerText = t.modeLabel;
+      document.getElementById("i18nModeNormal").innerText = t.modeNormal;
+      document.getElementById("i18nModeSlow").innerText = t.modeSlow;
+      document.getElementById("i18nModeWrong").innerText = t.modeWrong;
+      document.getElementById("i18nSlowN").innerText = t.slowN;
+      document.getElementById("i18nGradN").innerText = t.gradN;
+      document.getElementById("i18nGradSuffix").innerText = t.gradSuffix;
+      document.getElementById("i18nExtraOpsBtn").innerText = t.extraOps;
+      document.getElementById("i18nMatrixTitle").innerText = t.matrixTitle;
+      document.getElementById("hovered-word-info").innerText = t.hoverPrompt;
+      document.getElementById("i18nLegendUnseen").innerText = t.legendUnseen;
+      document.getElementById("i18nLegendMastered").innerText = t.legendMastered;
+      document.getElementById("i18nLegendWrong").innerText = t.legendWrong;
+      document.getElementById("i18nLegendSlow").innerText = t.legendSlow;
+      document.getElementById("startBtn").innerText = t.startBtn;
+      document.getElementById("pauseBtn").innerText = t.pauseBtn;
+      document.getElementById("voiceBtn").innerText = t.voiceBtn;
+      document.getElementById("i18nSpeedChartTitle").innerText = t.speedChartTitle;
+      document.getElementById("i18nDailyHistoryTitle").innerText = t.dailyHistoryTitle;
+      document.getElementById("i18nResetBtn").innerText = t.resetBtn;
+
+      if (isPaused && problemEl.innerText === "Pauza" || problemEl.innerText === "Paused" || problemEl.innerText === "Pause") {
+        problemEl.innerText = t.pausedText;
+      } else if (problemEl.innerText === "Stlač Štart" || problemEl.innerText === "Press Start" || problemEl.innerText === "Drücke Start") {
+        problemEl.innerText = t.startPrompt;
+      }
+
+      updateStats();
+      displayDailyHistory();
+    }
+
+    // CONSTANTS & CONFIG
     const STORAGE_KEY = "math_trainer_adaptive_progress_v3";
     const DAILY_KEY = "math_trainer_daily_history_v3";
 
-    const REPEAT_SPACING_MAX = 4;      // Minimum spacing between repeats of same fact
-    const SLOW_FEATURED_SIZE = 5;      // Max number of slow/wrong facts in injection pool
-    const SLOW_FEATURED_EVERY = 5;     // Inject a slow/wrong fact every N turns
-    const SLOW_SPEED_MULTIPLIER = 1.8; // Fact is "slow" if avg_time > MULTIPLIER * mean_speed
-    const MAX_OUTLIER_TIME = 20;       // Max capped time per problem (seconds)
+    const REPEAT_SPACING_MAX = 4;
+    const SLOW_FEATURED_EVERY = 5;
+    const MAX_OUTLIER_TIME = 20;
 
     // STATE
-    let allFacts = [];                 // Full pool of active facts [{ key, num1, num2, op, answer, text }]
+    let allFacts = [];
     let factsByKey = {};
 
-    let stats = {};                    // stats[key] = { totalTime, attempts, countdown }
-    let wrongMap = {};                 // wrongMap[key] = true (struggling facts)
-    let matrixCount = {};              // matrixCount[key] in current Tetris cycle
-    let wrongPracticeCount = {};       // wrongPracticeCount[key]
+    let stats = {};
+    let wrongMap = {};
+    let matrixCount = {};
+    let wrongPracticeCount = {};
 
     let correctCount = 0;
     let incorrectCount = 0;
 
-    let speedSamples = [];             // Today's speeds for average
-    let recentTimes = [];              // Sliding window of recent problem speeds for canvas chart
-    let recentFacts = [];              // Anti-repetition buffer
+    let speedSamples = [];
+    let recentTimes = [];
+    let recentFacts = [];
 
     let currentFact = null;
     let lastFactKey = "";
@@ -674,7 +957,7 @@
     const successThresholdEl = document.getElementById("successThreshold");
     const practiceModeSelectEl = document.getElementById("practiceModeSelect");
 
-    // DISCRETE HEATMAP COLOR PALETTES
+    // COLOR PALETTES
     const TEAL_STEPS = [
       "hsl(174,70%,82%)",
       "hsl(174,70%,72%)",
@@ -713,6 +996,11 @@
         }
       }
     });
+
+    function toggleExtraOps() {
+      const drawer = document.getElementById("extraOpsDrawer");
+      drawer.style.display = drawer.style.display === "none" ? "block" : "none";
+    }
 
     // BUILD ACTIVE FACT POOL FROM SETTINGS
     function buildProblemPool() {
@@ -785,7 +1073,7 @@
         }
       }
 
-      // Fallback if none selected
+      // Fallback
       if (pool.length === 0) {
         document.getElementById("modeMul").checked = true;
         return buildProblemPool();
@@ -793,7 +1081,6 @@
 
       allFacts = pool;
 
-      // Ensure all active facts exist in stats and matrixCount
       allFacts.forEach(f => {
         if (!stats[f.key]) {
           stats[f.key] = { totalTime: 0, attempts: 0 };
@@ -816,7 +1103,9 @@
       document.getElementById("mulMin").value = min;
       document.getElementById("mulMax").value = max;
 
-      document.querySelectorAll(".preset-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".preset-btn").forEach(btn => {
+        if (btn.id && btn.id.startsWith("preset")) btn.classList.remove("active");
+      });
       if (min === 1 && max === 10) document.getElementById("preset1_10")?.classList.add("active");
       if (min === 1 && max === 5) document.getElementById("preset1_5")?.classList.add("active");
       if (min === 6 && max === 10) document.getElementById("preset6_10")?.classList.add("active");
@@ -825,7 +1114,9 @@
     }
 
     function onCustomRangeChange() {
-      document.querySelectorAll(".preset-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".preset-btn").forEach(btn => {
+        if (btn.id && btn.id.startsWith("preset")) btn.classList.remove("active");
+      });
       onSettingsChange();
     }
 
@@ -854,6 +1145,12 @@
       let saved = localStorage.getItem(STORAGE_KEY);
       let today = new Date().toLocaleDateString('en-CA');
 
+      // Load language preference
+      let savedLang = localStorage.getItem("math_trainer_lang");
+      if (savedLang && I18N[savedLang]) {
+        currentLang = savedLang;
+      }
+
       if (saved) {
         try {
           let data = JSON.parse(saved);
@@ -865,6 +1162,10 @@
           if (data.downweightEasy !== undefined) {
             let chk = document.getElementById("downweightEasy");
             if (chk) chk.checked = data.downweightEasy;
+          }
+          if (data.slowCount !== undefined) {
+            let sInp = document.getElementById("slowCountInput");
+            if (sInp) sInp.value = data.slowCount;
           }
 
           if (data.lastPlayedDate !== today) {
@@ -894,6 +1195,7 @@
         speedSamples: speedSamples,
         recentTimes: recentTimes,
         downweightEasy: document.getElementById("downweightEasy")?.checked ?? true,
+        slowCount: parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5,
         lastPlayedDate: new Date().toLocaleDateString('en-CA')
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -923,19 +1225,19 @@
     function displayDailyHistory() {
       let history = JSON.parse(localStorage.getItem(DAILY_KEY) || "{}");
       let lines = [];
+      const t = I18N[currentLang];
 
       for (let date in history) {
         let h = history[date];
-        lines.push(`📅 <b>${date}</b> &mdash; Vyriešené: ${h.solved || '-'} | Presnosť: <b>${h.accuracy}%</b> | Priem. čas: <b>${h.speed}s</b>`);
+        lines.push(`📅 <b>${date}</b> &mdash; ${h.solved || '-'} | <b>${h.accuracy}%</b> | <b>${h.speed}s</b>`);
       }
 
-      dailyHistoryEl.innerHTML =
-        "<b>📅 Denná história tréningu:</b><br>" +
-        (lines.length > 0 ? lines.join("<br>") : "Zatiaľ žiadne záznamy za predchádzajúce dni.");
+      dailyHistoryEl.innerHTML = (lines.length > 0 ? lines.join("<br>") : t.noHistory);
     }
 
     function resetProgress() {
-      if (!confirm("Naozaj chceš vynulovať celý štatistický pokrok?")) return;
+      const t = I18N[currentLang];
+      if (!confirm(t.resetConfirm)) return;
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(DAILY_KEY);
       location.reload();
@@ -946,7 +1248,6 @@
       if (allFacts.length === 0) return;
       const downweight = document.getElementById("downweightEasy")?.checked ?? true;
 
-      // If downweighting easy facts, non-easy facts determine cycle completion
       let targetFacts = allFacts;
       if (downweight) {
         let nonEasy = allFacts.filter(f => !isEasyFact(f));
@@ -966,27 +1267,83 @@
       tetrisCheck();
     }
 
+    // STATISTICAL CALCULATION: 80th PERCENTILE (EXCLUDING OUTLIERS)
+    function calculatePercentile80() {
+      // Outlier filtering: exclude pause times and distractions (> 15s or < 0.2s)
+      let samples = speedSamples.filter(t => typeof t === "number" && t >= 0.2 && t <= 15.0);
+
+      if (samples.length < 5) {
+        allFacts.forEach(f => {
+          let s = stats[f.key];
+          if (s && s.attempts > 0) {
+            let avg = s.totalTime / s.attempts;
+            if (avg >= 0.2 && avg <= 15.0) samples.push(avg);
+          }
+        });
+      }
+
+      if (samples.length < 3) {
+        return 3.0; // Default when little data
+      }
+
+      samples.sort((a, b) => a - b);
+
+      // Exclude top 5% extreme outliers if we have at least 10 samples
+      let effective = samples;
+      if (samples.length >= 10) {
+        let cutoff = Math.floor(samples.length * 0.95);
+        effective = samples.slice(0, cutoff);
+      }
+
+      let idx = (effective.length - 1) * 0.80;
+      let i0 = Math.floor(idx);
+      let frac = idx - i0;
+      let p80 = effective[i0] + (i0 + 1 < effective.length ? frac * (effective[i0 + 1] - effective[i0]) : 0);
+
+      return Math.max(1.2, p80);
+    }
+
+    // IDENTIFY N-SLOWEST FACTS FROM ALREADY MARKED AS DONE
+    function getSlowDoneFacts() {
+      let nTarget = parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5;
+      let p80 = calculatePercentile80();
+
+      let activeKeys = allFacts.map(f => f.key);
+      let wrongKeys = Object.keys(wrongMap).filter(k => activeKeys.includes(k));
+
+      let doneFacts = allFacts.filter(f => 
+        (matrixCount[f.key] || 0) >= 1 && 
+        !wrongKeys.includes(f.key) &&
+        stats[f.key] && 
+        stats[f.key].attempts > 0
+      );
+
+      let slowCandidates = doneFacts.filter(f => {
+        let avg = stats[f.key].totalTime / stats[f.key].attempts;
+        return avg > p80;
+      });
+
+      slowCandidates.sort((a, b) => {
+        let avgA = stats[a.key].totalTime / stats[a.key].attempts;
+        let avgB = stats[b.key].totalTime / stats[b.key].attempts;
+        return avgB - avgA;
+      });
+
+      return {
+        p80: p80,
+        slowFacts: slowCandidates.slice(0, nTarget),
+        allDoneSlowCount: slowCandidates.length
+      };
+    }
+
     // ADAPTIVE SELECTION ALGORITHM
     function chooseProblem() {
       let mode = practiceModeSelectEl.value;
       let activeKeys = allFacts.map(f => f.key);
       let wrongKeys = Object.keys(wrongMap).filter(k => activeKeys.includes(k));
 
-      // Calculate mean speed across all practiced facts
-      let practicedFacts = allFacts.filter(f => stats[f.key] && stats[f.key].attempts > 0);
-      let meanSpeed = 0;
-      if (practicedFacts.length > 0) {
-        let sum = practicedFacts.reduce((acc, f) => acc + stats[f.key].totalTime / stats[f.key].attempts, 0);
-        meanSpeed = sum / practicedFacts.length;
-      }
-      let slowThreshold = SLOW_SPEED_MULTIPLIER * (meanSpeed || 2.5);
-
-      // Identify slow facts (exceed threshold, not in wrongMap)
-      let slowKeys = practicedFacts
-        .filter(f => !wrongKeys.includes(f.key) && (stats[f.key].totalTime / stats[f.key].attempts) > slowThreshold)
-        .sort((a, b) => (stats[b.key].totalTime / stats[b.key].attempts) - (stats[a.key].totalTime / stats[a.key].attempts))
-        .map(f => f.key)
-        .slice(0, SLOW_FEATURED_SIZE);
+      let { p80, slowFacts } = getSlowDoneFacts();
+      let slowKeys = slowFacts.map(f => f.key);
 
       // Practice mode overrides
       if (mode === "wrong") {
@@ -1014,14 +1371,14 @@
 
       let pool;
       if (isInjectionTurn && (wrongKeys.length > 0 || slowKeys.length > 0)) {
-        // Injection turn: prioritize wrong, then slow
         pool = wrongKeys.length > 0 ? wrongKeys : slowKeys;
       } else if (wrongKeys.length > 0 && zeroCells.length === 0) {
         pool = wrongKeys;
+      } else if (slowKeys.length > 0 && zeroCells.length === 0) {
+        pool = slowKeys;
       } else if (zeroCells.length > 0) {
         pool = zeroCells;
       } else {
-        // Lowest matrix count facts
         let minCount = Math.min(...allFacts.map(f => matrixCount[f.key] || 0));
         pool = allFacts
           .filter(f => (matrixCount[f.key] || 0) === minCount && !wrongKeys.includes(f.key))
@@ -1042,14 +1399,13 @@
 
       const downweight = document.getElementById("downweightEasy")?.checked ?? true;
 
-      // Assign weight: 3.0 for wrongMap, 0.10 for easy facts (1*N or N*1), 1.0 for regular facts
       let weights = available.map(k => {
         let f = factsByKey[k];
         if (wrongMap[k] !== undefined) {
           return 3.0;
         }
         if (downweight && isEasyFact(f)) {
-          return 0.10; // ~10x lower probability
+          return 0.10;
         }
         return 1.0;
       });
@@ -1076,10 +1432,11 @@
     }
 
     function pauseGame() {
+      const t = I18N[currentLang];
       isPaused = true;
       document.getElementById("startBtn").style.opacity = "1";
       document.getElementById("pauseBtn").style.opacity = "0.7";
-      problemEl.innerText = "Pauza";
+      problemEl.innerText = t.pausedText;
       feedbackEl.innerText = "";
       highlightActiveCell();
     }
@@ -1118,6 +1475,7 @@
 
       let targetN = parseInt(successThresholdEl?.value || "4", 10);
       let key = currentFact.key;
+      const t = I18N[currentLang];
 
       if (!stats[key]) {
         stats[key] = { totalTime: 0, attempts: 0, countdown: targetN };
@@ -1144,7 +1502,6 @@
           correctCount++;
           matrixCountIncrement(key);
         } else {
-          // Decrement countdown for wrong word graduation
           if (stats[key].countdown === undefined) stats[key].countdown = targetN;
           stats[key].countdown -= 1;
 
@@ -1152,16 +1509,29 @@
             delete wrongMap[key];
             delete wrongPracticeCount[key];
             matrixCountIncrement(key);
-            feedbackEl.innerText = `Skvelé! Príklad ${currentFact.text} vyradený z chýb! 🎓`;
+            feedbackEl.innerText = t.graduatedFeedback(currentFact.text);
           } else {
             wrongPracticeCount[key] = (wrongPracticeCount[key] || 0) + 1;
-            feedbackEl.innerText = `Správne! 🎉 (zostáva ${stats[key].countdown}x)`;
+            feedbackEl.innerText = `${t.correctFeedback} (${stats[key].countdown}x ${t.remainingSuffix})`;
           }
         }
 
-        if (feedbackEl.innerText.indexOf("vyradený") === -1) {
-          feedbackEl.innerText = "Správne! 🎉";
+        if (feedbackEl.innerText.indexOf("!") === -1 && feedbackEl.innerText.indexOf("🎓") === -1) {
+          let p80Now = calculatePercentile80();
+          let wasSlow = stats[key].attempts > 1 && ((stats[key].totalTime - elapsed) / (stats[key].attempts - 1)) > p80Now;
+          let newAvg = stats[key].totalTime / stats[key].attempts;
+
+          if (wasSlow && newAvg <= p80Now) {
+            feedbackEl.innerText = t.speedImproveFeedback(currentFact.text, newAvg.toFixed(2), p80Now.toFixed(2));
+          } else if (wasSlow && elapsed <= p80Now) {
+            feedbackEl.innerText = t.speedQuickFeedback(elapsed.toFixed(2), p80Now.toFixed(2));
+          } else {
+            feedbackEl.innerText = t.correctFeedback;
+          }
+        } else if (feedbackEl.innerText === "") {
+          feedbackEl.innerText = t.correctFeedback;
         }
+
         feedbackEl.className = "correct";
 
         updateStats();
@@ -1180,7 +1550,7 @@
         wrongPracticeCount[key] = (wrongPracticeCount[key] || 0) + 1;
         incorrectCount++;
 
-        feedbackEl.innerText = `Skús znova ❌ (${currentFact.text} = ${currentFact.answer})`;
+        feedbackEl.innerText = `${t.wrongFeedback} (${currentFact.text} = ${currentFact.answer})`;
         feedbackEl.className = "wrong";
 
         updateStats();
@@ -1194,13 +1564,17 @@
 
     function speakCurrentProblem() {
       if (!currentFact) return;
+      const t = I18N[currentLang];
+      let words = t.voiceWords;
+
       let text = currentFact.text
-        .replace("×", "krát")
-        .replace("+", "plus")
-        .replace("−", "mínus")
-        .replace("÷", "delené");
+        .replace("×", words.mul)
+        .replace("+", words.add)
+        .replace("−", words.sub)
+        .replace("÷", words.div);
+
       let u = new SpeechSynthesisUtterance(text);
-      u.lang = "sk-SK";
+      u.lang = t.speechLang;
       speechSynthesis.cancel();
       speechSynthesis.speak(u);
     }
@@ -1209,13 +1583,14 @@
     function updateStats() {
       let total = correctCount + incorrectCount;
       let accuracy = total > 0 ? (correctCount / total * 100).toFixed(1) : 0;
+      const t = I18N[currentLang];
 
       let avgSpeed = speedSamples.length > 0
         ? (speedSamples.reduce((a, b) => a + b, 0) / speedSamples.length).toFixed(2)
         : "-";
 
       statsEl.textContent =
-        `Správne: ${correctCount} | Nesprávne: ${incorrectCount} | Presnosť: ${accuracy}% | Priem. čas: ${avgSpeed}s`;
+        `${t.statsCorrect}: ${correctCount} | ${t.statsWrong}: ${incorrectCount} | ${t.statsAcc}: ${accuracy}% | ${t.statsAvg}: ${avgSpeed}s`;
 
       displayWrongWords();
       displaySlowWords();
@@ -1226,42 +1601,38 @@
     function displayWrongWords() {
       let activeKeys = allFacts.map(f => f.key);
       let currentWrongKeys = Object.keys(wrongMap).filter(k => activeKeys.includes(k));
+      const t = I18N[currentLang];
 
       let tags = currentWrongKeys.map(k => {
         let remaining = stats[k]?.countdown ?? 0;
         let factText = factsByKey[k]?.text || k;
-        return `<span class="tag-wrong">${factText} [${remaining}x zostáva]</span>`;
+        return `<span class="tag-wrong">${factText} [${remaining}x]</span>`;
       });
 
       wrongWordsEl.innerHTML =
-        "<b>❌ Chybné príklady (precvičujú sa prioritne):</b>" +
-        (tags.length > 0 ? tags.join(" ") : "<span style='color: var(--text-muted);'>Žiadne chybné príklady! Výborne!</span>");
+        `<b>${t.wrongHeader}</b><br>` +
+        (tags.length > 0 ? tags.join(" ") : `<span style='color: var(--text-muted); font-size:0.8rem;'>${t.noWrongs}</span>`);
     }
 
     function displaySlowWords() {
-      let practiced = allFacts.filter(f => stats[f.key] && stats[f.key].attempts > 0);
-      practiced.sort((a, b) => {
-        let avgA = stats[a.key].totalTime / stats[a.key].attempts;
-        let avgB = stats[b.key].totalTime / stats[b.key].attempts;
-        return avgB - avgA;
-      });
+      let { p80, slowFacts } = getSlowDoneFacts();
+      const t = I18N[currentLang];
 
-      let tags = practiced.slice(0, 8).map(f => {
+      let tags = slowFacts.map(f => {
         let avg = (stats[f.key].totalTime / stats[f.key].attempts).toFixed(2);
-        return `<span class="tag-slow">${f.text} (${avg}s)</span>`;
+        return `<span class="tag-slow">${f.text} (${avg}s &gt; ${p80.toFixed(2)}s)</span>`;
       });
 
       slowWordsEl.innerHTML =
-        "<b>🐢 Najpomalšie príklady:</b>" +
-        (tags.length > 0 ? tags.join(" ") : "<span style='color: var(--text-muted);'>Zatiaľ žiadne dáta.</span>");
+        `<b>${t.slowHeader} (${t.p80Boundary}: ${p80.toFixed(2)}s):</b><br>` +
+        (tags.length > 0 
+          ? tags.join(" ")
+          : `<span style='color: var(--success); font-weight:600; font-size:0.8rem;'>${t.noSlow}</span>`);
     }
 
     // MATRIX HEATMAP GRID LAYOUT & RENDERING
     function calculateOptimalGrid(N) {
-      let bestC = N;
-      let bestR = 1;
-      let minUnused = N;
-      let bestRatioDiff = Infinity;
+      let bestC = N, bestR = 1, minUnused = N, bestRatioDiff = Infinity;
       const targetRatio = 1.33;
 
       for (let r = 1; r <= N; r++) {
@@ -1271,16 +1642,12 @@
         if (ratio < 0.4 || ratio > 2.8) continue;
 
         if (unused < minUnused) {
-          minUnused = unused;
-          bestC = c;
-          bestR = r;
+          minUnused = unused; bestC = c; bestR = r;
           bestRatioDiff = Math.abs(ratio - targetRatio);
         } else if (unused === minUnused) {
           let ratioDiff = Math.abs(ratio - targetRatio);
           if (ratioDiff < bestRatioDiff) {
-            bestC = c;
-            bestR = r;
-            bestRatioDiff = ratioDiff;
+            bestC = c; bestR = r; bestRatioDiff = ratioDiff;
           }
         }
       }
@@ -1302,7 +1669,7 @@
       }
     }
 
-    function createMatrixCell(fact, key) {
+    function createMatrixCell(fact, key, isSlow, p80) {
       let cell = document.createElement("div");
       cell.className = "matrix-cell";
       cell.setAttribute("data-key", key);
@@ -1317,36 +1684,47 @@
       let avgTime = rawAtt > 0 ? (stats[key].totalTime / rawAtt).toFixed(2) : "-";
       let isWrong = wrongMap[key] !== undefined;
       let remaining = isWrong ? (stats[key]?.countdown ?? 0) : 0;
+      const t = I18N[currentLang];
 
       if (isWrong) {
-        cell.title = `Príklad: ${fact.text} = ${fact.answer}\n❌ Nesprávne — zostáva: ${remaining}x správne\nPokusy: ${rawAtt}x | Priem. čas: ${avgTime}s`;
+        cell.title = `${fact.text} = ${fact.answer}\n❌ ${t.statsWrong}: [${remaining}x ${t.remainingSuffix}]\n${rawAtt}x | ${avgTime}s`;
         let stepIndex = Math.min(5, remaining - 1);
         cell.style.backgroundColor = RED_STEPS[Math.max(0, stepIndex)];
       } else if (mc === 0) {
-        cell.title = `Príklad: ${fact.text} = ${fact.answer}\nNeprecvičené v tomto cykle\nPokusy: ${rawAtt}x | Priem. čas: ${avgTime}s`;
+        cell.title = `${fact.text} = ${fact.answer}\n${t.legendUnseen}\n${rawAtt}x | ${avgTime}s`;
         cell.style.backgroundColor = "var(--border-strong)";
       } else {
-        cell.title = `Príklad: ${fact.text} = ${fact.answer}\nCyklus: ${mc}x | Pokusy: ${rawAtt}x | Priem. čas: ${avgTime}s`;
+        cell.title = `${fact.text} = ${fact.answer}\n${t.legendMastered}: ${mc}x | ${rawAtt}x | ${avgTime}s`;
+        if (isSlow) {
+          cell.title += `\n🐢 ${avgTime}s (≤ ${p80.toFixed(2)}s)`;
+        }
         let stepIndex = Math.min(5, mc - 1);
         cell.style.backgroundColor = TEAL_STEPS[stepIndex];
+      }
+
+      if (isSlow && !isWrong && mc > 0) {
+        cell.classList.add("is-slow");
       }
 
       cell.addEventListener("mouseenter", () => {
         let textWithAns = `<b>${fact.text} = ${fact.answer}</b>`;
         if (isWrong) {
           document.getElementById("hovered-word-info").innerHTML =
-            `${textWithAns} <span style='color:var(--danger);'>[❌ zostáva: ${remaining}x]</span> &mdash; Pokusy: ${rawAtt}x, Priem: ${avgTime}s`;
+            `${textWithAns} <span style='color:var(--danger);'>[❌ ${remaining}x]</span> &mdash; ${rawAtt}x, ${avgTime}s`;
         } else if (mc === 0) {
           document.getElementById("hovered-word-info").innerHTML =
-            `${textWithAns} &mdash; Neprecvičené v cykle (Pokusy: ${rawAtt}x, Priem: ${avgTime}s)`;
+            `${textWithAns} &mdash; ${t.legendUnseen} (${rawAtt}x, ${avgTime}s)`;
+        } else if (isSlow) {
+          document.getElementById("hovered-word-info").innerHTML =
+            `${textWithAns} <span style='color:#f59e0b;'>[🐢 ${avgTime}s &gt; ≤${p80.toFixed(2)}s]</span> &mdash; ${mc}x`;
         } else {
           document.getElementById("hovered-word-info").innerHTML =
-            `${textWithAns} &mdash; Cyklus: ${mc}x | Pokusy: ${rawAtt}x, Priem: ${avgTime}s`;
+            `${textWithAns} &mdash; ${mc}x | ${rawAtt}x, ${avgTime}s`;
         }
       });
 
       cell.addEventListener("mouseleave", () => {
-        document.getElementById("hovered-word-info").innerHTML = "Prejdi myšou po tabuľke...";
+        document.getElementById("hovered-word-info").innerHTML = t.hoverPrompt;
       });
 
       // Click to practice this specific fact
@@ -1372,7 +1750,9 @@
 
       container.innerHTML = "";
 
-      // Check if active pool is pure multiplication table (min..max x min..max)
+      let { p80, slowFacts } = getSlowDoneFacts();
+      let slowKeysSet = new Set(slowFacts.map(f => f.key));
+
       let isPureMul = allFacts.every(f => f.op === "×");
       let minA = isPureMul ? Math.min(...allFacts.map(f => f.num1)) : 0;
       let maxA = isPureMul ? Math.max(...allFacts.map(f => f.num1)) : 0;
@@ -1382,19 +1762,16 @@
       let countB = maxB - minB + 1;
 
       if (isPureMul && (countA * countB === allFacts.length) && countB <= 15) {
-        // Render 2D Pythagorean Table
         container.style.display = "grid";
         container.style.gridTemplateColumns = `repeat(${countB + 1}, auto)`;
-        container.style.gap = "2px";
+        container.style.gap = "1.5px";
         container.style.justifyContent = "center";
 
-        // Top-left corner header
         let corner = document.createElement("div");
         corner.className = "matrix-hdr";
         corner.textContent = "×";
         container.appendChild(corner);
 
-        // Column headers (minB .. maxB)
         for (let b = minB; b <= maxB; b++) {
           let hdr = document.createElement("div");
           hdr.className = "matrix-hdr";
@@ -1402,7 +1779,6 @@
           container.appendChild(hdr);
         }
 
-        // Rows (minA .. maxA)
         for (let a = minA; a <= maxA; a++) {
           let rowHdr = document.createElement("div");
           rowHdr.className = "matrix-hdr";
@@ -1412,21 +1788,20 @@
           for (let b = minB; b <= maxB; b++) {
             let key = `${a}×${b}`;
             let fact = factsByKey[key];
-            let cell = createMatrixCell(fact, key);
+            let cell = createMatrixCell(fact, key, slowKeysSet.has(key), p80);
             container.appendChild(cell);
           }
         }
       } else {
-        // Fallback for mixed operations / irregular pools
         let N = allFacts.length;
         let grid = calculateOptimalGrid(N);
         container.style.display = "grid";
         container.style.gridTemplateColumns = `repeat(${grid.cols}, 1fr)`;
-        container.style.gap = "3px";
+        container.style.gap = "2px";
         container.style.justifyContent = "center";
 
         allFacts.forEach(fact => {
-          let cell = createMatrixCell(fact, fact.key);
+          let cell = createMatrixCell(fact, fact.key, slowKeysSet.has(fact.key), p80);
           container.appendChild(cell);
         });
 
@@ -1444,13 +1819,14 @@
       highlightActiveCell();
     }
 
-    // THEME-AWARE SPEED CANVAS CHART
+    // THEME-AWARE COMPACT SPEED CANVAS CHART
     function drawChart() {
       const canvas = document.getElementById("speedChart");
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
       const w = canvas.width;
       const h = canvas.height;
+      const t = I18N[currentLang];
 
       ctx.clearRect(0, 0, w, h);
 
@@ -1460,44 +1836,43 @@
       const colorGrid = isDark ? "rgba(255, 255, 255, 0.08)" : "#e2e8f0";
       const colorAxis = isDark ? "#475569" : "#cbd5e1";
       const colorText = isDark ? "#94a3b8" : "#64748b";
-      const colorTitle = isDark ? "#f1f5f9" : "#0f172a";
       const colorLine = isDark ? "#38bdf8" : "#2563eb";
       const colorPoint = isDark ? "#60a5fa" : "#1d4ed8";
 
       if (recentTimes.length < 2) {
-        ctx.font = "14px system-ui, sans-serif";
+        ctx.font = "11px system-ui, sans-serif";
         ctx.fillStyle = colorText;
         ctx.textAlign = "center";
-        ctx.fillText("Vyrieš aspoň 2 príklady, aby sa zobrazil graf rýchlosti!", w / 2, h / 2);
+        ctx.fillText(t.chartPlaceholder, w / 2, h / 2);
         return;
       }
 
       let maxTime = Math.max(...recentTimes);
       maxTime = Math.max(maxTime, 3);
 
-      let padL = 45;
-      let padR = 20;
-      let padT = 20;
-      let padB = 40;
+      let padL = 34;
+      let padR = 10;
+      let padT = 10;
+      let padB = 18;
 
       let graphW = w - padL - padR;
       let graphH = h - padT - padB;
       let xStep = graphW / (recentTimes.length - 1);
 
-      // Grid & Y labels
+      // Grid lines & labels
       ctx.strokeStyle = colorGrid;
       ctx.fillStyle = colorText;
-      ctx.font = "11px system-ui, sans-serif";
+      ctx.font = "9px system-ui, sans-serif";
       ctx.textAlign = "right";
       ctx.textBaseline = "middle";
 
       ctx.beginPath();
-      for (let i = 0; i <= 3; i++) {
-        let y = padT + graphH - (i / 3) * graphH;
+      for (let i = 0; i <= 2; i++) {
+        let y = padT + graphH - (i / 2) * graphH;
         ctx.moveTo(padL, y);
         ctx.lineTo(w - padR, y);
-        let val = (i / 3) * maxTime;
-        ctx.fillText(val.toFixed(1) + "s", padL - 8, y);
+        let val = (i / 2) * maxTime;
+        ctx.fillText(val.toFixed(1) + "s", padL - 4, y);
       }
       ctx.stroke();
 
@@ -1510,25 +1885,9 @@
       ctx.lineTo(w - padR, h - padB);
       ctx.stroke();
 
-      // Y-axis label
-      ctx.save();
-      ctx.translate(14, padT + graphH / 2);
-      ctx.rotate(-Math.PI / 2);
-      ctx.textAlign = "center";
-      ctx.fillStyle = colorTitle;
-      ctx.font = "bold 11px system-ui, sans-serif";
-      ctx.fillText("Čas (s)", 0, 0);
-      ctx.restore();
-
-      // X-axis label
-      ctx.textAlign = "center";
-      ctx.fillStyle = colorTitle;
-      ctx.font = "bold 11px system-ui, sans-serif";
-      ctx.fillText("Posledné riešené príklady", padL + graphW / 2, h - 10);
-
       // Data line
       ctx.strokeStyle = colorLine;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2;
       ctx.beginPath();
       for (let i = 0; i < recentTimes.length; i++) {
         let val = recentTimes[i];
@@ -1546,7 +1905,7 @@
         let x = padL + i * xStep;
         let y = padT + graphH - ((val / maxTime) * graphH);
         ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.arc(x, y, 2.5, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -1554,11 +1913,11 @@
     // INIT
     window.addEventListener("DOMContentLoaded", () => {
       loadProgress();
+      setLanguage(currentLang);
       buildProblemPool();
       updateStats();
       displayDailyHistory();
 
-      // Re-draw chart on theme change
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawChart);
       document.querySelectorAll(".theme-toggle-btn").forEach(btn => {
         btn.addEventListener("click", () => setTimeout(drawChart, 50));
