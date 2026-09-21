@@ -562,12 +562,15 @@
         </select>
       </div>
 
-      <!-- N-Slowest & Success Threshold -->
+      <!-- N-Slowest, Auto-Wrong Delay & Success Threshold -->
       <div class="toolbar-group">
         <span id="i18nSlowN">Pomalé N:</span>
         <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
         <span id="i18nSlowRepeat">Opakovať (2–N):</span>
         <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)">
+        <span id="i18nWrongDelay">Chyba po:</span>
+        <input type="number" id="wrongDelayInput" class="toolbar-input" value="3" min="1" max="10" onchange="onSettingsChange()" title="Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)">
+        <span id="i18nWrongDelaySuffix">s</span>
         <span id="i18nGradN">Vyradenie:</span>
         <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20">
         <span id="i18nGradSuffix">x</span>
@@ -742,6 +745,9 @@
         slowN: "Pomalé N:",
         slowRepeat: "Opakovať (2–N):",
         slowRepeatTitle: "V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)",
+        wrongDelay: "Chyba po:",
+        wrongDelaySuffix: "s",
+        wrongDelayTitle: "Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)",
         gradN: "Vyradenie:",
         gradSuffix: "x",
         extraOps: "⚙️ + − ÷",
@@ -794,6 +800,9 @@
         slowN: "Slow N:",
         slowRepeat: "Repeat (2–N):",
         slowRepeatTitle: "Every 2 to N problems, repeat one of the slowest problems (randomly 2 to N, default 5)",
+        wrongDelay: "Wrong after:",
+        wrongDelaySuffix: "s",
+        wrongDelayTitle: "If answer has expected digits and is wrong, mark wrong after N seconds and advance (default 3s)",
         gradN: "Graduate:",
         gradSuffix: "x",
         extraOps: "⚙️ + − ÷",
@@ -846,6 +855,9 @@
         slowN: "Langsam N:",
         slowRepeat: "Wiederholen (2–N):",
         slowRepeatTitle: "Alle 2 bis N Aufgaben eine der langsamsten Aufgaben wiederholen (zufällig 2 bis N, Standard 5)",
+        wrongDelay: "Fehler nach:",
+        wrongDelaySuffix: "s",
+        wrongDelayTitle: "Wenn die Antwort die erwartete Ziffernanzahl hat und falsch ist, nach N Sekunden als Fehler werten und weitergehen (Standard 3s)",
         gradN: "Abschluss:",
         gradSuffix: "x",
         extraOps: "⚙️ + − ÷",
@@ -914,6 +926,9 @@
       document.getElementById("i18nSlowN").innerText = t.slowN;
       document.getElementById("i18nSlowRepeat").innerText = t.slowRepeat;
       document.getElementById("slowIntervalInput").title = t.slowRepeatTitle;
+      document.getElementById("i18nWrongDelay").innerText = t.wrongDelay;
+      document.getElementById("i18nWrongDelaySuffix").innerText = t.wrongDelaySuffix;
+      document.getElementById("wrongDelayInput").title = t.wrongDelayTitle;
       document.getElementById("i18nGradN").innerText = t.gradN;
       document.getElementById("i18nGradSuffix").innerText = t.gradSuffix;
       document.getElementById("i18nExtraOpsBtn").innerText = t.extraOps;
@@ -1013,20 +1028,48 @@
     ];
 
     // KEYDOWN & REAL-TIME INPUT LISTENERS (Auto-check as digits are typed)
+    let wrongTimer = null;
+
+    function clearWrongTimer() {
+      if (wrongTimer) {
+        clearTimeout(wrongTimer);
+        wrongTimer = null;
+      }
+    }
+
     answerEl.addEventListener("keydown", function(e) {
       if (e.key === "Enter") {
         e.preventDefault();
+        clearWrongTimer();
         checkAnswer();
       }
     });
 
     answerEl.addEventListener("input", function() {
       if (isPaused || !currentFact || isChecking) return;
+      clearWrongTimer();
+
       let val = answerEl.value.trim();
       if (val === "") return;
       let user = parseInt(val, 10);
-      if (!isNaN(user) && user === currentFact.answer) {
+      if (isNaN(user)) return;
+
+      if (user === currentFact.answer) {
         checkAnswer();
+        return;
+      }
+
+      // Check if user has entered the expected number of digits and answer is incorrect
+      let expectedDigits = String(currentFact.answer).length;
+      if (val.length >= expectedDigits) {
+        let delaySec = parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10);
+        if (isNaN(delaySec) || delaySec < 1) delaySec = 3;
+
+        wrongTimer = setTimeout(() => {
+          if (!isPaused && currentFact && !isChecking) {
+            checkAnswer();
+          }
+        }, delaySec * 1000);
       }
     });
 
@@ -1221,6 +1264,10 @@
             let sInt = document.getElementById("slowIntervalInput");
             if (sInt) sInt.value = data.slowInterval;
           }
+          if (data.wrongDelay !== undefined) {
+            let wDel = document.getElementById("wrongDelayInput");
+            if (wDel) wDel.value = data.wrongDelay;
+          }
 
           if (data.lastPlayedDate !== today) {
             correctCount = 0;
@@ -1251,6 +1298,7 @@
         downweightEasy: document.getElementById("downweightEasy")?.checked ?? true,
         slowCount: parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5,
         slowInterval: parseInt(document.getElementById("slowIntervalInput")?.value || "5", 10) || 5,
+        wrongDelay: parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10) || 3,
         lastPlayedDate: new Date().toLocaleDateString('en-CA')
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -1496,11 +1544,13 @@
       document.getElementById("pauseBtn").style.opacity = "0.7";
       problemEl.innerText = t.pausedText;
       feedbackEl.innerText = "";
+      clearWrongTimer();
       highlightActiveCell();
     }
 
     function newProblem() {
       if (isPaused) return;
+      clearWrongTimer();
 
       currentFact = chooseProblem();
       if (!currentFact) return;
@@ -1607,6 +1657,9 @@
 
       } else {
         // INCORRECT ANSWER: Update time and trigger mistake tracking
+        isChecking = true;
+        clearWrongTimer();
+
         stats[key].lastTime = elapsed;
         stats[key].times = stats[key].times || [];
         stats[key].times.push(elapsed);
@@ -1626,9 +1679,11 @@
         saveProgress();
         saveDailyHistory();
 
-        answerEl.value = "";
-        answerEl.focus();
-        isChecking = false;
+        // Automatically move to the next problem after showing the correct answer for 1.3 seconds
+        setTimeout(() => {
+          isChecking = false;
+          newProblem();
+        }, 1300);
       }
     }
 
