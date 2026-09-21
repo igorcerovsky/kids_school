@@ -86,6 +86,22 @@
       color: var(--text-secondary);
     }
 
+    .preset-btn {
+      font-size: 0.82rem;
+      padding: 5px 11px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .preset-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 6px var(--primary-subtle);
+    }
+
     /* Top Split Layout: Heatmap Matrix + Active Problem Stage */
     .top-panel-container {
       display: flex;
@@ -96,16 +112,16 @@
     }
 
     .left-panel {
-      flex: 0 0 280px;
+      flex: 0 0 300px;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
       background: var(--bg-subtle);
       border-radius: var(--radius-lg);
-      padding: 18px 14px;
+      padding: 16px 12px;
       border: 1px solid var(--border);
-      min-height: 380px;
+      min-height: 410px;
     }
 
     .right-panel {
@@ -126,25 +142,61 @@
     .word-matrix {
       background: transparent;
       padding: 4px;
-      margin: 8px 0 auto;
-      max-height: 250px;
+      margin: 6px 0 auto;
+      max-height: 290px;
+      overflow-x: auto;
       overflow-y: auto;
       width: 100%;
     }
 
+    .matrix-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      width: 21px;
+      height: 21px;
+      border-radius: 3px;
+      background: transparent;
+      user-select: none;
+    }
+
     .matrix-cell {
-      width: 16px;
-      height: 16px;
+      width: 21px;
+      height: 21px;
       border-radius: 3px;
       background-color: var(--border-strong);
       transition: all 0.15s ease;
       cursor: pointer;
+      box-sizing: border-box;
+      position: relative;
     }
 
     .matrix-cell:hover {
-      transform: scale(1.4);
+      transform: scale(1.38);
       z-index: 10;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    @keyframes activePulse {
+      0%, 100% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 2px var(--primary), 0 0 8px var(--primary);
+        z-index: 5;
+      }
+      50% {
+        transform: scale(1.03);
+        box-shadow: 0 0 0 3px var(--primary), 0 0 14px var(--primary);
+        z-index: 5;
+      }
+    }
+
+    .matrix-cell.active-target {
+      animation: activePulse 1.5s infinite ease-in-out;
+      border: 1.5px solid #ffffff !important;
+      z-index: 4;
     }
 
     #hovered-word-info {
@@ -375,62 +427,43 @@
 
       <!-- Operations & Range Settings Card -->
       <section class="card-panel">
-        <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 2px;">
-          ⚙️ Nastavenie operácií a rozsahov
-        </h2>
-
-        <div class="modes-grid">
-          <div class="mode-item">
-            <label class="mode-label">
-              <input type="checkbox" id="modeMul" checked onchange="onSettingsChange()">
-              <span>✖ Násobenie</span>
-            </label>
-            <div class="range-inputs">
-              <span>Od</span>
-              <input type="number" id="mulMin" value="1" onchange="onSettingsChange()">
-              <span>do</span>
-              <input type="number" id="mulMax" value="10" onchange="onSettingsChange()">
-            </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin: 0; display: flex; align-items: center; gap: 8px;">
+              ✖️ Malá násobilka
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 2px 0 0 0;">
+              Adaptívny trenažér s 2D farebnou tabuľkou zvládnutia a prioritným precvičovaním chýb.
+            </p>
           </div>
 
-          <div class="mode-item">
-            <label class="mode-label">
-              <input type="checkbox" id="modeAdd" onchange="onSettingsChange()">
-              <span>➕ Sčítanie</span>
-            </label>
-            <div class="range-inputs">
-              <span>Od</span>
-              <input type="number" id="addMin" value="1" onchange="onSettingsChange()">
-              <span>do</span>
-              <input type="number" id="addMax" value="20" onchange="onSettingsChange()">
-            </div>
+          <!-- Quick Presets -->
+          <div class="preset-group" style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary btn-sm preset-btn active" id="preset1_10" onclick="setMultiplyPreset(1, 10)">
+              1 – 10 (Celá)
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm preset-btn" id="preset1_5" onclick="setMultiplyPreset(1, 5)">
+              1 – 5 (Základ)
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm preset-btn" id="preset6_10" onclick="setMultiplyPreset(6, 10)">
+              6 – 10 (Ťažšie)
+            </button>
+          </div>
+        </div>
+
+        <!-- Multiplication Range & Downweight Easy Toggle -->
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 12px 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius-md);">
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 600; color: var(--text);">
+            <span>Rozsah čísel: od</span>
+            <input type="number" id="mulMin" value="1" min="1" max="20" onchange="onCustomRangeChange()" style="width: 52px; text-align: center; padding: 4px; border-radius: var(--radius-sm);">
+            <span>do</span>
+            <input type="number" id="mulMax" value="10" min="1" max="20" onchange="onCustomRangeChange()" style="width: 52px; text-align: center; padding: 4px; border-radius: var(--radius-sm);">
           </div>
 
-          <div class="mode-item">
-            <label class="mode-label">
-              <input type="checkbox" id="modeSub" onchange="onSettingsChange()">
-              <span>➖ Odčítanie</span>
-            </label>
-            <div class="range-inputs">
-              <span>Od</span>
-              <input type="number" id="subMin" value="1" onchange="onSettingsChange()">
-              <span>do</span>
-              <input type="number" id="subMax" value="20" onchange="onSettingsChange()">
-            </div>
-          </div>
-
-          <div class="mode-item">
-            <label class="mode-label">
-              <input type="checkbox" id="modeDiv" onchange="onSettingsChange()">
-              <span>➗ Delenie</span>
-            </label>
-            <div class="range-inputs">
-              <span>Od</span>
-              <input type="number" id="divMin" value="1" onchange="onSettingsChange()">
-              <span>do</span>
-              <input type="number" id="divMax" value="10" onchange="onSettingsChange()">
-            </div>
-          </div>
+          <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; color: var(--text); cursor: pointer;">
+            <input type="checkbox" id="downweightEasy" checked onchange="saveProgress()" style="width: 17px; height: 17px; accent-color: var(--primary); cursor: pointer;">
+            <span>📉 Znížiť pravdepodobnosť ľahkých príkladov (1 × N)</span>
+          </label>
         </div>
 
         <div class="practice-controls-row">
@@ -445,10 +478,61 @@
 
           <div class="control-item">
             <label for="successThreshold"><b>Vyradenie po:</b></label>
-            <input type="number" id="successThreshold" value="4" min="1" max="20" style="width: 54px; text-align: center;">
+            <input type="number" id="successThreshold" value="4" min="1" max="20" style="width: 52px; text-align: center;">
             <span>úspechoch</span>
           </div>
         </div>
+
+        <!-- Secondary Collapsible Drawer for Other Operations -->
+        <details style="margin-top: 14px; font-size: 0.88rem; color: var(--text-secondary);">
+          <summary style="cursor: pointer; font-weight: 600; padding: 4px 0; user-select: none;">
+            ⚙️ Ďalšie operácie (sčítanie, odčítanie, delenie)
+          </summary>
+          <div class="modes-grid" style="margin-top: 10px;">
+            <div class="mode-item">
+              <label class="mode-label">
+                <input type="checkbox" id="modeMul" checked onchange="onSettingsChange()">
+                <span>✖ Násobenie</span>
+              </label>
+            </div>
+            <div class="mode-item">
+              <label class="mode-label">
+                <input type="checkbox" id="modeAdd" onchange="onSettingsChange()">
+                <span>➕ Sčítanie</span>
+              </label>
+              <div class="range-inputs">
+                <span>Od</span>
+                <input type="number" id="addMin" value="1" onchange="onSettingsChange()">
+                <span>do</span>
+                <input type="number" id="addMax" value="20" onchange="onSettingsChange()">
+              </div>
+            </div>
+            <div class="mode-item">
+              <label class="mode-label">
+                <input type="checkbox" id="modeSub" onchange="onSettingsChange()">
+                <span>➖ Odčítanie</span>
+              </label>
+              <div class="range-inputs">
+                <span>Od</span>
+                <input type="number" id="subMin" value="1" onchange="onSettingsChange()">
+                <span>do</span>
+                <input type="number" id="subMax" value="20" onchange="onSettingsChange()">
+              </div>
+            </div>
+            <div class="mode-item">
+              <label class="mode-label">
+                <input type="checkbox" id="modeDiv" onchange="onSettingsChange()">
+                <span>➗ Delenie</span>
+              </label>
+              <div class="range-inputs">
+                <span>Od</span>
+                <input type="number" id="divMin" value="1" onchange="onSettingsChange()">
+                <span>do</span>
+                <input type="number" id="divMax" value="10" onchange="onSettingsChange()">
+              </div>
+            </div>
+          </div>
+        </details>
       </section>
 
       <!-- Top Split Stage: Heatmap Matrix + Active Problem Area -->
@@ -457,10 +541,10 @@
         <!-- Left Heatmap Matrix -->
         <div class="left-panel">
           <div style="font-weight: 800; font-size: 15px; margin-bottom: 6px; color: var(--text); text-align: center;">
-            📊 Pokrok príkladov
+            📊 Mriežka násobilky
           </div>
           <div id="wordMatrix" class="word-matrix"></div>
-          <div id="hovered-word-info">Prejdi myšou po mriežke...</div>
+          <div id="hovered-word-info">Prejdi myšou po tabuľke...</div>
 
           <div class="matrix-legend">
             <div class="legend-row">
@@ -722,6 +806,29 @@
       renderMatrix();
     }
 
+    // PRESET BUTTONS & SETTINGS HANDLERS
+    function setMultiplyPreset(min, max) {
+      document.getElementById("modeMul").checked = true;
+      document.getElementById("modeAdd").checked = false;
+      document.getElementById("modeSub").checked = false;
+      document.getElementById("modeDiv").checked = false;
+
+      document.getElementById("mulMin").value = min;
+      document.getElementById("mulMax").value = max;
+
+      document.querySelectorAll(".preset-btn").forEach(btn => btn.classList.remove("active"));
+      if (min === 1 && max === 10) document.getElementById("preset1_10")?.classList.add("active");
+      if (min === 1 && max === 5) document.getElementById("preset1_5")?.classList.add("active");
+      if (min === 6 && max === 10) document.getElementById("preset6_10")?.classList.add("active");
+
+      onSettingsChange();
+    }
+
+    function onCustomRangeChange() {
+      document.querySelectorAll(".preset-btn").forEach(btn => btn.classList.remove("active"));
+      onSettingsChange();
+    }
+
     function onSettingsChange() {
       buildProblemPool();
       saveProgress();
@@ -736,6 +843,12 @@
       }
     }
 
+    // HELPER: Identify easy multiplication facts (1 * N or N * 1)
+    function isEasyFact(fact) {
+      if (!fact) return false;
+      return fact.op === "×" && (fact.num1 === 1 || fact.num2 === 1);
+    }
+
     // STORAGE: LOAD & SAVE
     function loadProgress() {
       let saved = localStorage.getItem(STORAGE_KEY);
@@ -748,6 +861,11 @@
           wrongMap = data.wrongMap || {};
           matrixCount = data.matrixCount || {};
           wrongPracticeCount = data.wrongPracticeCount || {};
+
+          if (data.downweightEasy !== undefined) {
+            let chk = document.getElementById("downweightEasy");
+            if (chk) chk.checked = data.downweightEasy;
+          }
 
           if (data.lastPlayedDate !== today) {
             correctCount = 0;
@@ -775,6 +893,7 @@
         incorrectCount: incorrectCount,
         speedSamples: speedSamples,
         recentTimes: recentTimes,
+        downweightEasy: document.getElementById("downweightEasy")?.checked ?? true,
         lastPlayedDate: new Date().toLocaleDateString('en-CA')
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -825,7 +944,16 @@
     // TETRIS COVERAGE CYCLE
     function tetrisCheck() {
       if (allFacts.length === 0) return;
-      let allFilled = allFacts.every(f => (matrixCount[f.key] || 0) >= 1);
+      const downweight = document.getElementById("downweightEasy")?.checked ?? true;
+
+      // If downweighting easy facts, non-easy facts determine cycle completion
+      let targetFacts = allFacts;
+      if (downweight) {
+        let nonEasy = allFacts.filter(f => !isEasyFact(f));
+        if (nonEasy.length > 0) targetFacts = nonEasy;
+      }
+
+      let allFilled = targetFacts.every(f => (matrixCount[f.key] || 0) >= 1);
       if (allFilled) {
         allFacts.forEach(f => {
           matrixCount[f.key] = Math.max(0, (matrixCount[f.key] || 0) - 1);
@@ -863,13 +991,13 @@
       // Practice mode overrides
       if (mode === "wrong") {
         if (wrongKeys.length > 0) {
-          let chosen = pickWithSpacing(wrongKeys);
+          let chosen = pickWeightedWithSpacing(wrongKeys);
           return factsByKey[chosen];
         }
       } else if (mode === "slow") {
         let pool = slowKeys.length > 0 ? slowKeys : wrongKeys;
         if (pool.length > 0) {
-          let chosen = pickWithSpacing(pool);
+          let chosen = pickWeightedWithSpacing(pool);
           slowModeForced = true;
           return factsByKey[chosen];
         }
@@ -901,16 +1029,41 @@
         if (pool.length === 0) pool = activeKeys;
       }
 
-      let chosenKey = pickWithSpacing(pool);
+      let chosenKey = pickWeightedWithSpacing(pool);
       return factsByKey[chosenKey] || allFacts[0];
     }
 
-    function pickWithSpacing(keys) {
+    // WEIGHTED RANDOM PICK WITH ANTI-REPEAT BUFFER
+    function pickWeightedWithSpacing(keys) {
       if (!keys || keys.length === 0) return allFacts[0]?.key;
       let available = keys.filter(k => k !== lastFactKey && !recentFacts.slice(-3).includes(k));
       if (available.length === 0) available = keys.filter(k => k !== lastFactKey);
       if (available.length === 0) available = keys;
-      return available[Math.floor(Math.random() * available.length)];
+
+      const downweight = document.getElementById("downweightEasy")?.checked ?? true;
+
+      // Assign weight: 3.0 for wrongMap, 0.10 for easy facts (1*N or N*1), 1.0 for regular facts
+      let weights = available.map(k => {
+        let f = factsByKey[k];
+        if (wrongMap[k] !== undefined) {
+          return 3.0;
+        }
+        if (downweight && isEasyFact(f)) {
+          return 0.10; // ~10x lower probability
+        }
+        return 1.0;
+      });
+
+      let totalWeight = weights.reduce((acc, w) => acc + w, 0);
+      let rand = Math.random() * totalWeight;
+      let running = 0;
+      for (let i = 0; i < available.length; i++) {
+        running += weights[i];
+        if (rand <= running) {
+          return available[i];
+        }
+      }
+      return available[available.length - 1];
     }
 
     // GAME CONTROLS & LIFECYCLE
@@ -928,6 +1081,7 @@
       document.getElementById("pauseBtn").style.opacity = "0.7";
       problemEl.innerText = "Pauza";
       feedbackEl.innerText = "";
+      highlightActiveCell();
     }
 
     function newProblem() {
@@ -947,6 +1101,8 @@
       startTime = performance.now();
       totalPausedTime = 0;
       pauseStart = 0;
+
+      highlightActiveCell();
     }
 
     function checkAnswer() {
@@ -1136,81 +1292,156 @@
       return { cols: bestC, rows: bestR };
     }
 
+    function highlightActiveCell() {
+      document.querySelectorAll(".matrix-cell.active-target").forEach(el => el.classList.remove("active-target"));
+      if (currentFact && !isPaused) {
+        let activeCell = document.querySelector(`.matrix-cell[data-key="${currentFact.key}"]`);
+        if (activeCell) {
+          activeCell.classList.add("active-target");
+        }
+      }
+    }
+
+    function createMatrixCell(fact, key) {
+      let cell = document.createElement("div");
+      cell.className = "matrix-cell";
+      cell.setAttribute("data-key", key);
+
+      if (!fact) {
+        cell.style.backgroundColor = "var(--border-strong)";
+        return cell;
+      }
+
+      let mc = matrixCount[key] || 0;
+      let rawAtt = stats[key]?.attempts || 0;
+      let avgTime = rawAtt > 0 ? (stats[key].totalTime / rawAtt).toFixed(2) : "-";
+      let isWrong = wrongMap[key] !== undefined;
+      let remaining = isWrong ? (stats[key]?.countdown ?? 0) : 0;
+
+      if (isWrong) {
+        cell.title = `Príklad: ${fact.text} = ${fact.answer}\n❌ Nesprávne — zostáva: ${remaining}x správne\nPokusy: ${rawAtt}x | Priem. čas: ${avgTime}s`;
+        let stepIndex = Math.min(5, remaining - 1);
+        cell.style.backgroundColor = RED_STEPS[Math.max(0, stepIndex)];
+      } else if (mc === 0) {
+        cell.title = `Príklad: ${fact.text} = ${fact.answer}\nNeprecvičené v tomto cykle\nPokusy: ${rawAtt}x | Priem. čas: ${avgTime}s`;
+        cell.style.backgroundColor = "var(--border-strong)";
+      } else {
+        cell.title = `Príklad: ${fact.text} = ${fact.answer}\nCyklus: ${mc}x | Pokusy: ${rawAtt}x | Priem. čas: ${avgTime}s`;
+        let stepIndex = Math.min(5, mc - 1);
+        cell.style.backgroundColor = TEAL_STEPS[stepIndex];
+      }
+
+      cell.addEventListener("mouseenter", () => {
+        let textWithAns = `<b>${fact.text} = ${fact.answer}</b>`;
+        if (isWrong) {
+          document.getElementById("hovered-word-info").innerHTML =
+            `${textWithAns} <span style='color:var(--danger);'>[❌ zostáva: ${remaining}x]</span> &mdash; Pokusy: ${rawAtt}x, Priem: ${avgTime}s`;
+        } else if (mc === 0) {
+          document.getElementById("hovered-word-info").innerHTML =
+            `${textWithAns} &mdash; Neprecvičené v cykle (Pokusy: ${rawAtt}x, Priem: ${avgTime}s)`;
+        } else {
+          document.getElementById("hovered-word-info").innerHTML =
+            `${textWithAns} &mdash; Cyklus: ${mc}x | Pokusy: ${rawAtt}x, Priem: ${avgTime}s`;
+        }
+      });
+
+      cell.addEventListener("mouseleave", () => {
+        document.getElementById("hovered-word-info").innerHTML = "Prejdi myšou po tabuľke...";
+      });
+
+      // Click to practice this specific fact
+      cell.addEventListener("click", () => {
+        if (!isPaused) {
+          currentFact = fact;
+          lastFactKey = currentFact.key;
+          problemEl.innerText = currentFact.text + " =";
+          answerEl.value = "";
+          answerEl.focus();
+          startTime = performance.now();
+          totalPausedTime = 0;
+          highlightActiveCell();
+        }
+      });
+
+      return cell;
+    }
+
     function renderMatrix() {
       const container = document.getElementById("wordMatrix");
       if (!container || allFacts.length === 0) return;
 
       container.innerHTML = "";
-      let N = allFacts.length;
-      let grid = calculateOptimalGrid(N);
 
-      container.style.display = "grid";
-      container.style.gridTemplateColumns = `repeat(${grid.cols}, 1fr)`;
-      container.style.gap = "3px";
+      // Check if active pool is pure multiplication table (min..max x min..max)
+      let isPureMul = allFacts.every(f => f.op === "×");
+      let minA = isPureMul ? Math.min(...allFacts.map(f => f.num1)) : 0;
+      let maxA = isPureMul ? Math.max(...allFacts.map(f => f.num1)) : 0;
+      let minB = isPureMul ? Math.min(...allFacts.map(f => f.num2)) : 0;
+      let maxB = isPureMul ? Math.max(...allFacts.map(f => f.num2)) : 0;
+      let countA = maxA - minA + 1;
+      let countB = maxB - minB + 1;
 
-      allFacts.forEach(fact => {
-        let k = fact.key;
-        let mc = matrixCount[k] || 0;
-        let rawAtt = stats[k]?.attempts || 0;
-        let avgTime = rawAtt > 0 ? (stats[k].totalTime / rawAtt).toFixed(2) : "-";
-        let isWrong = wrongMap[k] !== undefined;
-        let remaining = isWrong ? (stats[k]?.countdown ?? 0) : 0;
+      if (isPureMul && (countA * countB === allFacts.length) && countB <= 15) {
+        // Render 2D Pythagorean Table
+        container.style.display = "grid";
+        container.style.gridTemplateColumns = `repeat(${countB + 1}, auto)`;
+        container.style.gap = "2px";
+        container.style.justifyContent = "center";
 
-        let cell = document.createElement("div");
-        cell.className = "matrix-cell";
+        // Top-left corner header
+        let corner = document.createElement("div");
+        corner.className = "matrix-hdr";
+        corner.textContent = "×";
+        container.appendChild(corner);
 
-        if (isWrong) {
-          cell.title = `Príklad: ${fact.text}\n❌ Nesprávne — zostáva: ${remaining}x správne\nPokusy: ${rawAtt}x | Priem. čas: ${avgTime}s`;
-          let stepIndex = Math.min(5, remaining - 1);
-          cell.style.backgroundColor = RED_STEPS[Math.max(0, stepIndex)];
-        } else if (mc === 0) {
-          cell.title = `Príklad: ${fact.text}\nNeprecvičené v tomto cykle\nPokusy: ${rawAtt}x | Priem. čas: ${avgTime}s`;
-          cell.style.backgroundColor = "var(--border-strong)";
-        } else {
-          cell.title = `Príklad: ${fact.text}\nCyklus: ${mc}x | Pokusy: ${rawAtt}x | Priem. čas: ${avgTime}s`;
-          let stepIndex = Math.min(5, mc - 1);
-          cell.style.backgroundColor = TEAL_STEPS[stepIndex];
+        // Column headers (minB .. maxB)
+        for (let b = minB; b <= maxB; b++) {
+          let hdr = document.createElement("div");
+          hdr.className = "matrix-hdr";
+          hdr.textContent = b;
+          container.appendChild(hdr);
         }
 
-        cell.addEventListener("mouseenter", () => {
-          if (isWrong) {
-            document.getElementById("hovered-word-info").innerHTML =
-              `<b>${fact.text}</b> <span style='color:var(--danger);'>[❌ zostáva: ${remaining}x]</span> &mdash; Pokusy: ${rawAtt}x, Priem: ${avgTime}s`;
-          } else {
-            document.getElementById("hovered-word-info").innerHTML =
-              `<b>${fact.text}</b> &mdash; Cyklus: ${mc}x | Pokusy: ${rawAtt}x, Priem: ${avgTime}s`;
+        // Rows (minA .. maxA)
+        for (let a = minA; a <= maxA; a++) {
+          let rowHdr = document.createElement("div");
+          rowHdr.className = "matrix-hdr";
+          rowHdr.textContent = a;
+          container.appendChild(rowHdr);
+
+          for (let b = minB; b <= maxB; b++) {
+            let key = `${a}×${b}`;
+            let fact = factsByKey[key];
+            let cell = createMatrixCell(fact, key);
+            container.appendChild(cell);
           }
+        }
+      } else {
+        // Fallback for mixed operations / irregular pools
+        let N = allFacts.length;
+        let grid = calculateOptimalGrid(N);
+        container.style.display = "grid";
+        container.style.gridTemplateColumns = `repeat(${grid.cols}, 1fr)`;
+        container.style.gap = "3px";
+        container.style.justifyContent = "center";
+
+        allFacts.forEach(fact => {
+          let cell = createMatrixCell(fact, fact.key);
+          container.appendChild(cell);
         });
 
-        cell.addEventListener("mouseleave", () => {
-          document.getElementById("hovered-word-info").innerHTML = "Prejdi myšou po mriežke...";
-        });
-
-        // Click to practice this specific fact
-        cell.addEventListener("click", () => {
-          if (!isPaused) {
-            currentFact = fact;
-            problemEl.innerText = currentFact.text + " =";
-            answerEl.value = "";
-            answerEl.focus();
-            startTime = performance.now();
-            totalPausedTime = 0;
-          }
-        });
-
-        container.appendChild(cell);
-      });
-
-      // Placeholders to balance grid
-      let totalCells = grid.cols * grid.rows;
-      for (let i = N; i < totalCells; i++) {
-        let placeholder = document.createElement("div");
-        placeholder.className = "matrix-cell";
-        placeholder.style.backgroundColor = "transparent";
-        placeholder.style.border = "none";
-        placeholder.style.pointerEvents = "none";
-        container.appendChild(placeholder);
+        let totalCells = grid.cols * grid.rows;
+        for (let i = N; i < totalCells; i++) {
+          let placeholder = document.createElement("div");
+          placeholder.className = "matrix-cell";
+          placeholder.style.backgroundColor = "transparent";
+          placeholder.style.border = "none";
+          placeholder.style.pointerEvents = "none";
+          container.appendChild(placeholder);
+        }
       }
+
+      highlightActiveCell();
     }
 
     // THEME-AWARE SPEED CANVAS CHART
