@@ -115,24 +115,44 @@
       border-color: var(--primary);
     }
 
+    input[type="number"].toolbar-input,
+    .trainer-toolbar input[type="number"],
+    .extra-ops-drawer input[type="number"],
     .toolbar-input {
-      width: 44px;
-      padding: 2px 4px;
-      font-size: 0.82rem;
-      text-align: center;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      color: var(--text);
+      width: 52px !important;
+      min-width: 50px !important;
+      height: 28px !important;
+      padding: 2px 2px 2px 6px !important;
+      font-size: 0.88rem !important;
+      font-weight: 600 !important;
+      font-family: var(--font-sans) !important;
+      text-align: center !important;
+      line-height: 24px !important;
+      border: 1px solid var(--border-strong) !important;
+      border-radius: var(--radius-sm) !important;
+      background: var(--surface) !important;
+      color: var(--text) !important;
+      box-sizing: border-box !important;
     }
 
+    input[type="number"].toolbar-input::-webkit-inner-spin-button,
+    input[type="number"].toolbar-input::-webkit-outer-spin-button {
+      opacity: 0.85;
+      cursor: pointer;
+    }
+
+    select.toolbar-select,
+    .trainer-toolbar select,
     .toolbar-select {
-      padding: 2px 6px;
-      font-size: 0.82rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      color: var(--text);
+      height: 28px !important;
+      padding: 2px 8px !important;
+      font-size: 0.82rem !important;
+      font-family: var(--font-sans) !important;
+      border: 1px solid var(--border-strong) !important;
+      border-radius: var(--radius-sm) !important;
+      background: var(--surface) !important;
+      color: var(--text) !important;
+      box-sizing: border-box !important;
     }
 
     /* 3-Column Dashboard Grid (Fits 1 Screen) */
@@ -513,8 +533,7 @@
       <!-- Presets -->
       <div class="toolbar-group">
         <button type="button" class="preset-btn active" id="preset1_10" onclick="setMultiplyPreset(1, 10)">1 – 10</button>
-        <button type="button" class="preset-btn" id="preset1_5" onclick="setMultiplyPreset(1, 5)">1 – 5</button>
-        <button type="button" class="preset-btn" id="preset6_10" onclick="setMultiplyPreset(6, 10)">6 – 10</button>
+        <button type="button" class="preset-btn" id="preset3_9" onclick="setMultiplyPreset(3, 9)">3 – 9</button>
       </div>
 
       <!-- Range -->
@@ -547,6 +566,8 @@
       <div class="toolbar-group">
         <span id="i18nSlowN">Pomalé N:</span>
         <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
+        <span id="i18nSlowRepeat">Opakovať (2–N):</span>
+        <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)">
         <span id="i18nGradN">Vyradenie:</span>
         <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20">
         <span id="i18nGradSuffix">x</span>
@@ -719,6 +740,8 @@
         modeSlow: "Iba najpomalšie",
         modeWrong: "Iba chybné",
         slowN: "Pomalé N:",
+        slowRepeat: "Opakovať (2–N):",
+        slowRepeatTitle: "V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)",
         gradN: "Vyradenie:",
         gradSuffix: "x",
         extraOps: "⚙️ + − ÷",
@@ -769,6 +792,8 @@
         modeSlow: "Slowest only",
         modeWrong: "Mistakes only",
         slowN: "Slow N:",
+        slowRepeat: "Repeat (2–N):",
+        slowRepeatTitle: "Every 2 to N problems, repeat one of the slowest problems (randomly 2 to N, default 5)",
         gradN: "Graduate:",
         gradSuffix: "x",
         extraOps: "⚙️ + − ÷",
@@ -819,6 +844,8 @@
         modeSlow: "Nur die langsamsten",
         modeWrong: "Nur Fehler",
         slowN: "Langsam N:",
+        slowRepeat: "Wiederholen (2–N):",
+        slowRepeatTitle: "Alle 2 bis N Aufgaben eine der langsamsten Aufgaben wiederholen (zufällig 2 bis N, Standard 5)",
         gradN: "Abschluss:",
         gradSuffix: "x",
         extraOps: "⚙️ + − ÷",
@@ -885,6 +912,8 @@
       document.getElementById("i18nModeSlow").innerText = t.modeSlow;
       document.getElementById("i18nModeWrong").innerText = t.modeWrong;
       document.getElementById("i18nSlowN").innerText = t.slowN;
+      document.getElementById("i18nSlowRepeat").innerText = t.slowRepeat;
+      document.getElementById("slowIntervalInput").title = t.slowRepeatTitle;
       document.getElementById("i18nGradN").innerText = t.gradN;
       document.getElementById("i18nGradSuffix").innerText = t.gradSuffix;
       document.getElementById("i18nExtraOpsBtn").innerText = t.extraOps;
@@ -916,8 +945,16 @@
     const DAILY_KEY = "math_trainer_daily_history_v3";
 
     const REPEAT_SPACING_MAX = 4;
-    const SLOW_FEATURED_EVERY = 5;
     const MAX_OUTLIER_TIME = 20;
+
+    let problemsSinceLastSlow = 0;
+    let nextSlowInterval = 3;
+
+    function getNextSlowInterval() {
+      let n = parseInt(document.getElementById("slowIntervalInput")?.value || "5", 10);
+      if (isNaN(n) || n < 2) n = 2;
+      return Math.floor(Math.random() * (n - 2 + 1)) + 2;
+    }
 
     // STATE
     let allFacts = [];
@@ -1107,16 +1144,19 @@
         if (btn.id && btn.id.startsWith("preset")) btn.classList.remove("active");
       });
       if (min === 1 && max === 10) document.getElementById("preset1_10")?.classList.add("active");
-      if (min === 1 && max === 5) document.getElementById("preset1_5")?.classList.add("active");
-      if (min === 6 && max === 10) document.getElementById("preset6_10")?.classList.add("active");
+      if (min === 3 && max === 9) document.getElementById("preset3_9")?.classList.add("active");
 
       onSettingsChange();
     }
 
     function onCustomRangeChange() {
+      let min = parseInt(document.getElementById("mulMin").value) || 1;
+      let max = parseInt(document.getElementById("mulMax").value) || 10;
       document.querySelectorAll(".preset-btn").forEach(btn => {
         if (btn.id && btn.id.startsWith("preset")) btn.classList.remove("active");
       });
+      if (min === 1 && max === 10) document.getElementById("preset1_10")?.classList.add("active");
+      if (min === 3 && max === 9) document.getElementById("preset3_9")?.classList.add("active");
       onSettingsChange();
     }
 
@@ -1167,6 +1207,10 @@
             let sInp = document.getElementById("slowCountInput");
             if (sInp) sInp.value = data.slowCount;
           }
+          if (data.slowInterval !== undefined) {
+            let sInt = document.getElementById("slowIntervalInput");
+            if (sInt) sInt.value = data.slowInterval;
+          }
 
           if (data.lastPlayedDate !== today) {
             correctCount = 0;
@@ -1196,6 +1240,7 @@
         recentTimes: recentTimes,
         downweightEasy: document.getElementById("downweightEasy")?.checked ?? true,
         slowCount: parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5,
+        slowInterval: parseInt(document.getElementById("slowIntervalInput")?.value || "5", 10) || 5,
         lastPlayedDate: new Date().toLocaleDateString('en-CA')
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -1366,18 +1411,21 @@
         .filter(f => (matrixCount[f.key] || 0) === 0 && !wrongKeys.includes(f.key) && !slowKeys.includes(f.key))
         .map(f => f.key);
 
-      slowModeCounter++;
-      let isInjectionTurn = (slowModeCounter % SLOW_FEATURED_EVERY === 0);
+      problemsSinceLastSlow++;
+      let isSlowInjectionTurn = (problemsSinceLastSlow >= nextSlowInterval);
 
       let pool;
-      if (isInjectionTurn && (wrongKeys.length > 0 || slowKeys.length > 0)) {
-        pool = wrongKeys.length > 0 ? wrongKeys : slowKeys;
-      } else if (wrongKeys.length > 0 && zeroCells.length === 0) {
-        pool = wrongKeys;
-      } else if (slowKeys.length > 0 && zeroCells.length === 0) {
+      if (isSlowInjectionTurn && slowKeys.length > 0) {
+        // Take ONE of the N slowest problems repeatedly (every randomly 2 to N problems)
         pool = slowKeys;
+        problemsSinceLastSlow = 0;
+        nextSlowInterval = getNextSlowInterval();
+      } else if (wrongKeys.length > 0 && (problemsSinceLastSlow % 3 === 0 || zeroCells.length === 0)) {
+        pool = wrongKeys;
       } else if (zeroCells.length > 0) {
         pool = zeroCells;
+      } else if (slowKeys.length > 0) {
+        pool = slowKeys;
       } else {
         let minCount = Math.min(...allFacts.map(f => matrixCount[f.key] || 0));
         pool = allFacts
@@ -1478,21 +1526,21 @@
       const t = I18N[currentLang];
 
       if (!stats[key]) {
-        stats[key] = { totalTime: 0, attempts: 0, countdown: targetN };
+        stats[key] = { totalTime: 0, attempts: 0, countdown: targetN, times: [] };
       }
-
-      if (slowModeForced) {
-        stats[key].totalTime = 0;
-        stats[key].attempts = 0;
-        slowModeForced = false;
+      if (!stats[key].times) {
+        stats[key].times = stats[key].attempts > 0 ? [stats[key].totalTime / stats[key].attempts] : [];
       }
 
       let wasInWrongMap = wrongMap[key] !== undefined;
 
       if (user === currentFact.answer) {
-        // CORRECT ANSWER
-        stats[key].attempts += 1;
-        stats[key].totalTime += elapsed;
+        // CORRECT ANSWER: Update time for this specific problem!
+        stats[key].lastTime = elapsed;
+        stats[key].times.push(elapsed);
+        if (stats[key].times.length > 5) stats[key].times.shift();
+        stats[key].totalTime = stats[key].times.reduce((a, b) => a + b, 0);
+        stats[key].attempts = stats[key].times.length;
 
         recentTimes.push(elapsed);
         if (recentTimes.length > 40) recentTimes.shift();
@@ -1541,9 +1589,13 @@
         setTimeout(newProblem, 650);
 
       } else {
-        // INCORRECT ANSWER
-        stats[key].attempts += 1;
-        stats[key].totalTime += elapsed;
+        // INCORRECT ANSWER: Update time and trigger mistake tracking
+        stats[key].lastTime = elapsed;
+        stats[key].times = stats[key].times || [];
+        stats[key].times.push(elapsed);
+        if (stats[key].times.length > 5) stats[key].times.shift();
+        stats[key].totalTime = stats[key].times.reduce((a, b) => a + b, 0);
+        stats[key].attempts = stats[key].times.length;
         stats[key].countdown = targetN;
 
         wrongMap[key] = true;
@@ -1913,6 +1965,7 @@
     // INIT
     window.addEventListener("DOMContentLoaded", () => {
       loadProgress();
+      nextSlowInterval = getNextSlowInterval();
       setLanguage(currentLang);
       buildProblemPool();
       updateStats();
