@@ -695,7 +695,6 @@
         <div class="controls-row">
           <button class="btn btn-primary btn-sm" id="startBtn" onclick="startResume()">▶️ Štart</button>
           <button class="btn btn-secondary btn-sm" id="pauseBtn" onclick="pauseGame()">⏸ Pauza</button>
-          <button class="btn btn-secondary btn-sm" id="voiceBtn" onclick="speakCurrentProblem()" title="Prehrať hlasom">🔊 Hlas</button>
         </div>
 
         <div id="feedback"></div>
@@ -759,7 +758,6 @@
         legendSlow: "🐢 Pomalé z hotových (> 80. perc.)",
         startBtn: "▶️ Štart",
         pauseBtn: "⏸ Pauza",
-        voiceBtn: "🔊 Hlas",
         pausedText: "Pauza",
         startPrompt: "Stlač Štart",
         correctFeedback: "Správne! 🎉",
@@ -814,7 +812,6 @@
         legendSlow: "🐢 Slow from done (> 80th perc.)",
         startBtn: "▶️ Start",
         pauseBtn: "⏸ Pause",
-        voiceBtn: "🔊 Audio",
         pausedText: "Paused",
         startPrompt: "Press Start",
         correctFeedback: "Correct! 🎉",
@@ -869,7 +866,6 @@
         legendSlow: "🐢 Langsam (> 80. Perz.)",
         startBtn: "▶️ Start",
         pauseBtn: "⏸ Pause",
-        voiceBtn: "🔊 Vorlesen",
         pausedText: "Pause",
         startPrompt: "Drücke Start",
         correctFeedback: "Richtig! 🎉",
@@ -940,7 +936,6 @@
       document.getElementById("i18nLegendSlow").innerText = t.legendSlow;
       document.getElementById("startBtn").innerText = t.startBtn;
       document.getElementById("pauseBtn").innerText = t.pauseBtn;
-      document.getElementById("voiceBtn").innerText = t.voiceBtn;
       document.getElementById("i18nSpeedChartTitle").innerText = t.speedChartTitle;
       document.getElementById("i18nDailyHistoryTitle").innerText = t.dailyHistoryTitle;
       document.getElementById("i18nResetBtn").innerText = t.resetBtn;
@@ -1685,23 +1680,6 @@
           newProblem();
         }, 1300);
       }
-    }
-
-    function speakCurrentProblem() {
-      if (!currentFact) return;
-      const t = I18N[currentLang];
-      let words = t.voiceWords;
-
-      let text = currentFact.text
-        .replace("×", words.mul)
-        .replace("+", words.add)
-        .replace("−", words.sub)
-        .replace("÷", words.div);
-
-      let u = new SpeechSynthesisUtterance(text);
-      u.lang = t.speechLang;
-      speechSynthesis.cancel();
-      speechSynthesis.speak(u);
     }
 
     // STATS UPDATE & UI SYNCHRONIZATION
