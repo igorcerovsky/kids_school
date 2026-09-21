@@ -93,6 +93,21 @@
       color: var(--text);
     }
 
+    .toolbar-settings-cluster {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-setting-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+
     .preset-btn {
       font-size: 0.78rem;
       padding: 3px 9px;
@@ -563,16 +578,24 @@
       </div>
 
       <!-- N-Slowest, Auto-Wrong Delay & Success Threshold -->
-      <div class="toolbar-group">
-        <span id="i18nSlowN">Pomalé N:</span>
-        <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
-        <span id="i18nSlowRepeat">Opakovať (2–N):</span>
-        <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)">
-        <span id="i18nWrongDelay">Chyba po [s]:</span>
-        <input type="number" id="wrongDelayInput" class="toolbar-input" value="3" min="1" max="10" onchange="onSettingsChange()" title="Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)">
-        <span id="i18nGradN">Vyradenie:</span>
-        <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20">
-        <span id="i18nGradSuffix">x</span>
+      <div class="toolbar-settings-cluster">
+        <div class="toolbar-setting-item">
+          <span id="i18nSlowN">Pomalé N:</span>
+          <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
+        </div>
+        <div class="toolbar-setting-item">
+          <span id="i18nSlowRepeat">Opakovať (2–N):</span>
+          <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)">
+        </div>
+        <div class="toolbar-setting-item">
+          <span id="i18nWrongDelay">Chyba po [s]:</span>
+          <input type="number" id="wrongDelayInput" class="toolbar-input" value="3" min="1" max="10" onchange="onSettingsChange()" title="Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)">
+        </div>
+        <div class="toolbar-setting-item">
+          <span id="i18nGradN">Vyradenie:</span>
+          <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20">
+          <span id="i18nGradSuffix">x</span>
+        </div>
       </div>
 
       <!-- Extra Ops Toggle Button -->
