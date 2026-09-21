@@ -1012,10 +1012,20 @@
       "hsl(0,70%,32%)"
     ];
 
-    // KEYDOWN LISTENER
+    // KEYDOWN & REAL-TIME INPUT LISTENERS (Auto-check as digits are typed)
     answerEl.addEventListener("keydown", function(e) {
       if (e.key === "Enter") {
         e.preventDefault();
+        checkAnswer();
+      }
+    });
+
+    answerEl.addEventListener("input", function() {
+      if (isPaused || !currentFact || isChecking) return;
+      let val = answerEl.value.trim();
+      if (val === "") return;
+      let user = parseInt(val, 10);
+      if (!isNaN(user) && user === currentFact.answer) {
         checkAnswer();
       }
     });
@@ -1502,6 +1512,7 @@
       problemEl.innerText = currentFact.text + " =";
       answerEl.value = "";
       answerEl.focus();
+      isChecking = false;
 
       startTime = performance.now();
       totalPausedTime = 0;
@@ -1510,8 +1521,10 @@
       highlightActiveCell();
     }
 
+    let isChecking = false;
+
     function checkAnswer() {
-      if (isPaused || !currentFact) return;
+      if (isPaused || !currentFact || isChecking) return;
 
       let user = parseInt(answerEl.value);
       if (isNaN(user)) return;
@@ -1535,6 +1548,7 @@
       let wasInWrongMap = wrongMap[key] !== undefined;
 
       if (user === currentFact.answer) {
+        isChecking = true;
         // CORRECT ANSWER: Update time for this specific problem!
         stats[key].lastTime = elapsed;
         stats[key].times.push(elapsed);
@@ -1586,7 +1600,10 @@
         saveProgress();
         saveDailyHistory();
 
-        setTimeout(newProblem, 650);
+        setTimeout(() => {
+          isChecking = false;
+          newProblem();
+        }, 400);
 
       } else {
         // INCORRECT ANSWER: Update time and trigger mistake tracking
@@ -1611,6 +1628,7 @@
 
         answerEl.value = "";
         answerEl.focus();
+        isChecking = false;
       }
     }
 
