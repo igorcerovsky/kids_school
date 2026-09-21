@@ -568,9 +568,8 @@
         <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
         <span id="i18nSlowRepeat">Opakovať (2–N):</span>
         <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)">
-        <span id="i18nWrongDelay">Chyba po:</span>
+        <span id="i18nWrongDelay">Chyba po [s]:</span>
         <input type="number" id="wrongDelayInput" class="toolbar-input" value="3" min="1" max="10" onchange="onSettingsChange()" title="Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)">
-        <span id="i18nWrongDelaySuffix">s</span>
         <span id="i18nGradN">Vyradenie:</span>
         <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20">
         <span id="i18nGradSuffix">x</span>
@@ -744,8 +743,7 @@
         slowN: "Pomalé N:",
         slowRepeat: "Opakovať (2–N):",
         slowRepeatTitle: "V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)",
-        wrongDelay: "Chyba po:",
-        wrongDelaySuffix: "s",
+        wrongDelay: "Chyba po [s]:",
         wrongDelayTitle: "Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)",
         gradN: "Vyradenie:",
         gradSuffix: "x",
@@ -798,8 +796,7 @@
         slowN: "Slow N:",
         slowRepeat: "Repeat (2–N):",
         slowRepeatTitle: "Every 2 to N problems, repeat one of the slowest problems (randomly 2 to N, default 5)",
-        wrongDelay: "Wrong after:",
-        wrongDelaySuffix: "s",
+        wrongDelay: "Wrong after [s]:",
         wrongDelayTitle: "If answer has expected digits and is wrong, mark wrong after N seconds and advance (default 3s)",
         gradN: "Graduate:",
         gradSuffix: "x",
@@ -852,8 +849,7 @@
         slowN: "Langsam N:",
         slowRepeat: "Wiederholen (2–N):",
         slowRepeatTitle: "Alle 2 bis N Aufgaben eine der langsamsten Aufgaben wiederholen (zufällig 2 bis N, Standard 5)",
-        wrongDelay: "Fehler nach:",
-        wrongDelaySuffix: "s",
+        wrongDelay: "Fehler nach [s]:",
         wrongDelayTitle: "Wenn die Antwort die erwartete Ziffernanzahl hat und falsch ist, nach N Sekunden als Fehler werten und weitergehen (Standard 3s)",
         gradN: "Abschluss:",
         gradSuffix: "x",
@@ -923,7 +919,6 @@
       document.getElementById("i18nSlowRepeat").innerText = t.slowRepeat;
       document.getElementById("slowIntervalInput").title = t.slowRepeatTitle;
       document.getElementById("i18nWrongDelay").innerText = t.wrongDelay;
-      document.getElementById("i18nWrongDelaySuffix").innerText = t.wrongDelaySuffix;
       document.getElementById("wrongDelayInput").title = t.wrongDelayTitle;
       document.getElementById("i18nGradN").innerText = t.gradN;
       document.getElementById("i18nGradSuffix").innerText = t.gradSuffix;
