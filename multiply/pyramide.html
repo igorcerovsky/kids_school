@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zahlenpyramide – Mathe lernen | Kubi Kids School</title>
-<meta name="description" content="Mathe-Übungen mit Zahlenpyramiden für Kinder. Addition und Multiplikation spielerisch üben.">
+<title>Number Pyramid – Math Practice | Kubi Kids School</title>
+<meta name="description" content="Math practice with number pyramids for kids. Fun addition and multiplication practice.">
 
 <link rel="stylesheet" href="../css/theme.css">
 <script src="../css/theme.js"></script>
@@ -355,53 +355,58 @@
   <!-- Top Navigation -->
   <header class="kubi-top-bar">
     <div class="kubi-nav-left">
-      <a href="../index.html" class="kubi-back-link">
-        ← Prehľad aktivít
+      <a href="../index.html" class="kubi-back-link" id="pyramidBackLink">
+        ← All Activities
       </a>
-      <span class="kubi-page-title">Zahlenpyramide 🔺</span>
+      <span class="kubi-page-title" id="pyramidPageTitle">Number Pyramid 🔺</span>
     </div>
-    <div class="kubi-nav-right">
-      <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
+    <div class="kubi-nav-right" style="display:flex; align-items:center; gap:10px;">
+      <div class="lang-selector">
+        <button type="button" class="lang-btn" data-lang="sk" onclick="setPyramidLanguage('sk')">SK</button>
+        <button type="button" class="lang-btn active" data-lang="en" onclick="setPyramidLanguage('en')">EN</button>
+        <button type="button" class="lang-btn" data-lang="de" onclick="setPyramidLanguage('de')">DE</button>
+      </div>
+      <button class="theme-toggle-btn" aria-label="Toggle theme"></button>
     </div>
   </header>
 
   <div class="pyramid-page-wrapper">
     <div class="pyramid-header">
-      <h1>🔺 Zahlenpyramide</h1>
-      <p id="header-sub">Fülle die Pyramide aus!</p>
+      <h1 id="pyramidMainTitle">🔺 Number Pyramid</h1>
+      <p id="header-sub">Fill in the pyramid!</p>
     </div>
 
 <!-- SETTINGS -->
 <div class="settings-card">
   <div class="setting-group">
-    <label>Rechenart</label>
+    <label id="lblOperation">Operation</label>
     <select id="operation">
-      <option value="mul" selected>✖ Multiplikation</option>
-      <option value="add">➕ Addition</option>
+      <option value="mul" id="optMul" selected>✖ Multiplication</option>
+      <option value="add" id="optAdd">➕ Addition</option>
     </select>
   </div>
 
   <div class="setting-group">
-    <label>Anzahl Reihen</label>
+    <label id="lblLevel">Number of rows</label>
     <input type="number" id="level" value="3" min="2" max="7" style="width:70px">
   </div>
 
   <div class="setting-group">
-    <label>Max Grundzahl</label>
+    <label id="lblRange">Max base number</label>
     <input type="number" id="range" value="9" min="1" max="1000" style="width:70px">
   </div>
 
   <div class="setting-group">
-    <label>Max Spitzenwert</label>
+    <label id="lblMaxResult">Max apex value</label>
     <input type="number" id="maxResult" value="100" min="10" max="100000" style="width:80px">
   </div>
 
   <div class="setting-group">
-    <label>Hinweise</label>
+    <label id="lblHints">Hints</label>
     <select id="hints">
-      <option value="full">Viele Vorgaben</option>
-      <option value="some" selected>Wenige Vorgaben</option>
-      <option value="min">Minimale Vorgaben</option>
+      <option value="full" id="optHintsFull">Many clues</option>
+      <option value="some" id="optHintsSome" selected>Some clues</option>
+      <option value="min" id="optHintsMin">Minimal clues</option>
     </select>
   </div>
 </div>
@@ -426,14 +431,14 @@
 
 <!-- BUTTONS -->
 <div class="btn-row">
-  <button class="btn btn-primary" id="btn-new" onclick="newPyramid()">🔀 Neue Aufgabe</button>
-  <button class="btn btn-success" id="btn-check" onclick="checkAll()">✔ Prüfen</button>
-  <button class="btn btn-secondary" onclick="reveal()">💡 Lösung</button>
+  <button class="btn btn-primary" id="btn-new" onclick="newPyramid()">🔀 New Pyramid</button>
+  <button class="btn btn-success" id="btn-check" onclick="checkAll()">✔ Check</button>
+  <button class="btn btn-secondary" id="btn-reveal" onclick="reveal()">💡 Solution</button>
 </div>
 
 <!-- RULE HINT -->
 <div class="rule-hint" id="rule-hint">
-  Tippe die fehlenden Zahlen in die leeren Felder und drücke <strong>✔ Prüfen</strong>.
+  Enter the missing numbers into the empty cells and click <strong>✔ Check</strong>.
 </div>
 
 </div><!-- /.pyramid-page-wrapper -->
@@ -707,20 +712,22 @@
 
     updateProgress();
 
+    const t = PYRAMID_I18N[currentPyramidLang] || PYRAMID_I18N.en;
+
     if (!anyInput) {
-      setFeedback('Bitte trage zuerst Zahlen ein! ✏️', 'hint');
+      setFeedback(t.fbEmpty, 'hint');
       return;
     }
 
     if (allCorrect) {
-      setFeedback('Super! Pyramide gelöst! 🎉🏆', 'ok');
+      setFeedback(t.fbSolved, 'ok');
       showStars(3);
       confettiBurst();
       setTimeout(newPyramid, 2800);
     } else if (newCorrect > 0) {
-      setFeedback(`${newCorrect} richtig! Weiter so! 👍`, 'ok');
+      setFeedback(t.fbPartial(newCorrect), 'ok');
     } else {
-      setFeedback('Noch nicht ganz – versuch es nochmal! 💪', 'bad');
+      setFeedback(t.fbWrong, 'bad');
     }
   }
 
@@ -738,7 +745,8 @@
         inp.disabled = true;
       });
     });
-    setFeedback('Hier ist die Lösung! 💡', 'hint');
+    const t = PYRAMID_I18N[currentPyramidLang] || PYRAMID_I18N.en;
+    setFeedback(t.fbReveal, 'hint');
     starsEl.textContent = '';
     updateProgress();
   }
@@ -808,7 +816,140 @@
   `;
   document.head.appendChild(ks);
 
+  // ── I18N SUPPORT (Default English) ──
+  const PYRAMID_I18N = {
+    en: {
+      pageTitle: "Number Pyramid 🔺",
+      mainTitle: "🔺 Number Pyramid",
+      subtitle: "Fill in the pyramid!",
+      opLabel: "Operation",
+      opMul: "✖ Multiplication",
+      opAdd: "➕ Addition",
+      rowsLabel: "Number of rows",
+      baseLabel: "Max base number",
+      apexLabel: "Max apex value",
+      hintsLabel: "Hints",
+      hintsFull: "Many clues",
+      hintsSome: "Some clues",
+      hintsMin: "Minimal clues",
+      btnNew: "🔀 New Pyramid",
+      btnCheck: "✔ Check",
+      btnReveal: "💡 Solution",
+      ruleHint: "Enter the missing numbers into the empty cells and click <strong>✔ Check</strong>.",
+      fbEmpty: "Please enter numbers first! ✏️",
+      fbSolved: "Awesome! Pyramid solved! 🎉🏆",
+      fbPartial: (n) => `${n} correct! Keep going! 👍`,
+      fbWrong: "Not quite – try again! 💪",
+      fbReveal: "Here is the solution! 💡",
+      backLink: "← All Activities"
+    },
+    sk: {
+      pageTitle: "Číselná pyramída 🔺",
+      mainTitle: "🔺 Číselná pyramída",
+      subtitle: "Doplň pyramídu!",
+      opLabel: "Operácia",
+      opMul: "✖ Násobenie",
+      opAdd: "➕ Sčítanie",
+      rowsLabel: "Počet riadkov",
+      baseLabel: "Max základné číslo",
+      apexLabel: "Max vrchol pyramídy",
+      hintsLabel: "Nápovedy",
+      hintsFull: "Veľa čísiel vopred",
+      hintsSome: "Stredne veľa čísiel",
+      hintsMin: "Minimum čísiel vopred",
+      btnNew: "🔀 Nová úloha",
+      btnCheck: "✔ Skontrolovať",
+      btnReveal: "💡 Riešenie",
+      ruleHint: "Doplň čísla do prázdnych políčok a stlač <strong>✔ Skontrolovať</strong>.",
+      fbEmpty: "Najprv zadaj čísla do políčok! ✏️",
+      fbSolved: "Výborne! Pyramída je vyriešená! 🎉🏆",
+      fbPartial: (n) => `${n} správne! Pokračuj ďalej! 👍`,
+      fbWrong: "Ešte nie úplne – skús to znova! 💪",
+      fbReveal: "Tu je riešenie úlohy! 💡",
+      backLink: "← Prehľad aktivít"
+    },
+    de: {
+      pageTitle: "Zahlenpyramide 🔺",
+      mainTitle: "🔺 Zahlenpyramide",
+      subtitle: "Fülle die Pyramide aus!",
+      opLabel: "Rechenart",
+      opMul: "✖ Multiplikation",
+      opAdd: "➕ Addition",
+      rowsLabel: "Anzahl Reihen",
+      baseLabel: "Max Grundzahl",
+      apexLabel: "Max Spitzenwert",
+      hintsLabel: "Hinweise",
+      hintsFull: "Viele Vorgaben",
+      hintsSome: "Wenige Vorgaben",
+      hintsMin: "Minimale Vorgaben",
+      btnNew: "🔀 Neue Aufgabe",
+      btnCheck: "✔ Prüfen",
+      btnReveal: "💡 Lösung",
+      ruleHint: "Tippe die fehlenden Zahlen in die leeren Felder und drücke <strong>✔ Prüfen</strong>.",
+      fbEmpty: "Bitte trage zuerst Zahlen ein! ✏️",
+      fbSolved: "Super! Pyramide gelöst! 🎉🏆",
+      fbPartial: (n) => `${n} richtig! Weiter so! 👍`,
+      fbWrong: "Noch nicht ganz – versuch es nochmal! 💪",
+      fbReveal: "Hier ist die Lösung! 💡",
+      backLink: "← Zur Übersicht"
+    }
+  };
+
+  let currentPyramidLang = "en";
+
+  function setPyramidLanguage(lang) {
+    if (!PYRAMID_I18N[lang]) return;
+    currentPyramidLang = lang;
+    localStorage.setItem("kubi_lang", lang);
+    document.documentElement.lang = lang;
+    if (window.KubiTheme && window.KubiTheme.update) window.KubiTheme.update();
+
+    document.querySelectorAll(".lang-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
+    });
+
+    const t = PYRAMID_I18N[lang];
+    const backLink = document.getElementById("pyramidBackLink");
+    if (backLink) backLink.innerText = t.backLink;
+    const pageTitle = document.getElementById("pyramidPageTitle");
+    if (pageTitle) pageTitle.innerText = t.pageTitle;
+    const mainTitle = document.getElementById("pyramidMainTitle");
+    if (mainTitle) mainTitle.innerText = t.mainTitle;
+    const subTitle = document.getElementById("header-sub");
+    if (subTitle) subTitle.innerText = t.subtitle;
+    const lblOp = document.getElementById("lblOperation");
+    if (lblOp) lblOp.innerText = t.opLabel;
+    const optMul = document.getElementById("optMul");
+    if (optMul) optMul.innerText = t.opMul;
+    const optAdd = document.getElementById("optAdd");
+    if (optAdd) optAdd.innerText = t.opAdd;
+    const lblLvl = document.getElementById("lblLevel");
+    if (lblLvl) lblLvl.innerText = t.rowsLabel;
+    const lblRng = document.getElementById("lblRange");
+    if (lblRng) lblRng.innerText = t.baseLabel;
+    const lblMax = document.getElementById("lblMaxResult");
+    if (lblMax) lblMax.innerText = t.apexLabel;
+    const lblHnt = document.getElementById("lblHints");
+    if (lblHnt) lblHnt.innerText = t.hintsLabel;
+    const optHF = document.getElementById("optHintsFull");
+    if (optHF) optHF.innerText = t.hintsFull;
+    const optHS = document.getElementById("optHintsSome");
+    if (optHS) optHS.innerText = t.hintsSome;
+    const optHM = document.getElementById("optHintsMin");
+    if (optHM) optHM.innerText = t.hintsMin;
+    const bNew = document.getElementById("btn-new");
+    if (bNew) bNew.innerText = t.btnNew;
+    const bCheck = document.getElementById("btn-check");
+    if (bCheck) bCheck.innerText = t.btnCheck;
+    const bRev = document.getElementById("btn-reveal");
+    if (bRev) bRev.innerText = t.btnReveal;
+    const rHint = document.getElementById("rule-hint");
+    if (rHint) rHint.innerHTML = t.ruleHint;
+  }
+
   // ── INIT ──
+  const savedPyramidLang = localStorage.getItem("kubi_lang") || "en";
+  setPyramidLanguage(savedPyramidLang);
   newPyramid();
 </script>
 </body>

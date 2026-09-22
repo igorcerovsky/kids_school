@@ -443,3 +443,43 @@ textarea:focus {
   border-top: 1px solid var(--border-subtle);
   margin-top: auto;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Language Selector (Shared across portal and apps)
+   ───────────────────────────────────────────────────────────── */
+.lang-selector {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.03em;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.lang-btn:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.lang-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+

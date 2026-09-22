@@ -510,30 +510,21 @@
     .modes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 8px;
-      margin-top: 2px;
-    }
-
-    .mode-item {
       background: var(--bg-subtle);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 6px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
     }
 
-    /* Responsive Adaptation for Tablets and Phones */
-    @media (max-width: 920px) {
+    /* Responsive single-screen adjustments */
+    @media (max-width: 960px) {
       .dashboard-grid {
         grid-template-columns: 1fr;
       }
-      .center-panel {
-        order: 1;
-      }
       .matrix-panel {
         order: 2;
+      }
+      .center-panel {
+        order: 1;
       }
       .right-analytics-panel {
         order: 3;
@@ -546,17 +537,17 @@
   <!-- Compact Top Navigation Bar with Language Switcher -->
   <header class="kubi-top-bar">
     <div class="kubi-nav-left">
-      <a href="../index.html" class="kubi-back-link" id="i18nBackLink">← Prehľad aktivít</a>
+      <a href="../index.html" class="kubi-back-link" id="i18nBackLink">← All Activities</a>
       <span class="kubi-page-title" id="i18nTitle" style="font-size: 1.05rem;">Math Trainer ✏️</span>
     </div>
     <div class="nav-actions">
       <!-- Language Switcher: SK | EN | DE -->
       <div class="lang-selector">
-        <button type="button" class="lang-btn active" data-lang="sk" onclick="setLanguage('sk')">SK</button>
-        <button type="button" class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
+        <button type="button" class="lang-btn" data-lang="sk" onclick="setLanguage('sk')">SK</button>
+        <button type="button" class="lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
         <button type="button" class="lang-btn" data-lang="de" onclick="setLanguage('de')">DE</button>
       </div>
-      <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
+      <button class="theme-toggle-btn" aria-label="Toggle theme"></button>
     </div>
   </header>
 
@@ -571,7 +562,7 @@
       </div>
 
       <!-- Settings & Operations Toggle Button -->
-      <button type="button" class="preset-btn" onclick="toggleSettingsDrawer()" id="i18nSettingsBtn">⚙️ Nastavenia</button>
+      <button type="button" class="preset-btn" onclick="toggleSettingsDrawer()" id="i18nSettingsBtn">⚙️ Settings</button>
     </section>
 
     <!-- Collapsible Settings & Operations Drawer -->
@@ -580,37 +571,37 @@
       <div class="settings-row">
         <!-- Practice Mode -->
         <div class="toolbar-setting-item">
-          <label for="practiceModeSelect"><b id="i18nModeLabel">Režim:</b></label>
+          <label for="practiceModeSelect"><b id="i18nModeLabel">Mode:</b></label>
           <select id="practiceModeSelect" class="toolbar-select" onchange="onPracticeModeChange()">
-            <option value="normal" id="i18nModeNormal">Normálny (adaptívny cyklus)</option>
-            <option value="slow" id="i18nModeSlow">Iba najpomalšie</option>
-            <option value="wrong" id="i18nModeWrong">Iba chybné</option>
+            <option value="normal" id="i18nModeNormal">Normal (adaptive cycle)</option>
+            <option value="slow" id="i18nModeSlow">Only slowest</option>
+            <option value="wrong" id="i18nModeWrong">Only mistakes</option>
           </select>
         </div>
 
         <!-- Downweight Easy (1*N) -->
         <div class="toolbar-setting-item">
-          <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;" id="i18nDownweightLabel" title="Znížiť pravdepodobnosť ľahkých príkladov (1 × N)">
+          <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;" id="i18nDownweightLabel" title="Downweight easy facts (1 × N)">
             <input type="checkbox" id="downweightEasy" checked onchange="saveProgress()" style="accent-color:var(--primary); cursor:pointer;">
-            <span id="i18nDownweightText">📉 Znížiť 1×N</span>
+            <span id="i18nDownweightText">📉 Reduce 1×N</span>
           </label>
         </div>
 
         <!-- N-Slowest, Auto-Wrong Delay & Success Threshold -->
         <div class="toolbar-setting-item">
-          <span id="i18nSlowN">Pomalé N:</span>
+          <span id="i18nSlowN">Slow N:</span>
           <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
         </div>
         <div class="toolbar-setting-item">
-          <span id="i18nSlowRepeat">Opakovať (2–N):</span>
-          <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)">
+          <span id="i18nSlowRepeat">Repeat (2–N):</span>
+          <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="Repeat slowest fact every 2nd to N-th problem (random 2 to N, default 5)">
         </div>
         <div class="toolbar-setting-item">
-          <span id="i18nWrongDelay">Chyba po [s]:</span>
-          <input type="number" id="wrongDelayInput" class="toolbar-input" value="3" min="1" max="10" onchange="onSettingsChange()" title="Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)">
+          <span id="i18nWrongDelay">Wrong after [s]:</span>
+          <input type="number" id="wrongDelayInput" class="toolbar-input" value="3" min="1" max="10" onchange="onSettingsChange()" title="If answer has expected digits and is wrong, mark wrong after N seconds and advance (default 3s)">
         </div>
         <div class="toolbar-setting-item">
-          <span id="i18nGradN">Vyradenie:</span>
+          <span id="i18nGradN">Graduate:</span>
           <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20">
           <span id="i18nGradSuffix">x</span>
         </div>
@@ -623,48 +614,48 @@
         <div class="mode-item">
           <label class="mode-label">
             <input type="checkbox" id="modeMul" checked onchange="onSettingsChange()">
-            <span id="i18nOpMul">✖ Násobenie</span>
+            <span id="i18nOpMul">✖ Multiplication</span>
           </label>
           <div style="display:flex; gap:4px; align-items:center;">
-            <span class="i18n-from">Od</span>
+            <span class="i18n-from">From</span>
             <input type="number" id="mulMin" class="toolbar-input" value="1" min="1" max="20" onchange="onCustomRangeChange()">
-            <span class="i18n-to">do</span>
+            <span class="i18n-to">to</span>
             <input type="number" id="mulMax" class="toolbar-input" value="10" min="1" max="20" onchange="onCustomRangeChange()">
           </div>
         </div>
         <div class="mode-item">
           <label class="mode-label">
             <input type="checkbox" id="modeAdd" onchange="onSettingsChange()">
-            <span id="i18nOpAdd">➕ Sčítanie</span>
+            <span id="i18nOpAdd">➕ Addition</span>
           </label>
           <div style="display:flex; gap:4px; align-items:center;">
-            <span class="i18n-from">Od</span>
+            <span class="i18n-from">From</span>
             <input type="number" id="addMin" class="toolbar-input" value="1" onchange="onSettingsChange()">
-            <span class="i18n-to">do</span>
+            <span class="i18n-to">to</span>
             <input type="number" id="addMax" class="toolbar-input" value="20" onchange="onSettingsChange()">
           </div>
         </div>
         <div class="mode-item">
           <label class="mode-label">
             <input type="checkbox" id="modeSub" onchange="onSettingsChange()">
-            <span id="i18nOpSub">➖ Odčítanie</span>
+            <span id="i18nOpSub">➖ Subtraction</span>
           </label>
           <div style="display:flex; gap:4px; align-items:center;">
-            <span class="i18n-from">Od</span>
+            <span class="i18n-from">From</span>
             <input type="number" id="subMin" class="toolbar-input" value="1" onchange="onSettingsChange()">
-            <span class="i18n-to">do</span>
+            <span class="i18n-to">to</span>
             <input type="number" id="subMax" class="toolbar-input" value="20" onchange="onSettingsChange()">
           </div>
         </div>
         <div class="mode-item">
           <label class="mode-label">
             <input type="checkbox" id="modeDiv" onchange="onSettingsChange()">
-            <span id="i18nOpDiv">➗ Delenie</span>
+            <span id="i18nOpDiv">➗ Division</span>
           </label>
           <div style="display:flex; gap:4px; align-items:center;">
-            <span class="i18n-from">Od</span>
+            <span class="i18n-from">From</span>
             <input type="number" id="divMin" class="toolbar-input" value="1" onchange="onSettingsChange()">
-            <span class="i18n-to">do</span>
+            <span class="i18n-to">to</span>
             <input type="number" id="divMax" class="toolbar-input" value="10" onchange="onSettingsChange()">
           </div>
         </div>
@@ -677,17 +668,17 @@
       <!-- LEFT COLUMN: 2D Mastery Matrix -->
       <section class="panel-card matrix-panel">
         <div class="panel-title" id="i18nMatrixTitle">
-          📊 Mriežka násobilky
+          📊 Multiplication Matrix
         </div>
         
         <div id="wordMatrix" class="word-matrix"></div>
-        <div id="hovered-word-info">Prejdi myšou po tabuľke...</div>
+        <div id="hovered-word-info">Hover over the table...</div>
 
         <!-- Micro-Legend -->
         <div class="matrix-legend">
           <div class="legend-row">
             <div class="legend-swatch legend-swatch-gray"></div>
-            <span id="i18nLegendUnseen">Neprecvičené</span>
+            <span id="i18nLegendUnseen">Unpracticed</span>
           </div>
           <div class="legend-row">
             <div class="legend-swatch legend-swatch-teal">
@@ -698,7 +689,7 @@
               <div class="ls-step" style="background:hsl(174,70%,42%)"></div>
               <div class="ls-step" style="background:hsl(174,70%,32%)"></div>
             </div>
-            <span id="i18nLegendMastered">Správne (1–6)</span>
+            <span id="i18nLegendMastered">Correct (1–6)</span>
           </div>
           <div class="legend-row">
             <div class="legend-swatch legend-swatch-red">
@@ -709,13 +700,13 @@
               <div class="ls-step" style="background:hsl(0,70%,42%)"></div>
               <div class="ls-step" style="background:hsl(0,70%,32%)"></div>
             </div>
-            <span id="i18nLegendWrong">S chybou (1–6)</span>
+            <span id="i18nLegendWrong">With mistakes (1–6)</span>
           </div>
           <div class="legend-row">
             <div class="legend-swatch" style="background:hsl(174,70%,62%); position:relative; display:flex; align-items:center; justify-content:center; border-radius:2px;">
               <span style="position:absolute; top:2px; right:2px; width:5px; height:5px; border-radius:50%; background:#f59e0b; box-shadow:0 0 3px #f59e0b;"></span>
             </div>
-            <span id="i18nLegendSlow">🐢 Pomalé z hotových (&gt; 80. perc.)</span>
+            <span id="i18nLegendSlow">🐢 Slowest completed (&gt; 80th perc.)</span>
           </div>
         </div>
       </section>
@@ -723,7 +714,7 @@
       <!-- CENTER COLUMN: Active Problem Stage -->
       <section class="panel-card center-panel">
         <div class="problem-display" id="problem">
-          Stlač Štart
+          Press Start
         </div>
 
         <input
@@ -736,18 +727,18 @@
         >
 
         <div class="controls-row">
-          <button class="btn btn-primary btn-sm" id="startBtn" onclick="startResume()">▶️ Štart</button>
-          <button class="btn btn-secondary btn-sm" id="pauseBtn" onclick="pauseGame()">⏸ Pauza</button>
+          <button class="btn btn-primary btn-sm" id="startBtn" onclick="startResume()">▶️ Start</button>
+          <button class="btn btn-secondary btn-sm" id="pauseBtn" onclick="pauseGame()">⏸ Pause</button>
         </div>
 
         <div id="feedback"></div>
-        <div id="stats">Správne: 0 | Nesprávne: 0 | Presnosť: 0%</div>
+        <div id="stats">Correct: 0 | Mistakes: 0 | Accuracy: 0%</div>
       </section>
 
       <!-- RIGHT COLUMN: Analytics, Speed Sparkline & Mistake Tracking -->
       <section class="panel-card right-analytics-panel">
         <div style="font-weight: 700; font-size: 0.86rem; color: var(--text); display:flex; justify-content:space-between; align-items:center;">
-          <span id="i18nSpeedChartTitle">📈 Rýchlosť odpovedí (s)</span>
+          <span id="i18nSpeedChartTitle">📈 Response Time (s)</span>
         </div>
         
         <canvas id="speedChart" width="280" height="105"></canvas>
@@ -756,7 +747,7 @@
         <div id="wrongWords" class="info-box-compact"></div>
 
         <details style="margin-top: auto; font-size: 0.8rem; color: var(--text-secondary);">
-          <summary style="cursor: pointer; font-weight: 700;" id="i18nDailyHistoryTitle">📅 Denná história</summary>
+          <summary style="cursor: pointer; font-weight: 700;" id="i18nDailyHistoryTitle">📅 Daily History</summary>
           <div id="dailyHistory" style="margin-top: 4px; line-height: 1.35;"></div>
           <div style="text-align: right; margin-top: 6px;">
             <button type="button" class="preset-btn" onclick="resetProgress()" id="i18nResetBtn" style="color:var(--danger-text); border-color:var(--danger-border); font-size:0.75rem;">
@@ -946,13 +937,17 @@
       }
     };
 
-    let currentLang = "sk";
+    let currentLang = "en";
 
     function setLanguage(lang) {
       if (!I18N[lang]) return;
       currentLang = lang;
+      localStorage.setItem("kubi_lang", lang);
       localStorage.setItem("math_trainer_lang", lang);
       document.documentElement.lang = lang;
+      if (window.KubiTheme && window.KubiTheme.update) {
+        window.KubiTheme.update();
+      }
 
       // Update button active state
       document.querySelectorAll(".lang-btn").forEach(btn => {
@@ -1292,10 +1287,12 @@
       let saved = localStorage.getItem(STORAGE_KEY);
       let today = new Date().toLocaleDateString('en-CA');
 
-      // Load language preference
-      let savedLang = localStorage.getItem("math_trainer_lang");
+      // Load language preference (defaults to English if not explicitly set)
+      let savedLang = localStorage.getItem("kubi_lang");
       if (savedLang && I18N[savedLang]) {
         currentLang = savedLang;
+      } else {
+        currentLang = "en";
       }
 
       if (saved) {
