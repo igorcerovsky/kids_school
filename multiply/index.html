@@ -602,7 +602,7 @@
         </div>
         <div class="toolbar-setting-item">
           <span id="i18nGradN">Graduate:</span>
-          <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20">
+          <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20" onchange="onSettingsChange()">
           <span id="i18nGradSuffix">x</span>
         </div>
       </div>
@@ -1233,6 +1233,23 @@
     }
 
     // PRESET BUTTONS & SETTINGS HANDLERS
+    function updatePresetButtons() {
+      const modeMul = document.getElementById("modeMul")?.checked ?? true;
+      const modeAdd = document.getElementById("modeAdd")?.checked ?? false;
+      const modeSub = document.getElementById("modeSub")?.checked ?? false;
+      const modeDiv = document.getElementById("modeDiv")?.checked ?? false;
+      const isMulOnly = modeMul && !modeAdd && !modeSub && !modeDiv;
+
+      const min = parseInt(document.getElementById("mulMin")?.value || "1", 10);
+      const max = parseInt(document.getElementById("mulMax")?.value || "10", 10);
+
+      const btn1_10 = document.getElementById("preset1_10");
+      const btn3_9 = document.getElementById("preset3_9");
+
+      if (btn1_10) btn1_10.classList.toggle("active", isMulOnly && min === 1 && max === 10);
+      if (btn3_9) btn3_9.classList.toggle("active", isMulOnly && min === 3 && max === 9);
+    }
+
     function setMultiplyPreset(min, max) {
       document.getElementById("modeMul").checked = true;
       document.getElementById("modeAdd").checked = false;
@@ -1242,27 +1259,17 @@
       document.getElementById("mulMin").value = min;
       document.getElementById("mulMax").value = max;
 
-      document.querySelectorAll(".preset-btn").forEach(btn => {
-        if (btn.id && btn.id.startsWith("preset")) btn.classList.remove("active");
-      });
-      if (min === 1 && max === 10) document.getElementById("preset1_10")?.classList.add("active");
-      if (min === 3 && max === 9) document.getElementById("preset3_9")?.classList.add("active");
-
+      updatePresetButtons();
       onSettingsChange();
     }
 
     function onCustomRangeChange() {
-      let min = parseInt(document.getElementById("mulMin").value) || 1;
-      let max = parseInt(document.getElementById("mulMax").value) || 10;
-      document.querySelectorAll(".preset-btn").forEach(btn => {
-        if (btn.id && btn.id.startsWith("preset")) btn.classList.remove("active");
-      });
-      if (min === 1 && max === 10) document.getElementById("preset1_10")?.classList.add("active");
-      if (min === 3 && max === 9) document.getElementById("preset3_9")?.classList.add("active");
+      updatePresetButtons();
       onSettingsChange();
     }
 
     function onSettingsChange() {
+      updatePresetButtons();
       buildProblemPool();
       saveProgress();
       if (!isPaused) {
@@ -1271,6 +1278,7 @@
     }
 
     function onPracticeModeChange() {
+      saveProgress();
       if (!isPaused) {
         newProblem();
       }
@@ -1319,6 +1327,64 @@
             let wDel = document.getElementById("wrongDelayInput");
             if (wDel) wDel.value = data.wrongDelay;
           }
+          if (data.successThreshold !== undefined) {
+            let st = document.getElementById("successThreshold");
+            if (st) st.value = data.successThreshold;
+          }
+          if (data.practiceMode !== undefined) {
+            let pm = document.getElementById("practiceModeSelect");
+            if (pm) pm.value = data.practiceMode;
+          }
+
+          // Restore grid size & operations
+          if (data.mulMin !== undefined) {
+            let el = document.getElementById("mulMin");
+            if (el) el.value = data.mulMin;
+          }
+          if (data.mulMax !== undefined) {
+            let el = document.getElementById("mulMax");
+            if (el) el.value = data.mulMax;
+          }
+          if (data.modeMul !== undefined) {
+            let el = document.getElementById("modeMul");
+            if (el) el.checked = data.modeMul;
+          }
+          if (data.modeAdd !== undefined) {
+            let el = document.getElementById("modeAdd");
+            if (el) el.checked = data.modeAdd;
+          }
+          if (data.addMin !== undefined) {
+            let el = document.getElementById("addMin");
+            if (el) el.value = data.addMin;
+          }
+          if (data.addMax !== undefined) {
+            let el = document.getElementById("addMax");
+            if (el) el.value = data.addMax;
+          }
+          if (data.modeSub !== undefined) {
+            let el = document.getElementById("modeSub");
+            if (el) el.checked = data.modeSub;
+          }
+          if (data.subMin !== undefined) {
+            let el = document.getElementById("subMin");
+            if (el) el.value = data.subMin;
+          }
+          if (data.subMax !== undefined) {
+            let el = document.getElementById("subMax");
+            if (el) el.value = data.subMax;
+          }
+          if (data.modeDiv !== undefined) {
+            let el = document.getElementById("modeDiv");
+            if (el) el.checked = data.modeDiv;
+          }
+          if (data.divMin !== undefined) {
+            let el = document.getElementById("divMin");
+            if (el) el.value = data.divMin;
+          }
+          if (data.divMax !== undefined) {
+            let el = document.getElementById("divMax");
+            if (el) el.value = data.divMax;
+          }
 
           if (data.lastPlayedDate !== today) {
             correctCount = 0;
@@ -1334,6 +1400,8 @@
           console.error("Error loading progress", e);
         }
       }
+
+      updatePresetButtons();
     }
 
     function saveProgress() {
@@ -1350,7 +1418,22 @@
         slowCount: parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5,
         slowInterval: parseInt(document.getElementById("slowIntervalInput")?.value || "5", 10) || 5,
         wrongDelay: parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10) || 3,
-        lastPlayedDate: new Date().toLocaleDateString('en-CA')
+        successThreshold: parseInt(document.getElementById("successThreshold")?.value || "4", 10) || 4,
+        practiceMode: document.getElementById("practiceModeSelect")?.value || "normal",
+        lastPlayedDate: new Date().toLocaleDateString('en-CA'),
+        // Grid ranges & operations:
+        mulMin: parseInt(document.getElementById("mulMin")?.value || "1", 10) || 1,
+        mulMax: parseInt(document.getElementById("mulMax")?.value || "10", 10) || 10,
+        modeMul: document.getElementById("modeMul")?.checked ?? true,
+        modeAdd: document.getElementById("modeAdd")?.checked ?? false,
+        addMin: parseInt(document.getElementById("addMin")?.value || "1", 10) || 1,
+        addMax: parseInt(document.getElementById("addMax")?.value || "20", 10) || 20,
+        modeSub: document.getElementById("modeSub")?.checked ?? false,
+        subMin: parseInt(document.getElementById("subMin")?.value || "1", 10) || 1,
+        subMax: parseInt(document.getElementById("subMax")?.value || "20", 10) || 20,
+        modeDiv: document.getElementById("modeDiv")?.checked ?? false,
+        divMin: parseInt(document.getElementById("divMin")?.value || "1", 10) || 1,
+        divMax: parseInt(document.getElementById("divMax")?.value || "10", 10) || 10
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
