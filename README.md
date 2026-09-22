@@ -16,6 +16,7 @@ An interactive educational portal with web applications and practice tools desig
 | :--- | :--- | :--- |
 | **Main Portal Hub** | All Activities | [Open Portal](https://igorcerovsky.github.io/kids_school/) |
 | **Math Trainer** (Násobilka & Aritmetika) | Mathematics | [Open Math Trainer](https://igorcerovsky.github.io/kids_school/multiply/) |
+| **Division with Remainder** (Delenie so zvyškom) | Mathematics | [Open Remainder Trainer](https://igorcerovsky.github.io/kids_school/multiply/remainder.html) |
 | **Zahlenpyramide** (Číselné pyramídy) | Mathematics | [Open Zahlenpyramide](https://igorcerovsky.github.io/kids_school/multiply/pyramide.html) |
 | **I / Y Adaptívny Trenažér** (Vybrané slová) | Slovak Language | [Open I/Y Trenažér](https://igorcerovsky.github.io/kids_school/sk_diktat/iy_adaptive_full_v3.html) |
 | **I / Y po obojakom L** | Slovak Language | [Open I/Y po L](https://igorcerovsky.github.io/kids_school/sk_diktat/iy_l_adaptive_v3.html) |
@@ -32,11 +33,18 @@ An interactive educational portal with web applications and practice tools desig
 
 ### ✖️ Math Trainer (`/multiply/`)
 An intelligent arithmetic practice app featuring:
-- **Operations**: Multiplication (`✖`), Addition (`➕`), Subtraction (`➖`), and Division (`➗`) with custom number ranges for each operation.
+- **Operations**: Multiplication (`✖`), Addition (`➕`), Subtraction (`➖`), and Division (`➗`) with exclusive operation modes and custom number ranges for each operation (`[0–10]`, `[1–10]`, `[3–9]`).
 - **Adaptive Spaced Practice**: Focus on the slowest problems or repeated practice of mistakes.
 - **Smart Input Flow**: Automatically advances to the next problem as soon as the correct answer is typed. Configurable wrong-answer timer (marks incorrect and proceeds if wrong after $N$ seconds).
 - **Interactive Matrix & Heatmap**: Visual grid showing unpracticed, mastered, and slow problem facts with live response-time statistics.
 - **Multilingual UI**: Switch seamlessly between Slovak (**SK**), English (**EN**), and German (**DE**).
+
+### ➗ Division with Remainder (`/multiply/remainder.html`)
+Dedicated trainer for integer division with remainders:
+- **Dual-Input Stage**: Separate inputs for quotient and remainder ($a \div b = q \text{ rem } r$).
+- **Smart 3-Second Flow**: Auto-advances immediately on correct quotient or after 3 seconds on an incorrect quotient attempt.
+- **Remainder Matrix (Matica delenia so zvyškom)**: Visual 2D matrix displaying mastery and speed across dividend and divisor dimensions, perfectly scaled to fit the side pane.
+- **Quick Presets**: Fast switching between `[2–10]` and `[3–9]` divisor ranges.
 
 ### 🇸🇰 Slovak Orthography (`/sk_diktat/`)
 - Adaptive reinforcement for Slovak *vybrané slová* (i/y after B, M, P, R, S, V, Z, L).

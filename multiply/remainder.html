@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Math Trainer | Kubi Kids School</title>
+  <title>Division with Remainder | Kubi Kids School</title>
   
   <link rel="stylesheet" href="../css/theme.css">
   <script src="../css/theme.js"></script>
@@ -29,6 +29,12 @@
       align-items: center;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
+    }
+
+    .kubi-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .nav-actions {
@@ -93,57 +99,65 @@
       color: var(--text);
     }
 
-    .toolbar-settings-cluster {
+    .preset-btn {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .preset-btn:hover {
+      background: var(--surface-hover);
+      border-color: var(--primary);
+    }
+
+    .preset-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Collapsible Settings Drawer */
+    .settings-drawer {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .settings-row {
       display: flex;
       align-items: center;
-      gap: 16px;
       flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.82rem;
+      color: var(--text);
     }
 
     .toolbar-setting-item {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      font-size: 0.82rem;
-      color: var(--text);
     }
 
-    .preset-btn {
-      font-size: 0.78rem;
-      padding: 3px 9px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-weight: 600;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      color: var(--text);
-      transition: var(--transition);
-    }
-
-    .preset-btn:hover {
-      border-color: var(--border-strong);
-    }
-
-    .preset-btn.active {
-      background: var(--primary);
-      color: #ffffff;
-      border-color: var(--primary);
-    }
-
-    input[type="number"].toolbar-input,
-    .trainer-toolbar input[type="number"],
-    .settings-drawer input[type="number"],
-    .extra-ops-drawer input[type="number"],
     .toolbar-input {
-      width: 52px !important;
-      min-width: 50px !important;
+      width: 46px !important;
       height: 28px !important;
-      padding: 2px 2px 2px 6px !important;
-      font-size: 0.88rem !important;
+      padding: 2px 4px !important;
+      font-size: 0.82rem !important;
+      text-align: center !important;
       font-weight: 600 !important;
       font-family: var(--font-sans) !important;
-      text-align: center !important;
-      line-height: 24px !important;
       border: 1px solid var(--border-strong) !important;
       border-radius: var(--radius-sm) !important;
       background: var(--surface) !important;
@@ -151,15 +165,6 @@
       box-sizing: border-box !important;
     }
 
-    input[type="number"].toolbar-input::-webkit-inner-spin-button,
-    input[type="number"].toolbar-input::-webkit-outer-spin-button {
-      opacity: 0.85;
-      cursor: pointer;
-    }
-
-    select.toolbar-select,
-    .trainer-toolbar select,
-    .settings-drawer select,
     .toolbar-select {
       height: 28px !important;
       padding: 2px 8px !important;
@@ -172,10 +177,10 @@
       box-sizing: border-box !important;
     }
 
-    /* 3-Column Dashboard Grid (Fits 1 Screen) */
+    /* 3-Column Dashboard Grid */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 228px minmax(320px, 1fr) 280px;
+      grid-template-columns: 240px minmax(320px, 1fr) 280px;
       gap: 12px;
       align-items: stretch;
     }
@@ -190,7 +195,7 @@
       flex-direction: column;
     }
 
-    /* Left Panel: 2D Matrix */
+    /* Left Panel: 2D Matica delenia so zvyškom */
     .matrix-panel {
       align-items: center;
       justify-content: flex-start;
@@ -230,7 +235,7 @@
       font-weight: 800;
       color: var(--text-muted);
       width: 100%;
-      max-width: 18px;
+      max-width: 20px;
       aspect-ratio: 1;
       border-radius: 2px;
       background: transparent;
@@ -241,7 +246,7 @@
 
     .matrix-cell {
       width: 100%;
-      max-width: 18px;
+      max-width: 22px;
       aspect-ratio: 1;
       border-radius: 2.5px;
       background-color: var(--border-strong);
@@ -272,48 +277,39 @@
     }
 
     .matrix-cell.active-target {
-      animation: activePulse 1.5s infinite ease-in-out;
-      border: 1.5px solid #ffffff !important;
-      z-index: 4;
+      animation: activePulse 1.2s infinite ease-in-out;
+      border: 1px solid #ffffff;
     }
 
     .matrix-cell.is-slow::after {
       content: "";
       position: absolute;
-      top: 1px;
-      right: 1px;
-      width: 4.5px;
-      height: 4.5px;
+      top: 1.5px;
+      right: 1.5px;
+      width: 4px;
+      height: 4px;
       border-radius: 50%;
-      background-color: #f59e0b;
-      box-shadow: 0 0 3px #f59e0b;
-      z-index: 2;
+      background: #f59e0b;
+      box-shadow: 0 0 2px #f59e0b;
     }
 
     #hovered-word-info {
+      font-size: 0.76rem;
+      min-height: 1.4em;
       margin-top: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      min-height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       text-align: center;
-      width: 100%;
-      background: var(--surface);
-      border-radius: var(--radius-sm);
-      padding: 3px 6px;
-      border: 1px solid var(--border);
-      line-height: 1.25;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
     }
 
     .matrix-legend {
-      margin-top: 6px;
-      width: 100%;
       display: flex;
       flex-direction: column;
       gap: 3px;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border-subtle);
+      width: 100%;
     }
 
     .legend-row {
@@ -368,11 +364,20 @@
       font-family: var(--font-sans);
     }
 
+    .answer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
     .answer-input {
-      font-size: clamp(2rem, 4.5vw, 2.8rem) !important;
+      font-size: clamp(1.8rem, 3.8vw, 2.5rem) !important;
       font-weight: 700;
-      width: clamp(140px, 32vw, 190px) !important;
-      height: 54px;
+      width: clamp(110px, 22vw, 150px) !important;
+      height: 52px;
       text-align: center;
       border: 2.5px solid var(--border-strong) !important;
       border-radius: var(--radius-md) !important;
@@ -380,8 +385,20 @@
       color: var(--text) !important;
       box-shadow: var(--shadow-sm);
       outline: none;
-      margin-bottom: 14px;
+      margin-bottom: 0;
       transition: var(--transition);
+    }
+
+    .answer-input::placeholder {
+      font-size: 0.72em;
+      opacity: 0.55;
+    }
+
+    .remainder-label {
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+      font-weight: 700;
+      color: var(--text-secondary);
+      white-space: nowrap;
     }
 
     .answer-input:focus {
@@ -391,143 +408,79 @@
 
     .controls-row {
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 10px;
     }
 
-    .btn-sm {
-      padding: 5px 12px;
-      font-size: 0.85rem;
-    }
-
     #feedback {
-      min-height: 26px;
-      font-size: 1.05rem;
-      font-weight: 800;
-      margin-top: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      min-height: 24px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
     }
 
     #feedback.correct {
-      color: var(--success);
-      animation: pop 0.25s ease-out;
+      color: var(--success-text);
     }
 
     #feedback.wrong {
-      color: var(--danger);
-      animation: shake 0.25s ease-out;
-    }
-
-    @keyframes pop {
-      0% { transform: scale(0.85); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
+      color: var(--danger-text);
     }
 
     #stats {
-      font-size: 0.88rem;
-      font-weight: 700;
+      font-size: 0.8rem;
       color: var(--text-secondary);
-      margin-top: 8px;
+      font-weight: 600;
     }
 
-    /* Right Panel: Analytics & Speed Sparkline */
+    /* Right Panel: Analytics */
     .right-analytics-panel {
-      font-size: 0.82rem;
+      justify-content: flex-start;
       gap: 8px;
     }
 
     .info-box-compact {
       background: var(--bg-subtle);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
-      line-height: 1.4;
-      text-align: left;
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+      font-size: 0.78rem;
+      max-height: 85px;
+      overflow-y: auto;
+      line-height: 1.35;
     }
 
     .tag-wrong {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
+      display: inline-block;
       background: var(--danger-subtle);
       border: 1px solid var(--danger-border);
       color: var(--danger-text);
-      padding: 2px 6px;
-      border-radius: var(--radius-sm);
-      margin: 2px;
-      font-weight: 600;
-      font-size: 0.8rem;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 0.72rem;
+      margin: 1px;
     }
 
     .tag-slow {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      background: var(--warning-subtle);
-      border: 1px solid var(--warning-border);
-      color: var(--warning-text);
-      padding: 2px 6px;
-      border-radius: var(--radius-sm);
-      margin: 2px;
-      font-weight: 600;
-      font-size: 0.8rem;
+      display: inline-block;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      color: #b45309;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 0.72rem;
+      margin: 1px;
     }
 
-    canvas#speedChart {
-      width: 100%;
-      height: 105px;
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      display: block;
+    [data-theme="dark"] .tag-slow {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
     }
 
-    /* Collapsible Settings Drawer */
-    .settings-drawer {
-      margin-bottom: 10px;
-      padding: 10px 14px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      font-size: 0.82rem;
-    }
-
-    .settings-row {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .settings-row-divider {
-      height: 1px;
-      background: var(--border-subtle);
-      margin: 2px 0;
-    }
-
-    .modes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-    }
-
-    /* Responsive single-screen adjustments */
+    /* Responsive */
     @media (max-width: 960px) {
       .dashboard-grid {
         grid-template-columns: 1fr;
@@ -546,11 +499,12 @@
 </head>
 <body>
 
-  <!-- Compact Top Navigation Bar with Language Switcher -->
+  <!-- Top Navigation Bar -->
   <header class="kubi-top-bar">
     <div class="kubi-nav-left">
       <a href="../index.html" class="kubi-back-link" id="i18nBackLink">← All Activities</a>
-      <span class="kubi-page-title" id="i18nTitle" style="font-size: 1.05rem;">Math Trainer ✏️</span>
+      <a href="index.html" class="kubi-back-link" id="i18nMathTrainerLink" style="color:var(--text-secondary);">✏️ Math Trainer</a>
+      <span class="kubi-page-title" id="i18nTitle" style="font-size: 1.05rem;">Division with Remainder ➗</span>
     </div>
     <div class="nav-actions">
       <!-- Language Switcher: SK | EN | DE -->
@@ -565,22 +519,25 @@
 
   <main class="app-container">
     
-    <!-- Slim Toolbar (Ultra-clean default view: Presets + Settings toggle) -->
+    <!-- Slim Toolbar -->
     <section class="trainer-toolbar">
-      <!-- Presets -->
       <div class="toolbar-group">
-        <button type="button" class="preset-btn" id="preset0_10" onclick="setOpPreset(0, 10)">0 – 10</button>
-        <button type="button" class="preset-btn active" id="preset1_10" onclick="setOpPreset(1, 10)">1 – 10</button>
-        <button type="button" class="preset-btn" id="preset3_9" onclick="setOpPreset(3, 9)">3 – 9</button>
+        <button type="button" class="preset-btn active" id="preset2_10" onclick="setPreset(2, 10)">2 – 10</button>
+        <button type="button" class="preset-btn" id="preset3_9" onclick="setPreset(3, 9)">3 – 9</button>
       </div>
 
-      <!-- Settings & Operations Toggle Button -->
+      <div class="toolbar-group">
+        <span class="i18n-from">From</span>
+        <input type="number" id="divRemMin" class="toolbar-input" value="2" min="2" max="20" onchange="onCustomRangeChange()">
+        <span class="i18n-to">to</span>
+        <input type="number" id="divRemMax" class="toolbar-input" value="10" min="2" max="20" onchange="onCustomRangeChange()">
+      </div>
+
       <button type="button" class="preset-btn" onclick="toggleSettingsDrawer()" id="i18nSettingsBtn">⚙️ Settings</button>
     </section>
 
-    <!-- Collapsible Settings & Operations Drawer -->
+    <!-- Collapsible Settings Drawer -->
     <div id="settingsDrawer" class="settings-drawer" style="display: none;">
-      <!-- Row 1: Parameters, Modes, Timers & Thresholds -->
       <div class="settings-row">
         <!-- Practice Mode -->
         <div class="toolbar-setting-item">
@@ -592,26 +549,17 @@
           </select>
         </div>
 
-        <!-- Downweight Easy (1*N) -->
-        <div class="toolbar-setting-item">
-          <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;" id="i18nDownweightLabel" title="Downweight easy facts (1 × N)">
-            <input type="checkbox" id="downweightEasy" checked onchange="saveProgress()" style="accent-color:var(--primary); cursor:pointer;">
-            <span id="i18nDownweightText">📉 Reduce 1×N</span>
-          </label>
-        </div>
-
-        <!-- N-Slowest, Auto-Wrong Delay & Success Threshold -->
         <div class="toolbar-setting-item">
           <span id="i18nSlowN">Slow N:</span>
           <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
         </div>
         <div class="toolbar-setting-item">
           <span id="i18nSlowRepeat">Repeat (2–N):</span>
-          <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="Repeat slowest fact every 2nd to N-th problem (random 2 to N, default 5)">
+          <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="Repeat slowest fact every 2nd to N-th problem">
         </div>
         <div class="toolbar-setting-item">
           <span id="i18nWrongDelay">Wrong after [s]:</span>
-          <input type="number" id="wrongDelayInput" class="toolbar-input" value="3" min="1" max="10" onchange="onSettingsChange()" title="If answer has expected digits and is wrong, mark wrong after N seconds and advance (default 3s)">
+          <input type="number" id="wrongDelayInput" class="toolbar-input" value="3" min="1" max="10" onchange="onSettingsChange()" title="If answer has expected digits and is wrong, mark wrong after N seconds and advance">
         </div>
         <div class="toolbar-setting-item">
           <span id="i18nGradN">Graduate:</span>
@@ -619,75 +567,15 @@
           <span id="i18nGradSuffix">x</span>
         </div>
       </div>
-
-      <div class="settings-row-divider"></div>
-
-      <!-- Row 2: Exclusive Arithmetic Operations (Radio buttons) -->
-      <div class="modes-grid">
-        <div class="mode-item">
-          <label class="mode-label">
-            <input type="radio" name="opMode" id="modeMul" value="mul" checked onchange="onOpModeChange()">
-            <span id="i18nOpMul">✖ Multiplication</span>
-          </label>
-          <div style="display:flex; gap:4px; align-items:center;">
-            <span class="i18n-from">From</span>
-            <input type="number" id="mulMin" class="toolbar-input" value="1" min="1" max="20" onchange="onCustomRangeChange()">
-            <span class="i18n-to">to</span>
-            <input type="number" id="mulMax" class="toolbar-input" value="10" min="1" max="20" onchange="onCustomRangeChange()">
-          </div>
-        </div>
-        <div class="mode-item">
-          <label class="mode-label">
-            <input type="radio" name="opMode" id="modeAdd" value="add" onchange="onOpModeChange()">
-            <span id="i18nOpAdd">➕ Addition</span>
-          </label>
-          <div style="display:flex; gap:4px; align-items:center;">
-            <span class="i18n-from">From</span>
-            <input type="number" id="addMin" class="toolbar-input" value="0" min="0" max="50" onchange="onCustomRangeChange()">
-            <span class="i18n-to">to</span>
-            <input type="number" id="addMax" class="toolbar-input" value="10" min="1" max="50" onchange="onCustomRangeChange()">
-          </div>
-        </div>
-        <div class="mode-item">
-          <label class="mode-label">
-            <input type="radio" name="opMode" id="modeSub" value="sub" onchange="onOpModeChange()">
-            <span id="i18nOpSub">➖ Subtraction</span>
-          </label>
-          <div style="display:flex; gap:4px; align-items:center;">
-            <span class="i18n-from">From</span>
-            <input type="number" id="subMin" class="toolbar-input" value="0" min="0" max="50" onchange="onCustomRangeChange()">
-            <span class="i18n-to">to</span>
-            <input type="number" id="subMax" class="toolbar-input" value="10" min="1" max="50" onchange="onCustomRangeChange()">
-          </div>
-        </div>
-        <div class="mode-item">
-          <label class="mode-label">
-            <input type="radio" name="opMode" id="modeDiv" value="div" onchange="onOpModeChange()">
-            <span id="i18nOpDiv">➗ Division</span>
-          </label>
-          <div style="display:flex; gap:4px; align-items:center;">
-            <span class="i18n-from">From</span>
-            <input type="number" id="divMin" class="toolbar-input" value="1" min="1" max="20" onchange="onCustomRangeChange()">
-            <span class="i18n-to">to</span>
-            <input type="number" id="divMax" class="toolbar-input" value="10" min="1" max="20" onchange="onCustomRangeChange()">
-          </div>
-        </div>
-      </div>
-
-      <!-- Dedicated Link to Division with Remainder -->
-      <div style="margin-top:10px; padding:8px 14px; background:var(--surface); border:1px dashed var(--primary); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-        <span style="font-size:0.86rem; font-weight:600; color:var(--text);" id="i18nRemainderPromo">➗ Looking for division with remainder?</span>
-        <a href="remainder.html" class="btn btn-sm btn-primary" style="text-decoration:none;" id="i18nRemainderPromoBtn">Division with Remainder →</a>
-      </div>
     </div>
 
     <!-- 3-Column Single-Screen Dashboard -->
     <div class="dashboard-grid">
 
-      <!-- LEFT COLUMN: 2D Mastery Matrix -->
+      <!-- LEFT COLUMN: Matica delenia so zvyškom -->
       <section class="panel-card matrix-panel">
         <div class="panel-title" id="i18nMatrixTitle">
-          📊 Multiplication Matrix
+          📊 Matica delenia so zvyškom
         </div>
         
         <div id="wordMatrix" class="word-matrix"></div>
@@ -725,26 +613,40 @@
             <div class="legend-swatch" style="background:hsl(174,70%,62%); position:relative; display:flex; align-items:center; justify-content:center; border-radius:2px;">
               <span style="position:absolute; top:2px; right:2px; width:5px; height:5px; border-radius:50%; background:#f59e0b; box-shadow:0 0 3px #f59e0b;"></span>
             </div>
-            <span id="i18nLegendSlow">🐢 Slowest completed (&gt; 80th perc.)</span>
+            <span id="i18nLegendSlow">🐢 Slowest completed (> 80th perc.)</span>
           </div>
         </div>
       </section>
 
-      <!-- CENTER COLUMN: Active Problem Stage -->
+      <!-- CENTER COLUMN: Active Problem Stage (Dual Inputs) -->
       <section class="panel-card center-panel">
         <div class="problem-display" id="problem">
           Press Start
         </div>
 
-        <input
-          type="text"
-          id="answer"
-          class="answer-input"
-          inputmode="numeric"
-          autocomplete="off"
-          placeholder="?"
-          autofocus
-        >
+        <div class="answer-row" id="answerRow">
+          <input
+            type="text"
+            id="answer"
+            class="answer-input"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="?"
+            title="Quotient"
+            autofocus
+          >
+          <span class="remainder-label" id="remainderLabel">remainder</span>
+          <input
+            type="text"
+            id="remainderInput"
+            class="answer-input remainder-input"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="?"
+            title="Remainder"
+          >
+        </div>
+
         <div class="controls-row">
           <button class="btn btn-primary btn-sm" id="startBtn" onclick="startResume()">▶️ Start</button>
           <button class="btn btn-secondary btn-sm" id="pauseBtn" onclick="pauseGame()">⏸ Pause</button>
@@ -785,34 +687,24 @@
     const I18N = {
       sk: {
         backLink: "← Prehľad aktivít",
-        title: "Math Trainer ✏️",
+        mathTrainerLink: "✏️ Násobilka",
+        title: "Delenie so zvyškom ➗",
         rangeFrom: "Od",
         rangeTo: "do",
-        downweightEasy: "📉 Znížiť 1×N",
-        downweightEasyTitle: "Znížiť pravdepodobnosť ľahkých príkladov (1 × N)",
         modeLabel: "Režim:",
         modeNormal: "Normálny (adaptívny cyklus)",
         modeSlow: "Iba najpomalšie",
         modeWrong: "Iba chybné",
         slowN: "Pomalé N:",
         slowRepeat: "Opakovať (2–N):",
-        slowRepeatTitle: "V každom 2. až N-tom príklade zopakovať najpomalší príklad (náhodne 2 až N, default 5)",
         wrongDelay: "Chyba po [s]:",
-        wrongDelayTitle: "Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)",
         gradN: "Vyradenie:",
         gradSuffix: "x",
         settingsBtn: "⚙️ Nastavenia",
-        opMul: "✖ Násobenie",
-        opAdd: "➕ Sčítanie",
-        opSub: "➖ Odčítanie",
-        opDiv: "➗ Delenie",
-        remainderPromo: "➗ Chceš precvičovať delenie so zvyškom?",
-        remainderPromoBtn: "Delenie so zvyškom →",
-        matrixTitleMul: "📊 Matica násobilky",
-        matrixTitleAdd: "📊 Matica sčítania",
-        matrixTitleSub: "📊 Matica odčítania",
-        matrixTitleDiv: "📊 Matica delenia",
-        matrixTitle: "📊 Matica násobilky",
+        remainderWord: "zvyšok",
+        quotientPlaceholder: "podiel",
+        remainderPlaceholder: "zvyšok",
+        matrixTitle: "📊 Matica delenia so zvyškom",
         hoverPrompt: "Prejdi myšou po tabuľke...",
         legendUnseen: "Neprecvičené",
         legendMastered: "Správne (1–6)",
@@ -842,40 +734,28 @@
         dailyHistoryTitle: "📅 Denná história",
         noHistory: "Zatiaľ žiadne záznamy.",
         resetBtn: "🧹 Reset štatistík",
-        resetConfirm: "Naozaj chceš vynulovať celý štatistický pokrok?",
-        speechLang: "sk-SK",
-        voiceWords: { mul: "krát", add: "plus", sub: "mínus", div: "delené" }
+        resetConfirm: "Naozaj chceš vynulovať celý štatistický pokrok?"
       },
       en: {
         backLink: "← Activities Hub",
-        title: "Math Trainer ✏️",
+        mathTrainerLink: "✏️ Math Trainer",
+        title: "Division with Remainder ➗",
         rangeFrom: "From",
         rangeTo: "to",
-        downweightEasy: "📉 Downweight 1×N",
-        downweightEasyTitle: "Lower probability for easy facts (1 × N)",
         modeLabel: "Mode:",
         modeNormal: "Normal (Adaptive cycle)",
         modeSlow: "Slowest only",
         modeWrong: "Mistakes only",
         slowN: "Slow N:",
         slowRepeat: "Repeat (2–N):",
-        slowRepeatTitle: "Every 2 to N problems, repeat one of the slowest problems (randomly 2 to N, default 5)",
         wrongDelay: "Wrong after [s]:",
-        wrongDelayTitle: "If answer has expected digits and is wrong, mark wrong after N seconds and advance (default 3s)",
         gradN: "Graduate:",
         gradSuffix: "x",
         settingsBtn: "⚙️ Settings",
-        opMul: "✖ Multiplication",
-        opAdd: "➕ Addition",
-        opSub: "➖ Subtraction",
-        opDiv: "➗ Division",
-        remainderPromo: "➗ Looking for division with remainder?",
-        remainderPromoBtn: "Division with Remainder →",
-        matrixTitleMul: "📊 Multiplication Matrix",
-        matrixTitleAdd: "📊 Addition Matrix",
-        matrixTitleSub: "📊 Subtraction Matrix",
-        matrixTitleDiv: "📊 Division Matrix",
-        matrixTitle: "📊 Multiplication Matrix",
+        remainderWord: "remainder",
+        quotientPlaceholder: "quotient",
+        remainderPlaceholder: "remainder",
+        matrixTitle: "📊 Remainder Matrix",
         hoverPrompt: "Hover over the table...",
         legendUnseen: "Unpracticed",
         legendMastered: "Correct (1–6)",
@@ -905,40 +785,28 @@
         dailyHistoryTitle: "📅 Daily History",
         noHistory: "No records yet.",
         resetBtn: "🧹 Reset Progress",
-        resetConfirm: "Are you sure you want to reset all progress?",
-        speechLang: "en-US",
-        voiceWords: { mul: "times", add: "plus", sub: "minus", div: "divided by" }
+        resetConfirm: "Are you sure you want to reset all progress?"
       },
       de: {
         backLink: "← Übersicht",
-        title: "Mathe-Trainer ✏️",
+        mathTrainerLink: "✏️ Mathe-Trainer",
+        title: "Division mit Rest ➗",
         rangeFrom: "Von",
         rangeTo: "bis",
-        downweightEasy: "📉 1×N dämpfen",
-        downweightEasyTitle: "Geringere Wahrscheinlichkeit für einfache Aufgaben (1 × N)",
         modeLabel: "Modus:",
         modeNormal: "Normal (Adaptiver Zyklus)",
         modeSlow: "Nur die langsamsten",
         modeWrong: "Nur Fehler",
         slowN: "Langsam N:",
         slowRepeat: "Wiederholen (2–N):",
-        slowRepeatTitle: "Alle 2 bis N Aufgaben eine der langsamsten Aufgaben wiederholen (zufällig 2 bis N, Standard 5)",
         wrongDelay: "Fehler nach [s]:",
-        wrongDelayTitle: "Wenn die Antwort die erwartete Ziffernanzahl hat und falsch ist, nach N Sekunden als Fehler werten und weitergehen (Standard 3s)",
         gradN: "Abschluss:",
         gradSuffix: "x",
         settingsBtn: "⚙️ Einstellungen",
-        opMul: "✖ Multiplikation",
-        opAdd: "➕ Addition",
-        opSub: "➖ Subtraktion",
-        opDiv: "➗ Division",
-        remainderPromo: "➗ Suchst du Division mit Rest?",
-        remainderPromoBtn: "Division mit Rest →",
-        matrixTitleMul: "📊 Einmaleins-Matrix",
-        matrixTitleAdd: "📊 Additionsmatrix",
-        matrixTitleSub: "📊 Subtraktionsmatrix",
-        matrixTitleDiv: "📊 Divisionsmatrix",
-        matrixTitle: "📊 Einmaleins-Matrix",
+        remainderWord: "Rest",
+        quotientPlaceholder: "Quotient",
+        remainderPlaceholder: "Rest",
+        matrixTitle: "📊 Rest-Divisionsmatrix",
         hoverPrompt: "Fahre über die Tabelle...",
         legendUnseen: "Nicht geübt",
         legendMastered: "Richtig (1–6)",
@@ -968,9 +836,7 @@
         dailyHistoryTitle: "📅 Tägliche Historie",
         noHistory: "Bisher keine Einträge.",
         resetBtn: "🧹 Fortschritt zurücksetzen",
-        resetConfirm: "Möchtest du den gesamten Fortschritt wirklich zurücksetzen?",
-        speechLang: "de-DE",
-        voiceWords: { mul: "mal", add: "plus", sub: "minus", div: "geteilt durch" }
+        resetConfirm: "Möchtest du den gesamten Fortschritt wirklich zurücksetzen?"
       }
     };
 
@@ -980,46 +846,35 @@
       if (!I18N[lang]) return;
       currentLang = lang;
       localStorage.setItem("kubi_lang", lang);
-      localStorage.setItem("math_trainer_lang", lang);
       document.documentElement.lang = lang;
       if (window.KubiTheme && window.KubiTheme.update) {
         window.KubiTheme.update();
       }
 
-      // Update button active state
       document.querySelectorAll(".lang-btn").forEach(btn => {
         btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
       });
 
-      // Update UI Text
       const t = I18N[lang];
       document.getElementById("i18nBackLink").innerText = t.backLink;
+      document.getElementById("i18nMathTrainerLink").innerText = t.mathTrainerLink;
       document.getElementById("i18nTitle").innerText = t.title;
       document.querySelectorAll(".i18n-from").forEach(el => el.innerText = t.rangeFrom);
       document.querySelectorAll(".i18n-to").forEach(el => el.innerText = t.rangeTo);
-      document.getElementById("i18nDownweightText").innerText = t.downweightEasy;
-      document.getElementById("i18nDownweightLabel").title = t.downweightEasyTitle;
       document.getElementById("i18nModeLabel").innerText = t.modeLabel;
       document.getElementById("i18nModeNormal").innerText = t.modeNormal;
       document.getElementById("i18nModeSlow").innerText = t.modeSlow;
       document.getElementById("i18nModeWrong").innerText = t.modeWrong;
       document.getElementById("i18nSlowN").innerText = t.slowN;
       document.getElementById("i18nSlowRepeat").innerText = t.slowRepeat;
-      document.getElementById("slowIntervalInput").title = t.slowRepeatTitle;
       document.getElementById("i18nWrongDelay").innerText = t.wrongDelay;
-      document.getElementById("wrongDelayInput").title = t.wrongDelayTitle;
       document.getElementById("i18nGradN").innerText = t.gradN;
       document.getElementById("i18nGradSuffix").innerText = t.gradSuffix;
       document.getElementById("i18nSettingsBtn").innerText = t.settingsBtn;
-      document.getElementById("i18nOpMul").innerText = t.opMul;
-      document.getElementById("i18nOpAdd").innerText = t.opAdd;
-      document.getElementById("i18nOpSub").innerText = t.opSub;
-      document.getElementById("i18nOpDiv").innerText = t.opDiv;
-      let promoTxt = document.getElementById("i18nRemainderPromo");
-      if (promoTxt) promoTxt.innerText = t.remainderPromo;
-      let promoBtn = document.getElementById("i18nRemainderPromoBtn");
-      if (promoBtn) promoBtn.innerText = t.remainderPromoBtn;
-      updateMatrixTitle();
+      document.getElementById("remainderLabel").innerText = t.remainderWord;
+      document.getElementById("answer").title = t.quotientPlaceholder;
+      document.getElementById("remainderInput").title = t.remainderWord;
+      document.getElementById("i18nMatrixTitle").innerText = t.matrixTitle;
       document.getElementById("hovered-word-info").innerText = t.hoverPrompt;
       document.getElementById("i18nLegendUnseen").innerText = t.legendUnseen;
       document.getElementById("i18nLegendMastered").innerText = t.legendMastered;
@@ -1042,10 +897,8 @@
     }
 
     // CONSTANTS & CONFIG
-    const STORAGE_KEY = "math_trainer_adaptive_progress_v3";
-    const DAILY_KEY = "math_trainer_daily_history_v3";
-
-    const REPEAT_SPACING_MAX = 4;
+    const STORAGE_KEY = "remainder_trainer_progress_v1";
+    const DAILY_KEY = "remainder_trainer_daily_v1";
     const MAX_OUTLIER_TIME = 20;
 
     let problemsSinceLastSlow = 0;
@@ -1060,7 +913,6 @@
     // STATE
     let allFacts = [];
     let factsByKey = {};
-
     let stats = {};
     let wrongMap = {};
     let matrixCount = {};
@@ -1068,25 +920,22 @@
 
     let correctCount = 0;
     let incorrectCount = 0;
-
     let speedSamples = [];
     let recentTimes = [];
     let recentFacts = [];
 
     let currentFact = null;
     let lastFactKey = "";
-
     let startTime = 0;
     let totalPausedTime = 0;
     let pauseStart = 0;
     let isPaused = true;
-
-    let slowModeCounter = 0;
-    let slowModeForced = false;
+    let isChecking = false;
 
     // DOM ELEMENTS
     const problemEl = document.getElementById("problem");
     const answerEl = document.getElementById("answer");
+    const remainderEl = document.getElementById("remainderInput");
     const feedbackEl = document.getElementById("feedback");
     const statsEl = document.getElementById("stats");
     const wrongWordsEl = document.getElementById("wrongWords");
@@ -1113,34 +962,47 @@
       "hsl(0,70%,32%)"
     ];
 
-    // KEYDOWN & REAL-TIME INPUT LISTENERS (Auto-check as digits are typed)
+    // FOCUS & TIMERS
     let wrongTimer = null;
+    let focusAdvanceTimer = null;
 
     function clearTimers() {
       if (wrongTimer) {
         clearTimeout(wrongTimer);
         wrongTimer = null;
       }
+      if (focusAdvanceTimer) {
+        clearTimeout(focusAdvanceTimer);
+        focusAdvanceTimer = null;
+      }
     }
     const clearWrongTimer = clearTimers;
 
     function getFactAnswerText(fact) {
       if (!fact) return "";
-      return String(fact.answer);
+      const t = I18N[currentLang];
+      return `${fact.quotient} ${t.remainderWord} ${fact.remainder}`;
     }
 
     function setupProblemInputs() {
       answerEl.value = "";
+      remainderEl.value = "";
       clearTimers();
+      const t = I18N[currentLang];
+      document.getElementById("remainderLabel").innerText = t.remainderWord;
       answerEl.placeholder = "?";
+      remainderEl.placeholder = "?";
+      answerEl.title = t.quotientPlaceholder;
+      remainderEl.title = t.remainderWord;
       answerEl.focus();
     }
 
     answerEl.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" || e.key === "Tab" || e.key === " ") {
         e.preventDefault();
         clearTimers();
-        checkAnswer();
+        remainderEl.focus();
+        remainderEl.select();
       }
     });
 
@@ -1153,13 +1015,59 @@
       let user = parseInt(val, 10);
       if (isNaN(user)) return;
 
-      if (user === currentFact.answer) {
+      if (user === currentFact.quotient) {
+        // Immediately move focus to remainder input when correct quotient is entered
+        remainderEl.focus();
+        remainderEl.select();
+        return;
+      }
+
+      // If user entered expected digit length and it is incorrect, auto-move focus after delay
+      let expectedDigits = String(currentFact.quotient).length;
+      if (val.length >= expectedDigits) {
+        let delaySec = parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10);
+        if (isNaN(delaySec) || delaySec < 1) delaySec = 3;
+
+        focusAdvanceTimer = setTimeout(() => {
+          if (!isPaused && currentFact && !isChecking) {
+            remainderEl.focus();
+            remainderEl.select();
+          }
+        }, delaySec * 1000);
+      }
+    });
+
+    remainderEl.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        clearTimers();
+        checkAnswer();
+      } else if (e.key === "Backspace" && remainderEl.value === "") {
+        e.preventDefault();
+        answerEl.focus();
+      }
+    });
+
+    remainderEl.addEventListener("input", function() {
+      if (isPaused || !currentFact || isChecking) return;
+      clearTimers();
+
+      let rVal = remainderEl.value.trim();
+      if (rVal === "") return;
+      let userR = parseInt(rVal, 10);
+      if (isNaN(userR)) return;
+
+      let userQ = parseInt(answerEl.value.trim(), 10);
+
+      // If both quotient and remainder are correct, advance immediately!
+      if (userQ === currentFact.quotient && userR === currentFact.remainder) {
         checkAnswer();
         return;
       }
 
-      let expectedDigits = String(currentFact.answer).length;
-      if (val.length >= expectedDigits) {
+      // If remainder reached expected digits, trigger wrong timer
+      let expectedRDigits = String(currentFact.remainder).length;
+      if (rVal.length >= expectedRDigits) {
         let delaySec = parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10);
         if (isNaN(delaySec) || delaySec < 1) delaySec = 3;
 
@@ -1192,62 +1100,22 @@
       drawer.style.display = isClosed ? "flex" : "none";
       if (btn) btn.classList.toggle("active", isClosed);
     }
-    const toggleExtraOps = toggleSettingsDrawer;
 
-    // ACTIVE OPERATION & PRESETS HANDLERS
-    function getActiveOp() {
-      const checked = document.querySelector('input[name="opMode"]:checked');
-      return checked ? checked.value : "mul";
-    }
-
-    function updateMatrixTitle() {
-      const op = getActiveOp();
-      const el = document.getElementById("i18nMatrixTitle");
-      if (!el) return;
-      const t = I18N[currentLang] || I18N.en;
-      if (op === "add") el.innerText = t.matrixTitleAdd || "📊 Addition Matrix";
-      else if (op === "sub") el.innerText = t.matrixTitleSub || "📊 Subtraction Matrix";
-      else if (op === "div") el.innerText = t.matrixTitleDiv || "📊 Division Matrix";
-      else el.innerText = t.matrixTitleMul || "📊 Multiplication Matrix";
-    }
-
-    function getActiveRangeInputs() {
-      const op = getActiveOp();
-      if (op === "add") return { minEl: document.getElementById("addMin"), maxEl: document.getElementById("addMax") };
-      if (op === "sub") return { minEl: document.getElementById("subMin"), maxEl: document.getElementById("subMax") };
-      if (op === "div") return { minEl: document.getElementById("divMin"), maxEl: document.getElementById("divMax") };
-      return { minEl: document.getElementById("mulMin"), maxEl: document.getElementById("mulMax") };
-    }
-
+    // PRESET BUTTONS
     function updatePresetButtons() {
-      const { minEl, maxEl } = getActiveRangeInputs();
-      const min = parseInt(minEl?.value || "1", 10);
-      const max = parseInt(maxEl?.value || "10", 10);
+      const min = parseInt(document.getElementById("divRemMin")?.value || "2", 10);
+      const max = parseInt(document.getElementById("divRemMax")?.value || "10", 10);
 
-      const btn0_10 = document.getElementById("preset0_10");
-      const btn1_10 = document.getElementById("preset1_10");
+      const btn2_10 = document.getElementById("preset2_10");
       const btn3_9 = document.getElementById("preset3_9");
 
-      if (btn0_10) btn0_10.classList.toggle("active", min === 0 && max === 10);
-      if (btn1_10) btn1_10.classList.toggle("active", min === 1 && max === 10);
+      if (btn2_10) btn2_10.classList.toggle("active", min === 2 && max === 10);
       if (btn3_9) btn3_9.classList.toggle("active", min === 3 && max === 9);
     }
 
-    function setOpPreset(min, max) {
-      const op = getActiveOp();
-      const { minEl, maxEl } = getActiveRangeInputs();
-      if (op === "mul" || op === "div") {
-        min = Math.max(1, min);
-      }
-      if (minEl) minEl.value = min;
-      if (maxEl) maxEl.value = max;
-
-      updatePresetButtons();
-      onSettingsChange();
-    }
-
-    function onOpModeChange() {
-      updateMatrixTitle();
+    function setPreset(min, max) {
+      document.getElementById("divRemMin").value = min;
+      document.getElementById("divRemMax").value = max;
       updatePresetButtons();
       onSettingsChange();
     }
@@ -1273,69 +1141,31 @@
       }
     }
 
-    // BUILD ACTIVE FACT POOL FROM SETTINGS
+    // BUILD ACTIVE FACT POOL
     function buildProblemPool() {
       let pool = [];
       factsByKey = {};
 
-      const op = getActiveOp();
+      let min = parseInt(document.getElementById("divRemMin")?.value || "2", 10) || 2;
+      let max = parseInt(document.getElementById("divRemMax")?.value || "10", 10) || 10;
+      if (min < 2) min = 2;
+      if (min > max) [min, max] = [max, min];
 
-      if (op === "mul") {
-        let min = parseInt(document.getElementById("mulMin").value, 10) || 1;
-        let max = parseInt(document.getElementById("mulMax").value, 10) || 10;
-        if (min > max) [min, max] = [max, min];
-        for (let a = min; a <= max; a++) {
-          for (let b = min; b <= max; b++) {
-            let key = `${a}×${b}`;
-            let item = { key, num1: a, num2: b, op: "×", answer: a * b, text: `${a} × ${b}` };
-            pool.push(item);
-            factsByKey[key] = item;
-          }
-        }
-      } else if (op === "add") {
-        let min = parseInt(document.getElementById("addMin").value, 10);
-        if (isNaN(min)) min = 0;
-        let max = parseInt(document.getElementById("addMax").value, 10) || 10;
-        if (min > max) [min, max] = [max, min];
-        for (let a = min; a <= max; a++) {
-          for (let b = min; b <= max; b++) {
-            let key = `${a}+${b}`;
-            let item = { key, num1: a, num2: b, op: "+", answer: a + b, text: `${a} + ${b}` };
-            pool.push(item);
-            factsByKey[key] = item;
-          }
-        }
-      } else if (op === "sub") {
-        let min = parseInt(document.getElementById("subMin").value, 10);
-        if (isNaN(min)) min = 0;
-        let max = parseInt(document.getElementById("subMax").value, 10) || 10;
-        if (min > max) [min, max] = [max, min];
-        for (let a = min; a <= max; a++) {
-          for (let b = min; b <= a; b++) {
-            let key = `${a}-${b}`;
-            let item = { key, num1: a, num2: b, op: "-", answer: a - b, text: `${a} − ${b}` };
-            pool.push(item);
-            factsByKey[key] = item;
-          }
-        }
-      } else if (op === "div") {
-        let min = parseInt(document.getElementById("divMin").value, 10) || 1;
-        let max = parseInt(document.getElementById("divMax").value, 10) || 10;
-        if (min > max) [min, max] = [max, min];
-        for (let b = min; b <= max; b++) {
-          for (let ans = min; ans <= max; ans++) {
-            let a = b * ans;
-            let key = `${a}÷${b}`;
-            let item = { key, num1: a, num2: b, op: "÷", answer: ans, text: `${a} ÷ ${b}` };
+      for (let b = min; b <= max; b++) {
+        for (let q = 1; q <= 10; q++) {
+          for (let r = 1; r < b; r++) {
+            let a = b * q + r;
+            let key = `${a}÷${b}r`;
+            let item = { key, num1: a, num2: b, op: "÷r", quotient: q, remainder: r, text: `${a} ÷ ${b}` };
             pool.push(item);
             factsByKey[key] = item;
           }
         }
       }
 
-      // Fallback
       if (pool.length === 0) {
-        document.getElementById("modeMul").checked = true;
+        document.getElementById("divRemMin").value = 2;
+        document.getElementById("divRemMax").value = 10;
         return buildProblemPool();
       }
 
@@ -1353,18 +1183,11 @@
       renderMatrix();
     }
 
-    // HELPER: Identify easy multiplication facts (1 * N or N * 1)
-    function isEasyFact(fact) {
-      if (!fact) return false;
-      return fact.op === "×" && (fact.num1 === 1 || fact.num2 === 1);
-    }
-
     // STORAGE: LOAD & SAVE
     function loadProgress() {
       let saved = localStorage.getItem(STORAGE_KEY);
       let today = new Date().toLocaleDateString('en-CA');
 
-      // Load language preference (defaults to English if not explicitly set)
       let savedLang = localStorage.getItem("kubi_lang");
       if (savedLang && I18N[savedLang]) {
         currentLang = savedLang;
@@ -1380,23 +1203,9 @@
           matrixCount = data.matrixCount || {};
           wrongPracticeCount = data.wrongPracticeCount || {};
 
-          if (data.activeOp) {
-            let r = document.querySelector(`input[name="opMode"][value="${data.activeOp}"]`);
-            if (r) r.checked = true;
-          }
-          if (data.mulMin !== undefined) document.getElementById("mulMin").value = data.mulMin;
-          if (data.mulMax !== undefined) document.getElementById("mulMax").value = data.mulMax;
-          if (data.addMin !== undefined) document.getElementById("addMin").value = data.addMin;
-          if (data.addMax !== undefined) document.getElementById("addMax").value = data.addMax;
-          if (data.subMin !== undefined) document.getElementById("subMin").value = data.subMin;
-          if (data.subMax !== undefined) document.getElementById("subMax").value = data.subMax;
-          if (data.divMin !== undefined) document.getElementById("divMin").value = data.divMin;
-          if (data.divMax !== undefined) document.getElementById("divMax").value = data.divMax;
+          if (data.divRemMin !== undefined) document.getElementById("divRemMin").value = data.divRemMin;
+          if (data.divRemMax !== undefined) document.getElementById("divRemMax").value = data.divRemMax;
 
-          if (data.downweightEasy !== undefined) {
-            let chk = document.getElementById("downweightEasy");
-            if (chk) chk.checked = data.downweightEasy;
-          }
           if (data.slowCount !== undefined) {
             let sInp = document.getElementById("slowCountInput");
             if (sInp) sInp.value = data.slowCount;
@@ -1429,11 +1238,10 @@
           }
           recentTimes = data.recentTimes || [];
         } catch (e) {
-          console.error("Error loading progress", e);
+          console.error("Error loading remainder progress", e);
         }
       }
 
-      updateMatrixTitle();
       updatePresetButtons();
     }
 
@@ -1447,22 +1255,14 @@
         incorrectCount: incorrectCount,
         speedSamples: speedSamples,
         recentTimes: recentTimes,
-        downweightEasy: document.getElementById("downweightEasy")?.checked ?? true,
         slowCount: parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5,
         slowInterval: parseInt(document.getElementById("slowIntervalInput")?.value || "5", 10) || 5,
         wrongDelay: parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10) || 3,
         successThreshold: parseInt(document.getElementById("successThreshold")?.value || "4", 10) || 4,
         practiceMode: document.getElementById("practiceModeSelect")?.value || "normal",
         lastPlayedDate: new Date().toLocaleDateString('en-CA'),
-        activeOp: getActiveOp(),
-        mulMin: parseInt(document.getElementById("mulMin")?.value || "1", 10) || 1,
-        mulMax: parseInt(document.getElementById("mulMax")?.value || "10", 10) || 10,
-        addMin: parseInt(document.getElementById("addMin")?.value || "0", 10) || 0,
-        addMax: parseInt(document.getElementById("addMax")?.value || "10", 10) || 10,
-        subMin: parseInt(document.getElementById("subMin")?.value || "0", 10) || 0,
-        subMax: parseInt(document.getElementById("subMax")?.value || "10", 10) || 10,
-        divMin: parseInt(document.getElementById("divMin")?.value || "1", 10) || 1,
-        divMax: parseInt(document.getElementById("divMax")?.value || "10", 10) || 10
+        divRemMin: parseInt(document.getElementById("divRemMin")?.value || "2", 10) || 2,
+        divRemMax: parseInt(document.getElementById("divRemMax")?.value || "10", 10) || 10
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
@@ -1473,244 +1273,200 @@
 
       let total = correctCount + incorrectCount;
       let accuracy = total > 0 ? (correctCount / total * 100).toFixed(1) : 0;
-
       let avgSpeed = speedSamples.length > 0
         ? (speedSamples.reduce((a, b) => a + b, 0) / speedSamples.length).toFixed(2)
         : "-";
 
-      history[today] = {
-        accuracy: accuracy,
-        speed: avgSpeed,
-        solved: total
-      };
-
+      history[today] = { correct: correctCount, incorrect: incorrectCount, accuracy: accuracy, avgSpeed: avgSpeed };
       localStorage.setItem(DAILY_KEY, JSON.stringify(history));
-      displayDailyHistory();
     }
 
     function displayDailyHistory() {
       let history = JSON.parse(localStorage.getItem(DAILY_KEY) || "{}");
-      let lines = [];
+      let dates = Object.keys(history).sort().reverse();
       const t = I18N[currentLang];
 
-      for (let date in history) {
-        let h = history[date];
-        lines.push(`📅 <b>${date}</b> &mdash; ${h.solved || '-'} | <b>${h.accuracy}%</b> | <b>${h.speed}s</b>`);
+      if (dates.length === 0) {
+        dailyHistoryEl.innerHTML = `<span style='color:var(--text-muted);'>${t.noHistory}</span>`;
+        return;
       }
 
-      dailyHistoryEl.innerHTML = (lines.length > 0 ? lines.join("<br>") : t.noHistory);
+      let html = "<table style='width:100%; border-collapse:collapse; font-size:0.75rem;'>";
+      html += "<tr style='border-bottom:1px solid var(--border);'><th style='text-align:left;'>Date</th><th>OK</th><th>Err</th><th>Acc</th><th>Avg</th></tr>";
+      dates.slice(0, 5).forEach(d => {
+        let entry = history[d];
+        html += `<tr><td>${d}</td><td style='text-align:center;'>${entry.correct}</td><td style='text-align:center;'>${entry.incorrect}</td><td style='text-align:center;'>${entry.accuracy}%</td><td style='text-align:center;'>${entry.avgSpeed}s</td></tr>`;
+      });
+      html += "</table>";
+      dailyHistoryEl.innerHTML = html;
     }
 
     function resetProgress() {
       const t = I18N[currentLang];
       if (!confirm(t.resetConfirm)) return;
+
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(DAILY_KEY);
-      location.reload();
+
+      stats = {};
+      wrongMap = {};
+      matrixCount = {};
+      wrongPracticeCount = {};
+      correctCount = 0;
+      incorrectCount = 0;
+      speedSamples = [];
+      recentTimes = [];
+      recentFacts = [];
+
+      buildProblemPool();
+      updateStats();
+      displayDailyHistory();
+      if (!isPaused) newProblem();
     }
 
-    // TETRIS COVERAGE CYCLE
-    function tetrisCheck() {
-      if (allFacts.length === 0) return;
-      const downweight = document.getElementById("downweightEasy")?.checked ?? true;
-
-      let targetFacts = allFacts;
-      if (downweight) {
-        let nonEasy = allFacts.filter(f => !isEasyFact(f));
-        if (nonEasy.length > 0) targetFacts = nonEasy;
-      }
-
-      let allFilled = targetFacts.every(f => (matrixCount[f.key] || 0) >= 1);
-      if (allFilled) {
-        allFacts.forEach(f => {
-          matrixCount[f.key] = Math.max(0, (matrixCount[f.key] || 0) - 1);
-        });
-      }
-    }
-
-    function matrixCountIncrement(key) {
-      matrixCount[key] = (matrixCount[key] || 0) + 1;
-      tetrisCheck();
-    }
-
-    // STATISTICAL CALCULATION: 80th PERCENTILE (EXCLUDING OUTLIERS)
+    // PERCENTILE & SLOW PROBLEM ALGORITHM
     function calculatePercentile80() {
-      // Outlier filtering: exclude pause times and distractions (> 15s or < 0.2s)
-      let samples = speedSamples.filter(t => typeof t === "number" && t >= 0.2 && t <= 15.0);
+      let times = [];
+      allFacts.forEach(f => {
+        let st = stats[f.key];
+        if (st && st.attempts > 0 && st.totalTime > 0) {
+          times.push(st.totalTime / st.attempts);
+        }
+      });
 
-      if (samples.length < 5 && recentTimes && recentTimes.length > 0) {
-        recentTimes.forEach(t => {
-          if (typeof t === "number" && t >= 0.2 && t <= 15.0) samples.push(t);
-        });
-      }
-
-      if (samples.length < 5) {
-        allFacts.forEach(f => {
-          let s = stats[f.key];
-          if (s && s.attempts > 0) {
-            let avg = s.totalTime / s.attempts;
-            if (avg >= 0.2 && avg <= 15.0) samples.push(avg);
-          }
-        });
-      }
-
-      if (samples.length < 3) {
-        return 3.0; // Default when little data
-      }
-
-      samples.sort((a, b) => a - b);
-
-      // Exclude top 5% extreme outliers if we have at least 10 samples
-      let effective = samples;
-      if (samples.length >= 10) {
-        let cutoff = Math.floor(samples.length * 0.95);
-        effective = samples.slice(0, cutoff);
-      }
-
-      let idx = (effective.length - 1) * 0.80;
-      let i0 = Math.floor(idx);
-      let frac = idx - i0;
-      let p80 = effective[i0] + (i0 + 1 < effective.length ? frac * (effective[i0 + 1] - effective[i0]) : 0);
-
-      return Math.max(1.2, p80);
+      if (times.length < 3) return 4.0;
+      times.sort((a, b) => a - b);
+      let idx = Math.floor(0.80 * (times.length - 1));
+      return times[idx];
     }
 
-    // IDENTIFY N-SLOWEST FACTS FROM ALREADY MARKED AS DONE
     function getSlowDoneFacts() {
-      let nTarget = parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5;
       let p80 = calculatePercentile80();
+      let slowFacts = allFacts
+        .filter(f => {
+          let st = stats[f.key];
+          if (!st || st.attempts === 0) return false;
+          let avg = st.totalTime / st.attempts;
+          return avg > p80 && (matrixCount[f.key] || 0) >= 1 && wrongMap[f.key] === undefined;
+        })
+        .sort((a, b) => {
+          let avgA = stats[a.key].totalTime / stats[a.key].attempts;
+          let avgB = stats[b.key].totalTime / stats[b.key].attempts;
+          return avgB - avgA;
+        });
 
-      let activeKeys = allFacts.map(f => f.key);
-      let wrongKeys = Object.keys(wrongMap).filter(k => activeKeys.includes(k));
-
-      let doneFacts = allFacts.filter(f => 
-        (matrixCount[f.key] || 0) >= 1 && 
-        !wrongKeys.includes(f.key) &&
-        stats[f.key] && 
-        stats[f.key].attempts > 0
-      );
-
-      let slowCandidates = doneFacts.filter(f => {
-        let avg = stats[f.key].totalTime / stats[f.key].attempts;
-        return avg > p80;
-      });
-
-      slowCandidates.sort((a, b) => {
-        let avgA = stats[a.key].totalTime / stats[a.key].attempts;
-        let avgB = stats[b.key].totalTime / stats[b.key].attempts;
-        return avgB - avgA;
-      });
-
-      return {
-        p80: p80,
-        slowFacts: slowCandidates.slice(0, nTarget),
-        allDoneSlowCount: slowCandidates.length
-      };
+      return { p80, slowFacts };
     }
 
-    // ADAPTIVE SELECTION ALGORITHM
+    // PROBLEM SELECTION ALGORITHM
     function chooseProblem() {
-      let mode = practiceModeSelectEl.value;
-      let activeKeys = allFacts.map(f => f.key);
-      let wrongKeys = Object.keys(wrongMap).filter(k => activeKeys.includes(k));
+      if (allFacts.length === 0) return null;
 
+      let pMode = practiceModeSelectEl?.value || "normal";
+      let wrongKeys = Object.keys(wrongMap).filter(k => factsByKey[k]);
       let { p80, slowFacts } = getSlowDoneFacts();
       let slowKeys = slowFacts.map(f => f.key);
 
-      // Practice mode overrides
-      if (mode === "wrong") {
+      if (pMode === "wrong") {
         if (wrongKeys.length > 0) {
-          let chosen = pickWeightedWithSpacing(wrongKeys);
-          return factsByKey[chosen];
-        }
-      } else if (mode === "slow") {
-        let pool = slowKeys.length > 0 ? slowKeys : wrongKeys;
-        if (pool.length > 0) {
-          let chosen = pickWeightedWithSpacing(pool);
-          slowModeForced = true;
-          return factsByKey[chosen];
+          let candidates = wrongKeys.filter(k => k !== lastFactKey);
+          if (candidates.length === 0) candidates = wrongKeys;
+          let chosenKey = candidates[Math.floor(Math.random() * candidates.length)];
+          return factsByKey[chosenKey];
         }
       }
 
-      // Normal Adaptive Mode:
-      // Zero-cells: facts not yet seen this Tetris cycle (excluding wrong and slow)
-      let zeroCells = allFacts
-        .filter(f => (matrixCount[f.key] || 0) === 0 && !wrongKeys.includes(f.key) && !slowKeys.includes(f.key))
-        .map(f => f.key);
+      if (pMode === "slow") {
+        if (slowKeys.length > 0) {
+          let candidates = slowKeys.filter(k => k !== lastFactKey);
+          if (candidates.length === 0) candidates = slowKeys;
+          let chosenKey = candidates[Math.floor(Math.random() * candidates.length)];
+          return factsByKey[chosenKey];
+        }
+      }
 
+      // Priority 1: Mistakes that are still in countdown
+      if (wrongKeys.length > 0) {
+        let candidates = wrongKeys.filter(k => k !== lastFactKey && !recentFacts.slice(-2).includes(k));
+        if (candidates.length === 0) candidates = wrongKeys.filter(k => k !== lastFactKey);
+        if (candidates.length === 0) candidates = wrongKeys;
+        let chosenKey = candidates[Math.floor(Math.random() * candidates.length)];
+        return factsByKey[chosenKey];
+      }
+
+      // Priority 2: Periodic repetition of slowest facts
       problemsSinceLastSlow++;
-      let isSlowInjectionTurn = (problemsSinceLastSlow >= nextSlowInterval);
-
-      let pool;
-      if (isSlowInjectionTurn && slowKeys.length > 0) {
-        // Take ONE of the N slowest problems repeatedly (every randomly 2 to N problems)
-        pool = slowKeys;
+      if (slowKeys.length > 0 && problemsSinceLastSlow >= nextSlowInterval) {
         problemsSinceLastSlow = 0;
         nextSlowInterval = getNextSlowInterval();
-      } else if (wrongKeys.length > 0 && (problemsSinceLastSlow % 3 === 0 || zeroCells.length === 0)) {
-        pool = wrongKeys;
-      } else if (zeroCells.length > 0) {
-        pool = zeroCells;
-      } else if (slowKeys.length > 0) {
-        pool = slowKeys;
-      } else {
-        let minCount = Math.min(...allFacts.map(f => matrixCount[f.key] || 0));
-        pool = allFacts
-          .filter(f => (matrixCount[f.key] || 0) === minCount && !wrongKeys.includes(f.key))
-          .map(f => f.key);
-        if (pool.length === 0) pool = activeKeys;
-      }
 
-      let chosenKey = pickWeightedWithSpacing(pool);
-      return factsByKey[chosenKey] || allFacts[0];
-    }
-
-    // WEIGHTED RANDOM PICK WITH ANTI-REPEAT BUFFER
-    function pickWeightedWithSpacing(keys) {
-      if (!keys || keys.length === 0) return allFacts[0]?.key;
-      let available = keys.filter(k => k !== lastFactKey && !recentFacts.slice(-3).includes(k));
-      if (available.length === 0) available = keys.filter(k => k !== lastFactKey);
-      if (available.length === 0) available = keys;
-
-      const downweight = document.getElementById("downweightEasy")?.checked ?? true;
-
-      let weights = available.map(k => {
-        let f = factsByKey[k];
-        if (wrongMap[k] !== undefined) {
-          return 3.0;
-        }
-        if (downweight && isEasyFact(f)) {
-          return 0.10;
-        }
-        return 1.0;
-      });
-
-      let totalWeight = weights.reduce((acc, w) => acc + w, 0);
-      let rand = Math.random() * totalWeight;
-      let running = 0;
-      for (let i = 0; i < available.length; i++) {
-        running += weights[i];
-        if (rand <= running) {
-          return available[i];
+        let sCount = parseInt(document.getElementById("slowCountInput")?.value || "5", 10);
+        let topSlowKeys = slowKeys.slice(0, sCount);
+        let candidates = topSlowKeys.filter(k => k !== lastFactKey && !recentFacts.slice(-3).includes(k));
+        if (candidates.length === 0) candidates = topSlowKeys.filter(k => k !== lastFactKey);
+        if (candidates.length > 0) {
+          let chosenKey = candidates[Math.floor(Math.random() * candidates.length)];
+          return factsByKey[chosenKey];
         }
       }
-      return available[available.length - 1];
+
+      // Priority 3: Unpracticed facts
+      let unseenFacts = allFacts
+        .filter(f => (matrixCount[f.key] || 0) === 0 && !wrongKeys.includes(f.key) && !slowKeys.includes(f.key))
+        .filter(f => f.key !== lastFactKey && !recentFacts.slice(-2).includes(f.key));
+
+      if (unseenFacts.length > 0) {
+        return unseenFacts[Math.floor(Math.random() * unseenFacts.length)];
+      }
+
+      // Priority 4: Lowest count facts
+      let minCount = Math.min(...allFacts.map(f => matrixCount[f.key] || 0));
+      let lowestCountFacts = allFacts
+        .filter(f => (matrixCount[f.key] || 0) === minCount && !wrongKeys.includes(f.key))
+        .filter(f => f.key !== lastFactKey && !recentFacts.slice(-3).includes(f.key));
+
+      if (lowestCountFacts.length > 0) {
+        return lowestCountFacts[Math.floor(Math.random() * lowestCountFacts.length)];
+      }
+
+      let fallbackCandidates = allFacts.filter(f => f.key !== lastFactKey);
+      if (fallbackCandidates.length === 0) fallbackCandidates = allFacts;
+      return fallbackCandidates[Math.floor(Math.random() * fallbackCandidates.length)];
     }
 
-    // GAME CONTROLS & LIFECYCLE
+    // GAME CONTROLS
     function startResume() {
       if (!isPaused) return;
       isPaused = false;
-      document.getElementById("startBtn").style.opacity = "0.7";
-      document.getElementById("pauseBtn").style.opacity = "1";
-      newProblem();
+
+      document.getElementById("startBtn").classList.add("active");
+      document.getElementById("pauseBtn").classList.remove("active");
+
+      if (pauseStart !== 0) {
+        totalPausedTime += performance.now() - pauseStart;
+        pauseStart = 0;
+      }
+
+      if (!currentFact) {
+        newProblem();
+      } else {
+        startTime = performance.now();
+        totalPausedTime = 0;
+        problemEl.innerText = currentFact.text + " =";
+        setupProblemInputs();
+        highlightActiveCell();
+      }
     }
 
     function pauseGame() {
-      const t = I18N[currentLang];
+      if (isPaused) return;
       isPaused = true;
-      document.getElementById("startBtn").style.opacity = "1";
-      document.getElementById("pauseBtn").style.opacity = "0.7";
+      pauseStart = performance.now();
+
+      document.getElementById("startBtn").classList.remove("active");
+      document.getElementById("pauseBtn").classList.add("active");
+
+      const t = I18N[currentLang];
       problemEl.innerText = t.pausedText;
       feedbackEl.innerText = "";
       clearWrongTimer();
@@ -1739,15 +1495,15 @@
       highlightActiveCell();
     }
 
-    let isChecking = false;
-
     function checkAnswer() {
       if (isPaused || !currentFact || isChecking) return;
 
-      let user = parseInt(answerEl.value.trim(), 10);
-      if (isNaN(user)) return;
+      let userQ = parseInt(answerEl.value.trim(), 10);
+      let userR = parseInt(remainderEl.value.trim(), 10);
+      if (isNaN(userQ)) return;
+      if (isNaN(userR)) userR = -1;
 
-      let isCorrect = (user === currentFact.answer);
+      let isCorrect = (userQ === currentFact.quotient && userR === currentFact.remainder);
 
       let endTime = performance.now();
       let elapsed = (endTime - startTime - totalPausedTime) / 1000;
@@ -1756,7 +1512,7 @@
 
       let targetN = parseInt(successThresholdEl?.value || "4", 10);
       let key = currentFact.key;
-      const t = I18N[currentLang] || I18N.en;
+      const t = I18N[currentLang];
 
       if (!stats[key]) {
         stats[key] = { totalTime: 0, attempts: 0, countdown: targetN, times: [] };
@@ -1770,7 +1526,6 @@
       if (isCorrect) {
         isChecking = true;
         clearTimers();
-        // CORRECT ANSWER: Update time for this specific problem!
         stats[key].lastTime = elapsed;
         stats[key].times.push(elapsed);
         if (stats[key].times.length > 5) stats[key].times.shift();
@@ -1827,7 +1582,6 @@
         }, 400);
 
       } else {
-        // INCORRECT ANSWER: Update time and trigger mistake tracking
         isChecking = true;
         clearTimers();
 
@@ -1850,13 +1604,17 @@
         updateStats();
         saveProgress();
         saveDailyHistory();
+        renderMatrix();
 
-        // Automatically move to the next problem after showing the correct answer for 1.3 seconds
         setTimeout(() => {
           isChecking = false;
           newProblem();
         }, 1300);
       }
+    }
+
+    function matrixCountIncrement(key) {
+      matrixCount[key] = (matrixCount[key] || 0) + 1;
     }
 
     // STATS UPDATE & UI SYNCHRONIZATION
@@ -1910,16 +1668,16 @@
           : `<span style='color: var(--success); font-weight:600; font-size:0.8rem;'>${t.noSlow}</span>`);
     }
 
-    // MATRIX HEATMAP GRID LAYOUT & RENDERING
+    // MATRIX HEATMAP GRID LAYOUT & RENDERING (GUARANTEED FIT IN SIDE PANE)
     function calculateOptimalGrid(N) {
       let bestC = N, bestR = 1, minUnused = N, bestRatioDiff = Infinity;
-      const targetRatio = 1.33;
+      const targetRatio = 1.25;
 
       for (let r = 1; r <= N; r++) {
         let c = Math.ceil(N / r);
         let unused = (c * r) - N;
         let ratio = c / r;
-        if (ratio < 0.4 || ratio > 2.8) continue;
+        if (ratio < 0.35 || ratio > 2.8) continue;
 
         if (unused < minUnused) {
           minUnused = unused; bestC = c; bestR = r;
@@ -2008,7 +1766,6 @@
         document.getElementById("hovered-word-info").innerHTML = t.hoverPrompt;
       });
 
-      // Click to practice this specific fact
       cell.addEventListener("click", () => {
         if (!isPaused) {
           currentFact = fact;
@@ -2033,73 +1790,32 @@
       let { p80, slowFacts } = getSlowDoneFacts();
       let slowKeysSet = new Set(slowFacts.map(f => f.key));
 
-      let isStructured = (allFacts.every(f => f.op === "×") || allFacts.every(f => f.op === "+"));
-      let minA = isStructured ? Math.min(...allFacts.map(f => f.num1)) : 0;
-      let maxA = isStructured ? Math.max(...allFacts.map(f => f.num1)) : 0;
-      let minB = isStructured ? Math.min(...allFacts.map(f => f.num2)) : 0;
-      let maxB = isStructured ? Math.max(...allFacts.map(f => f.num2)) : 0;
-      let countA = maxA - minA + 1;
-      let countB = maxB - minB + 1;
+      let N = allFacts.length;
+      let grid = calculateOptimalGrid(N);
+      container.style.display = "grid";
+      container.style.gridTemplateColumns = `repeat(${grid.cols}, minmax(0, 1fr))`;
+      container.style.gap = "2px";
+      container.style.justifyContent = "center";
 
-      if (isStructured && (countA * countB === allFacts.length) && countB <= 15) {
-        container.style.display = "grid";
-        container.style.gridTemplateColumns = `repeat(${countB + 1}, minmax(0, 1fr))`;
-        container.style.gap = "1.5px";
-        container.style.justifyContent = "center";
+      allFacts.forEach(fact => {
+        let cell = createMatrixCell(fact, fact.key, slowKeysSet.has(fact.key), p80);
+        container.appendChild(cell);
+      });
 
-        let corner = document.createElement("div");
-        corner.className = "matrix-hdr";
-        corner.textContent = allFacts[0].op;
-        container.appendChild(corner);
-
-        for (let b = minB; b <= maxB; b++) {
-          let hdr = document.createElement("div");
-          hdr.className = "matrix-hdr";
-          hdr.textContent = b;
-          container.appendChild(hdr);
-        }
-
-        for (let a = minA; a <= maxA; a++) {
-          let rowHdr = document.createElement("div");
-          rowHdr.className = "matrix-hdr";
-          rowHdr.textContent = a;
-          container.appendChild(rowHdr);
-
-          for (let b = minB; b <= maxB; b++) {
-            let key = `${a}${allFacts[0].op}${b}`;
-            let fact = factsByKey[key];
-            let cell = createMatrixCell(fact, key, slowKeysSet.has(key), p80);
-            container.appendChild(cell);
-          }
-        }
-      } else {
-        let N = allFacts.length;
-        let grid = calculateOptimalGrid(N);
-        container.style.display = "grid";
-        container.style.gridTemplateColumns = `repeat(${grid.cols}, minmax(0, 1fr))`;
-        container.style.gap = "2px";
-        container.style.justifyContent = "center";
-
-        allFacts.forEach(fact => {
-          let cell = createMatrixCell(fact, fact.key, slowKeysSet.has(fact.key), p80);
-          container.appendChild(cell);
-        });
-
-        let totalCells = grid.cols * grid.rows;
-        for (let i = N; i < totalCells; i++) {
-          let placeholder = document.createElement("div");
-          placeholder.className = "matrix-cell";
-          placeholder.style.backgroundColor = "transparent";
-          placeholder.style.border = "none";
-          placeholder.style.pointerEvents = "none";
-          container.appendChild(placeholder);
-        }
+      let totalCells = grid.cols * grid.rows;
+      for (let i = N; i < totalCells; i++) {
+        let placeholder = document.createElement("div");
+        placeholder.className = "matrix-cell";
+        placeholder.style.backgroundColor = "transparent";
+        placeholder.style.border = "none";
+        placeholder.style.pointerEvents = "none";
+        container.appendChild(placeholder);
       }
 
       highlightActiveCell();
     }
 
-    // THEME-AWARE COMPACT SPEED CANVAS CHART
+    // THEME-AWARE SPEED CHART WITH 80th PERCENTILE LINE
     function drawChart() {
       const canvas = document.getElementById("speedChart");
       if (!canvas) return;
@@ -2147,45 +1863,14 @@
       ctx.textAlign = "right";
       ctx.textBaseline = "middle";
 
-      ctx.beginPath();
-      for (let i = 0; i <= 2; i++) {
-        let y = padT + graphH - (i / 2) * graphH;
+      for (let s = 1; s <= maxTime; s += (maxTime > 10 ? 4 : 2)) {
+        let y = padT + graphH - (s / maxTime) * graphH;
+        ctx.beginPath();
         ctx.moveTo(padL, y);
         ctx.lineTo(w - padR, y);
-        let val = (i / 2) * maxTime;
-        ctx.fillText(val.toFixed(1) + "s", padL - 4, y);
+        ctx.stroke();
+        ctx.fillText(s + "s", padL - 4, y);
       }
-      ctx.stroke();
-
-      // 80th Percentile Reference Line & Label
-      let yP80 = padT + graphH - ((p80 / maxTime) * graphH);
-      const colorP80 = isDark ? "#fbbf24" : "#d97706";
-
-      ctx.save();
-      ctx.setLineDash([4, 3]);
-      ctx.strokeStyle = colorP80;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(padL, yP80);
-      ctx.lineTo(w - padR, yP80);
-      ctx.stroke();
-      ctx.restore();
-
-      // 80th Percentile Label badge (P80: X.Xs)
-      ctx.font = "bold 9px system-ui, sans-serif";
-      const p80Label = `P80: ${p80.toFixed(1)}s`;
-      const textWidth = ctx.measureText(p80Label).width;
-      const labelX = w - padR;
-      const isNearTop = (yP80 - padT) < 14;
-      const bgY = isNearTop ? yP80 + 1 : yP80 - 12;
-
-      ctx.fillStyle = isDark ? "rgba(21, 29, 48, 0.85)" : "rgba(255, 255, 255, 0.85)";
-      ctx.fillRect(labelX - textWidth - 5, bgY, textWidth + 5, 11);
-
-      ctx.fillStyle = colorP80;
-      ctx.textAlign = "right";
-      ctx.textBaseline = isNearTop ? "top" : "bottom";
-      ctx.fillText(p80Label, labelX - 2, isNearTop ? yP80 + 3 : yP80 - 2);
 
       // Axes
       ctx.strokeStyle = colorAxis;
@@ -2196,44 +1881,57 @@
       ctx.lineTo(w - padR, h - padB);
       ctx.stroke();
 
-      // Data line
+      // 80th Percentile Threshold Line
+      if (p80 > 0 && p80 <= maxTime) {
+        let yP80 = padT + graphH - (p80 / maxTime) * graphH;
+        ctx.save();
+        ctx.strokeStyle = "#f59e0b";
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(padL, yP80);
+        ctx.lineTo(w - padR, yP80);
+        ctx.stroke();
+        ctx.fillStyle = "#f59e0b";
+        ctx.font = "8px system-ui, sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText("P80: " + p80.toFixed(1) + "s", w - padR, yP80 - 4);
+        ctx.restore();
+      }
+
+      // Response Time Line
       ctx.strokeStyle = colorLine;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      for (let i = 0; i < recentTimes.length; i++) {
-        let val = recentTimes[i];
+      recentTimes.forEach((val, i) => {
         let x = padL + i * xStep;
-        let y = padT + graphH - ((val / maxTime) * graphH);
+        let y = padT + graphH - (val / maxTime) * graphH;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
-      }
+      });
       ctx.stroke();
 
-      // Data points (slower than P80 highlighted in amber)
-      for (let i = 0; i < recentTimes.length; i++) {
-        let val = recentTimes[i];
+      // Data Points
+      recentTimes.forEach((val, i) => {
         let x = padL + i * xStep;
-        let y = padT + graphH - ((val / maxTime) * graphH);
+        let y = padT + graphH - (val / maxTime) * graphH;
+        ctx.fillStyle = val > p80 ? "#f59e0b" : colorPoint;
         ctx.beginPath();
         ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = (val > p80) ? colorP80 : colorPoint;
         ctx.fill();
-      }
+      });
     }
 
-    // INIT
+    // INITIALIZATION
     window.addEventListener("DOMContentLoaded", () => {
       loadProgress();
-      nextSlowInterval = getNextSlowInterval();
       setLanguage(currentLang);
       buildProblemPool();
       updateStats();
       displayDailyHistory();
 
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawChart);
-      document.querySelectorAll(".theme-toggle-btn").forEach(btn => {
-        btn.addEventListener("click", () => setTimeout(drawChart, 50));
-      });
+      // Auto-start on load
+      startResume();
     });
   </script>
 </body>
