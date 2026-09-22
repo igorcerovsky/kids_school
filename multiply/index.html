@@ -132,6 +132,7 @@
 
     input[type="number"].toolbar-input,
     .trainer-toolbar input[type="number"],
+    .settings-drawer input[type="number"],
     .extra-ops-drawer input[type="number"],
     .toolbar-input {
       width: 52px !important;
@@ -158,6 +159,7 @@
 
     select.toolbar-select,
     .trainer-toolbar select,
+    .settings-drawer select,
     .toolbar-select {
       height: 28px !important;
       padding: 2px 8px !important;
@@ -478,21 +480,38 @@
       display: block;
     }
 
-    /* Secondary collapsible operations */
-    .extra-ops-drawer {
-      margin-top: 8px;
-      padding: 8px 12px;
+    /* Collapsible Settings Drawer */
+    .settings-drawer {
+      margin-bottom: 10px;
+      padding: 10px 14px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       font-size: 0.82rem;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .settings-row-divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 2px 0;
     }
 
     .modes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 8px;
-      margin-top: 6px;
+      margin-top: 2px;
     }
 
     .mode-item {
@@ -543,7 +562,7 @@
 
   <main class="app-container">
     
-    <!-- Slim Toolbar (Single Row Controls) -->
+    <!-- Slim Toolbar (Ultra-clean default view: Presets + Settings toggle) -->
     <section class="trainer-toolbar">
       <!-- Presets -->
       <div class="toolbar-group">
@@ -551,34 +570,33 @@
         <button type="button" class="preset-btn" id="preset3_9" onclick="setMultiplyPreset(3, 9)">3 – 9</button>
       </div>
 
-      <!-- Range -->
-      <div class="toolbar-group">
-        <span id="i18nRangeFrom">Od</span>
-        <input type="number" id="mulMin" class="toolbar-input" value="1" min="1" max="20" onchange="onCustomRangeChange()">
-        <span id="i18nRangeTo">do</span>
-        <input type="number" id="mulMax" class="toolbar-input" value="10" min="1" max="20" onchange="onCustomRangeChange()">
-      </div>
+      <!-- Settings & Operations Toggle Button -->
+      <button type="button" class="preset-btn" onclick="toggleSettingsDrawer()" id="i18nSettingsBtn">⚙️ Nastavenia</button>
+    </section>
 
-      <!-- Downweight Easy (1*N) -->
-      <div class="toolbar-group">
-        <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;" id="i18nDownweightLabel" title="Znížiť pravdepodobnosť ľahkých príkladov (1 × N)">
-          <input type="checkbox" id="downweightEasy" checked onchange="saveProgress()" style="accent-color:var(--primary); cursor:pointer;">
-          <span id="i18nDownweightText">📉 Znížiť 1×N</span>
-        </label>
-      </div>
+    <!-- Collapsible Settings & Operations Drawer -->
+    <div id="settingsDrawer" class="settings-drawer" style="display: none;">
+      <!-- Row 1: Parameters, Modes, Timers & Thresholds -->
+      <div class="settings-row">
+        <!-- Practice Mode -->
+        <div class="toolbar-setting-item">
+          <label for="practiceModeSelect"><b id="i18nModeLabel">Režim:</b></label>
+          <select id="practiceModeSelect" class="toolbar-select" onchange="onPracticeModeChange()">
+            <option value="normal" id="i18nModeNormal">Normálny (adaptívny cyklus)</option>
+            <option value="slow" id="i18nModeSlow">Iba najpomalšie</option>
+            <option value="wrong" id="i18nModeWrong">Iba chybné</option>
+          </select>
+        </div>
 
-      <!-- Practice Mode -->
-      <div class="toolbar-group">
-        <label for="practiceModeSelect"><b id="i18nModeLabel">Režim:</b></label>
-        <select id="practiceModeSelect" class="toolbar-select" onchange="onPracticeModeChange()">
-          <option value="normal" id="i18nModeNormal">Normálny (adaptívny cyklus)</option>
-          <option value="slow" id="i18nModeSlow">Iba najpomalšie</option>
-          <option value="wrong" id="i18nModeWrong">Iba chybné</option>
-        </select>
-      </div>
+        <!-- Downweight Easy (1*N) -->
+        <div class="toolbar-setting-item">
+          <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;" id="i18nDownweightLabel" title="Znížiť pravdepodobnosť ľahkých príkladov (1 × N)">
+            <input type="checkbox" id="downweightEasy" checked onchange="saveProgress()" style="accent-color:var(--primary); cursor:pointer;">
+            <span id="i18nDownweightText">📉 Znížiť 1×N</span>
+          </label>
+        </div>
 
-      <!-- N-Slowest, Auto-Wrong Delay & Success Threshold -->
-      <div class="toolbar-settings-cluster">
+        <!-- N-Slowest, Auto-Wrong Delay & Success Threshold -->
         <div class="toolbar-setting-item">
           <span id="i18nSlowN">Pomalé N:</span>
           <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
@@ -598,52 +616,55 @@
         </div>
       </div>
 
-      <!-- Extra Ops Toggle Button -->
-      <button type="button" class="preset-btn" onclick="toggleExtraOps()" id="i18nExtraOpsBtn">⚙️ + − ÷</button>
-    </section>
+      <div class="settings-row-divider"></div>
 
-    <!-- Secondary Collapsible Drawer for Extra Ops -->
-    <div id="extraOpsDrawer" class="extra-ops-drawer" style="display: none;">
+      <!-- Row 2: Arithmetic Operations (All operations have from-to inside their box) -->
       <div class="modes-grid">
         <div class="mode-item">
           <label class="mode-label">
             <input type="checkbox" id="modeMul" checked onchange="onSettingsChange()">
-            <span>✖ Násobenie</span>
+            <span id="i18nOpMul">✖ Násobenie</span>
           </label>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <span class="i18n-from">Od</span>
+            <input type="number" id="mulMin" class="toolbar-input" value="1" min="1" max="20" onchange="onCustomRangeChange()">
+            <span class="i18n-to">do</span>
+            <input type="number" id="mulMax" class="toolbar-input" value="10" min="1" max="20" onchange="onCustomRangeChange()">
+          </div>
         </div>
         <div class="mode-item">
           <label class="mode-label">
             <input type="checkbox" id="modeAdd" onchange="onSettingsChange()">
-            <span>➕ Sčítanie</span>
+            <span id="i18nOpAdd">➕ Sčítanie</span>
           </label>
           <div style="display:flex; gap:4px; align-items:center;">
-            <span>Od</span>
+            <span class="i18n-from">Od</span>
             <input type="number" id="addMin" class="toolbar-input" value="1" onchange="onSettingsChange()">
-            <span>do</span>
+            <span class="i18n-to">do</span>
             <input type="number" id="addMax" class="toolbar-input" value="20" onchange="onSettingsChange()">
           </div>
         </div>
         <div class="mode-item">
           <label class="mode-label">
             <input type="checkbox" id="modeSub" onchange="onSettingsChange()">
-            <span>➖ Odčítanie</span>
+            <span id="i18nOpSub">➖ Odčítanie</span>
           </label>
           <div style="display:flex; gap:4px; align-items:center;">
-            <span>Od</span>
+            <span class="i18n-from">Od</span>
             <input type="number" id="subMin" class="toolbar-input" value="1" onchange="onSettingsChange()">
-            <span>do</span>
+            <span class="i18n-to">do</span>
             <input type="number" id="subMax" class="toolbar-input" value="20" onchange="onSettingsChange()">
           </div>
         </div>
         <div class="mode-item">
           <label class="mode-label">
             <input type="checkbox" id="modeDiv" onchange="onSettingsChange()">
-            <span>➗ Delenie</span>
+            <span id="i18nOpDiv">➗ Delenie</span>
           </label>
           <div style="display:flex; gap:4px; align-items:center;">
-            <span>Od</span>
+            <span class="i18n-from">Od</span>
             <input type="number" id="divMin" class="toolbar-input" value="1" onchange="onSettingsChange()">
-            <span>do</span>
+            <span class="i18n-to">do</span>
             <input type="number" id="divMax" class="toolbar-input" value="10" onchange="onSettingsChange()">
           </div>
         </div>
@@ -770,7 +791,11 @@
         wrongDelayTitle: "Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)",
         gradN: "Vyradenie:",
         gradSuffix: "x",
-        extraOps: "⚙️ + − ÷",
+        settingsBtn: "⚙️ Nastavenia",
+        opMul: "✖ Násobenie",
+        opAdd: "➕ Sčítanie",
+        opSub: "➖ Odčítanie",
+        opDiv: "➗ Delenie",
         matrixTitle: "📊 Mriežka násobilky",
         hoverPrompt: "Prejdi myšou po tabuľke...",
         legendUnseen: "Neprecvičené",
@@ -823,7 +848,11 @@
         wrongDelayTitle: "If answer has expected digits and is wrong, mark wrong after N seconds and advance (default 3s)",
         gradN: "Graduate:",
         gradSuffix: "x",
-        extraOps: "⚙️ + − ÷",
+        settingsBtn: "⚙️ Settings",
+        opMul: "✖ Multiplication",
+        opAdd: "➕ Addition",
+        opSub: "➖ Subtraction",
+        opDiv: "➗ Division",
         matrixTitle: "📊 Multiplication Matrix",
         hoverPrompt: "Hover over the table...",
         legendUnseen: "Unpracticed",
@@ -876,7 +905,11 @@
         wrongDelayTitle: "Wenn die Antwort die erwartete Ziffernanzahl hat und falsch ist, nach N Sekunden als Fehler werten und weitergehen (Standard 3s)",
         gradN: "Abschluss:",
         gradSuffix: "x",
-        extraOps: "⚙️ + − ÷",
+        settingsBtn: "⚙️ Einstellungen",
+        opMul: "✖ Multiplikation",
+        opAdd: "➕ Addition",
+        opSub: "➖ Subtraktion",
+        opDiv: "➗ Division",
         matrixTitle: "📊 Einmaleins-Matrix",
         hoverPrompt: "Fahre über die Tabelle...",
         legendUnseen: "Nicht geübt",
@@ -930,8 +963,8 @@
       const t = I18N[lang];
       document.getElementById("i18nBackLink").innerText = t.backLink;
       document.getElementById("i18nTitle").innerText = t.title;
-      document.getElementById("i18nRangeFrom").innerText = t.rangeFrom;
-      document.getElementById("i18nRangeTo").innerText = t.rangeTo;
+      document.querySelectorAll(".i18n-from").forEach(el => el.innerText = t.rangeFrom);
+      document.querySelectorAll(".i18n-to").forEach(el => el.innerText = t.rangeTo);
       document.getElementById("i18nDownweightText").innerText = t.downweightEasy;
       document.getElementById("i18nDownweightLabel").title = t.downweightEasyTitle;
       document.getElementById("i18nModeLabel").innerText = t.modeLabel;
@@ -945,7 +978,11 @@
       document.getElementById("wrongDelayInput").title = t.wrongDelayTitle;
       document.getElementById("i18nGradN").innerText = t.gradN;
       document.getElementById("i18nGradSuffix").innerText = t.gradSuffix;
-      document.getElementById("i18nExtraOpsBtn").innerText = t.extraOps;
+      document.getElementById("i18nSettingsBtn").innerText = t.settingsBtn;
+      document.getElementById("i18nOpMul").innerText = t.opMul;
+      document.getElementById("i18nOpAdd").innerText = t.opAdd;
+      document.getElementById("i18nOpSub").innerText = t.opSub;
+      document.getElementById("i18nOpDiv").innerText = t.opDiv;
       document.getElementById("i18nMatrixTitle").innerText = t.matrixTitle;
       document.getElementById("hovered-word-info").innerText = t.hoverPrompt;
       document.getElementById("i18nLegendUnseen").innerText = t.legendUnseen;
@@ -958,9 +995,9 @@
       document.getElementById("i18nDailyHistoryTitle").innerText = t.dailyHistoryTitle;
       document.getElementById("i18nResetBtn").innerText = t.resetBtn;
 
-      if (isPaused && problemEl.innerText === "Pauza" || problemEl.innerText === "Paused" || problemEl.innerText === "Pause") {
+      if (isPaused && (problemEl.innerText === "Pauza" || problemEl.innerText === "Paused" || problemEl.innerText === "Pause")) {
         problemEl.innerText = t.pausedText;
-      } else if (problemEl.innerText === "Stlač Štart" || problemEl.innerText === "Press Start" || problemEl.innerText === "Drücke Start") {
+      } else if (!currentFact || problemEl.innerText === "Stlač Štart" || problemEl.innerText === "Press Start" || problemEl.innerText === "Drücke Start") {
         problemEl.innerText = t.startPrompt;
       }
 
@@ -1100,10 +1137,14 @@
       }
     });
 
-    function toggleExtraOps() {
-      const drawer = document.getElementById("extraOpsDrawer");
-      drawer.style.display = drawer.style.display === "none" ? "block" : "none";
+    function toggleSettingsDrawer() {
+      const drawer = document.getElementById("settingsDrawer");
+      const btn = document.getElementById("i18nSettingsBtn");
+      const isClosed = drawer.style.display === "none";
+      drawer.style.display = isClosed ? "flex" : "none";
+      if (btn) btn.classList.toggle("active", isClosed);
     }
+    const toggleExtraOps = toggleSettingsDrawer;
 
     // BUILD ACTIVE FACT POOL FROM SETTINGS
     function buildProblemPool() {
