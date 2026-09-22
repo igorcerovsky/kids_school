@@ -1426,6 +1426,12 @@
       // Outlier filtering: exclude pause times and distractions (> 15s or < 0.2s)
       let samples = speedSamples.filter(t => typeof t === "number" && t >= 0.2 && t <= 15.0);
 
+      if (samples.length < 5 && recentTimes && recentTimes.length > 0) {
+        recentTimes.forEach(t => {
+          if (typeof t === "number" && t >= 0.2 && t <= 15.0) samples.push(t);
+        });
+      }
+
       if (samples.length < 5) {
         allFacts.forEach(f => {
           let s = stats[f.key];
@@ -2006,7 +2012,8 @@
         return;
       }
 
-      let maxTime = Math.max(...recentTimes);
+      let p80 = calculatePercentile80();
+      let maxTime = Math.max(...recentTimes, p80 * 1.08);
       maxTime = Math.max(maxTime, 3);
 
       let padL = 34;
@@ -2035,6 +2042,36 @@
       }
       ctx.stroke();
 
+      // 80th Percentile Reference Line & Label
+      let yP80 = padT + graphH - ((p80 / maxTime) * graphH);
+      const colorP80 = isDark ? "#fbbf24" : "#d97706";
+
+      ctx.save();
+      ctx.setLineDash([4, 3]);
+      ctx.strokeStyle = colorP80;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(padL, yP80);
+      ctx.lineTo(w - padR, yP80);
+      ctx.stroke();
+      ctx.restore();
+
+      // 80th Percentile Label badge (P80: X.Xs)
+      ctx.font = "bold 9px system-ui, sans-serif";
+      const p80Label = `P80: ${p80.toFixed(1)}s`;
+      const textWidth = ctx.measureText(p80Label).width;
+      const labelX = w - padR;
+      const isNearTop = (yP80 - padT) < 14;
+      const bgY = isNearTop ? yP80 + 1 : yP80 - 12;
+
+      ctx.fillStyle = isDark ? "rgba(21, 29, 48, 0.85)" : "rgba(255, 255, 255, 0.85)";
+      ctx.fillRect(labelX - textWidth - 5, bgY, textWidth + 5, 11);
+
+      ctx.fillStyle = colorP80;
+      ctx.textAlign = "right";
+      ctx.textBaseline = isNearTop ? "top" : "bottom";
+      ctx.fillText(p80Label, labelX - 2, isNearTop ? yP80 + 3 : yP80 - 2);
+
       // Axes
       ctx.strokeStyle = colorAxis;
       ctx.lineWidth = 1;
@@ -2057,14 +2094,14 @@
       }
       ctx.stroke();
 
-      // Data points
-      ctx.fillStyle = colorPoint;
+      // Data points (slower than P80 highlighted in amber)
       for (let i = 0; i < recentTimes.length; i++) {
         let val = recentTimes[i];
         let x = padL + i * xStep;
         let y = padT + graphH - ((val / maxTime) * graphH);
         ctx.beginPath();
         ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = (val > p80) ? colorP80 : colorPoint;
         ctx.fill();
       }
     }
