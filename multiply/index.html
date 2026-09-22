@@ -356,6 +356,15 @@
       font-family: var(--font-sans);
     }
 
+    .answer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
     .answer-input {
       font-size: clamp(1.8rem, 3.8vw, 2.5rem) !important;
       font-weight: 700;
@@ -368,8 +377,39 @@
       color: var(--text) !important;
       box-shadow: var(--shadow-sm);
       outline: none;
-      margin-bottom: 14px;
+      margin-bottom: 0;
       transition: var(--transition);
+    }
+
+    .answer-input::placeholder {
+      font-size: 0.72em;
+      opacity: 0.55;
+    }
+
+    .answer-row.has-remainder .answer-input {
+      width: clamp(120px, 24vw, 155px) !important;
+      font-size: clamp(1.5rem, 3.2vw, 2.1rem) !important;
+    }
+
+    .remainder-container {
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .answer-row.has-remainder .remainder-container {
+      display: flex;
+    }
+
+    .remainder-label {
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+      font-weight: 700;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .remainder-input {
+      width: clamp(120px, 24vw, 155px) !important;
     }
 
     .answer-input:focus {
@@ -659,6 +699,18 @@
             <input type="number" id="divMax" class="toolbar-input" value="10" onchange="onSettingsChange()">
           </div>
         </div>
+        <div class="mode-item">
+          <label class="mode-label">
+            <input type="checkbox" id="modeDivRem" onchange="onSettingsChange()">
+            <span id="i18nOpDivRem">➗ Division with remainder</span>
+          </label>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <span class="i18n-from">From</span>
+            <input type="number" id="divRemMin" class="toolbar-input" value="2" min="2" max="20" onchange="onSettingsChange()">
+            <span class="i18n-to">to</span>
+            <input type="number" id="divRemMax" class="toolbar-input" value="10" min="2" max="20" onchange="onSettingsChange()">
+          </div>
+        </div>
       </div>
     </div>
 
@@ -717,14 +769,27 @@
           Press Start
         </div>
 
-        <input
-          type="text"
-          id="answer"
-          class="answer-input"
-          inputmode="numeric"
-          autocomplete="off"
-          placeholder="?"
-        >
+        <div class="answer-row" id="answerRow">
+          <input
+            type="text"
+            id="answer"
+            class="answer-input"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="?"
+          >
+          <div id="remainderContainer" class="remainder-container">
+            <span id="remainderLabel" class="remainder-label">remainder</span>
+            <input
+              type="text"
+              id="remainderInput"
+              class="answer-input remainder-input"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="?"
+            >
+          </div>
+        </div>
 
         <div class="controls-row">
           <button class="btn btn-primary btn-sm" id="startBtn" onclick="startResume()">▶️ Start</button>
@@ -787,6 +852,10 @@
         opAdd: "➕ Sčítanie",
         opSub: "➖ Odčítanie",
         opDiv: "➗ Delenie",
+        opDivRem: "➗ Delenie so zvyškom",
+        remainderWord: "zvyšok",
+        quotientPlaceholder: "podiel",
+        remainderPlaceholder: "zvyšok",
         matrixTitle: "📊 Mriežka násobilky",
         hoverPrompt: "Prejdi myšou po tabuľke...",
         legendUnseen: "Neprecvičené",
@@ -844,6 +913,10 @@
         opAdd: "➕ Addition",
         opSub: "➖ Subtraction",
         opDiv: "➗ Division",
+        opDivRem: "➗ Division with remainder",
+        remainderWord: "remainder",
+        quotientPlaceholder: "quotient",
+        remainderPlaceholder: "remainder",
         matrixTitle: "📊 Multiplication Matrix",
         hoverPrompt: "Hover over the table...",
         legendUnseen: "Unpracticed",
@@ -901,6 +974,10 @@
         opAdd: "➕ Addition",
         opSub: "➖ Subtraktion",
         opDiv: "➗ Division",
+        opDivRem: "➗ Division mit Rest",
+        remainderWord: "Rest",
+        quotientPlaceholder: "Quotient",
+        remainderPlaceholder: "Rest",
         matrixTitle: "📊 Einmaleins-Matrix",
         hoverPrompt: "Fahre über die Tabelle...",
         legendUnseen: "Nicht geübt",
@@ -978,6 +1055,10 @@
       document.getElementById("i18nOpAdd").innerText = t.opAdd;
       document.getElementById("i18nOpSub").innerText = t.opSub;
       document.getElementById("i18nOpDiv").innerText = t.opDiv;
+      let opDivRemEl = document.getElementById("i18nOpDivRem");
+      if (opDivRemEl) opDivRemEl.innerText = t.opDivRem;
+      let remLabelEl = document.getElementById("remainderLabel");
+      if (remLabelEl) remLabelEl.innerText = t.remainderWord;
       document.getElementById("i18nMatrixTitle").innerText = t.matrixTitle;
       document.getElementById("hovered-word-info").innerText = t.hoverPrompt;
       document.getElementById("i18nLegendUnseen").innerText = t.legendUnseen;
@@ -994,6 +1075,13 @@
         problemEl.innerText = t.pausedText;
       } else if (!currentFact || problemEl.innerText === "Stlač Štart" || problemEl.innerText === "Press Start" || problemEl.innerText === "Drücke Start") {
         problemEl.innerText = t.startPrompt;
+      }
+
+      if (currentFact && currentFact.op === "÷r") {
+        let ansInp = document.getElementById("answer");
+        let remInp = document.getElementById("remainderInput");
+        if (ansInp) ansInp.title = t.quotientPlaceholder;
+        if (remInp) remInp.title = t.remainderWord;
       }
 
       updateStats();
@@ -1046,6 +1134,9 @@
     // DOM ELEMENTS
     const problemEl = document.getElementById("problem");
     const answerEl = document.getElementById("answer");
+    const answerRowEl = document.getElementById("answerRow");
+    const remainderContainerEl = document.getElementById("remainderContainer");
+    const remainderEl = document.getElementById("remainderInput");
     const feedbackEl = document.getElementById("feedback");
     const statsEl = document.getElementById("stats");
     const wrongWordsEl = document.getElementById("wrongWords");
@@ -1074,39 +1165,151 @@
 
     // KEYDOWN & REAL-TIME INPUT LISTENERS (Auto-check as digits are typed)
     let wrongTimer = null;
+    let focusAdvanceTimer = null;
 
-    function clearWrongTimer() {
+    function clearTimers() {
       if (wrongTimer) {
         clearTimeout(wrongTimer);
         wrongTimer = null;
       }
+      if (focusAdvanceTimer) {
+        clearTimeout(focusAdvanceTimer);
+        focusAdvanceTimer = null;
+      }
+    }
+    const clearWrongTimer = clearTimers;
+
+    function getFactAnswerText(fact) {
+      if (!fact) return "";
+      const t = I18N[currentLang];
+      if (fact.op === "÷r") {
+        return `${fact.quotient} ${t.remainderWord} ${fact.remainder}`;
+      }
+      return String(fact.answer);
+    }
+
+    function setupProblemInputs(fact) {
+      answerEl.value = "";
+      remainderEl.value = "";
+      clearTimers();
+      const t = I18N[currentLang];
+
+      if (fact && fact.op === "÷r") {
+        answerRowEl.classList.add("has-remainder");
+        remainderContainerEl.style.display = "flex";
+        document.getElementById("remainderLabel").innerText = t.remainderWord;
+        answerEl.placeholder = "?";
+        remainderEl.placeholder = "?";
+        answerEl.title = t.quotientPlaceholder;
+        remainderEl.title = t.remainderWord;
+      } else {
+        answerRowEl.classList.remove("has-remainder");
+        remainderContainerEl.style.display = "none";
+        answerEl.placeholder = "?";
+        answerEl.title = "";
+      }
+      answerEl.focus();
     }
 
     answerEl.addEventListener("keydown", function(e) {
       if (e.key === "Enter") {
         e.preventDefault();
-        clearWrongTimer();
-        checkAnswer();
+        clearTimers();
+        if (currentFact && currentFact.op === "÷r") {
+          remainderEl.focus();
+          remainderEl.select();
+        } else {
+          checkAnswer();
+        }
+      } else if ((e.key === "Tab" || e.key === " ") && currentFact && currentFact.op === "÷r") {
+        e.preventDefault();
+        clearTimers();
+        remainderEl.focus();
+        remainderEl.select();
       }
     });
 
     answerEl.addEventListener("input", function() {
       if (isPaused || !currentFact || isChecking) return;
-      clearWrongTimer();
+      clearTimers();
 
       let val = answerEl.value.trim();
       if (val === "") return;
       let user = parseInt(val, 10);
       if (isNaN(user)) return;
 
-      if (user === currentFact.answer) {
+      if (currentFact.op === "÷r") {
+        if (user === currentFact.quotient) {
+          // Immediately move focus to remainder input when correct quotient is entered
+          remainderEl.focus();
+          remainderEl.select();
+          return;
+        }
+
+        // If user entered expected digit length and it is incorrect, auto-move focus after delay
+        let expectedDigits = String(currentFact.quotient).length;
+        if (val.length >= expectedDigits) {
+          let delaySec = parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10);
+          if (isNaN(delaySec) || delaySec < 1) delaySec = 3;
+
+          focusAdvanceTimer = setTimeout(() => {
+            if (!isPaused && currentFact && !isChecking) {
+              remainderEl.focus();
+              remainderEl.select();
+            }
+          }, delaySec * 1000);
+        }
+      } else {
+        if (user === currentFact.answer) {
+          checkAnswer();
+          return;
+        }
+
+        let expectedDigits = String(currentFact.answer).length;
+        if (val.length >= expectedDigits) {
+          let delaySec = parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10);
+          if (isNaN(delaySec) || delaySec < 1) delaySec = 3;
+
+          wrongTimer = setTimeout(() => {
+            if (!isPaused && currentFact && !isChecking) {
+              checkAnswer();
+            }
+          }, delaySec * 1000);
+        }
+      }
+    });
+
+    remainderEl.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        clearTimers();
+        checkAnswer();
+      } else if (e.key === "Backspace" && remainderEl.value === "") {
+        e.preventDefault();
+        answerEl.focus();
+      }
+    });
+
+    remainderEl.addEventListener("input", function() {
+      if (isPaused || !currentFact || isChecking || currentFact.op !== "÷r") return;
+      clearTimers();
+
+      let rVal = remainderEl.value.trim();
+      if (rVal === "") return;
+      let userR = parseInt(rVal, 10);
+      if (isNaN(userR)) return;
+
+      let userQ = parseInt(answerEl.value.trim(), 10);
+
+      // If both quotient and remainder are correct, advance immediately!
+      if (userQ === currentFact.quotient && userR === currentFact.remainder) {
         checkAnswer();
         return;
       }
 
-      // Check if user has entered the expected number of digits and answer is incorrect
-      let expectedDigits = String(currentFact.answer).length;
-      if (val.length >= expectedDigits) {
+      // If remainder has reached expected length (or quotient was wrong), trigger wrong delay timer
+      let expectedRDigits = String(currentFact.remainder).length;
+      if (rVal.length >= expectedRDigits) {
         let delaySec = parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10);
         if (isNaN(delaySec) || delaySec < 1) delaySec = 3;
 
@@ -1150,6 +1353,7 @@
       const modeAdd = document.getElementById("modeAdd").checked;
       const modeSub = document.getElementById("modeSub").checked;
       const modeDiv = document.getElementById("modeDiv").checked;
+      const modeDivRem = document.getElementById("modeDivRem")?.checked ?? false;
 
       // Multiplication
       if (modeMul) {
@@ -1212,6 +1416,25 @@
         }
       }
 
+      // Division with remainder
+      if (modeDivRem) {
+        let min = parseInt(document.getElementById("divRemMin")?.value || "2", 10) || 2;
+        let max = parseInt(document.getElementById("divRemMax")?.value || "10", 10) || 10;
+        if (min < 2) min = 2;
+        if (min > max) [min, max] = [max, min];
+        for (let b = min; b <= max; b++) {
+          for (let q = 1; q <= 10; q++) {
+            for (let r = 1; r < b; r++) {
+              let a = b * q + r;
+              let key = `${a}÷${b}r`;
+              let item = { key, num1: a, num2: b, op: "÷r", quotient: q, remainder: r, answer: q, text: `${a} ÷ ${b}` };
+              pool.push(item);
+              factsByKey[key] = item;
+            }
+          }
+        }
+      }
+
       // Fallback
       if (pool.length === 0) {
         document.getElementById("modeMul").checked = true;
@@ -1238,7 +1461,8 @@
       const modeAdd = document.getElementById("modeAdd")?.checked ?? false;
       const modeSub = document.getElementById("modeSub")?.checked ?? false;
       const modeDiv = document.getElementById("modeDiv")?.checked ?? false;
-      const isMulOnly = modeMul && !modeAdd && !modeSub && !modeDiv;
+      const modeDivRem = document.getElementById("modeDivRem")?.checked ?? false;
+      const isMulOnly = modeMul && !modeAdd && !modeSub && !modeDiv && !modeDivRem;
 
       const min = parseInt(document.getElementById("mulMin")?.value || "1", 10);
       const max = parseInt(document.getElementById("mulMax")?.value || "10", 10);
@@ -1255,6 +1479,7 @@
       document.getElementById("modeAdd").checked = false;
       document.getElementById("modeSub").checked = false;
       document.getElementById("modeDiv").checked = false;
+      if (document.getElementById("modeDivRem")) document.getElementById("modeDivRem").checked = false;
 
       document.getElementById("mulMin").value = min;
       document.getElementById("mulMax").value = max;
@@ -1385,6 +1610,18 @@
             let el = document.getElementById("divMax");
             if (el) el.value = data.divMax;
           }
+          if (data.modeDivRem !== undefined) {
+            let el = document.getElementById("modeDivRem");
+            if (el) el.checked = data.modeDivRem;
+          }
+          if (data.divRemMin !== undefined) {
+            let el = document.getElementById("divRemMin");
+            if (el) el.value = data.divRemMin;
+          }
+          if (data.divRemMax !== undefined) {
+            let el = document.getElementById("divRemMax");
+            if (el) el.value = data.divRemMax;
+          }
 
           if (data.lastPlayedDate !== today) {
             correctCount = 0;
@@ -1433,7 +1670,10 @@
         subMax: parseInt(document.getElementById("subMax")?.value || "20", 10) || 20,
         modeDiv: document.getElementById("modeDiv")?.checked ?? false,
         divMin: parseInt(document.getElementById("divMin")?.value || "1", 10) || 1,
-        divMax: parseInt(document.getElementById("divMax")?.value || "10", 10) || 10
+        divMax: parseInt(document.getElementById("divMax")?.value || "10", 10) || 10,
+        modeDivRem: document.getElementById("modeDivRem")?.checked ?? false,
+        divRemMin: parseInt(document.getElementById("divRemMin")?.value || "2", 10) || 2,
+        divRemMax: parseInt(document.getElementById("divRemMax")?.value || "10", 10) || 10
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
@@ -1690,7 +1930,7 @@
 
     function newProblem() {
       if (isPaused) return;
-      clearWrongTimer();
+      clearTimers();
 
       currentFact = chooseProblem();
       if (!currentFact) return;
@@ -1700,8 +1940,7 @@
       if (recentFacts.length > 15) recentFacts.shift();
 
       problemEl.innerText = currentFact.text + " =";
-      answerEl.value = "";
-      answerEl.focus();
+      setupProblemInputs(currentFact);
       isChecking = false;
 
       startTime = performance.now();
@@ -1716,8 +1955,22 @@
     function checkAnswer() {
       if (isPaused || !currentFact || isChecking) return;
 
-      let user = parseInt(answerEl.value);
-      if (isNaN(user)) return;
+      let userQ = parseInt(answerEl.value.trim(), 10);
+      if (isNaN(userQ)) return;
+
+      let isDivRem = (currentFact.op === "÷r");
+      let userR = null;
+      if (isDivRem) {
+        userR = parseInt(remainderEl.value.trim(), 10);
+        if (isNaN(userR)) userR = -1;
+      }
+
+      let isCorrect = false;
+      if (isDivRem) {
+        isCorrect = (userQ === currentFact.quotient && userR === currentFact.remainder);
+      } else {
+        isCorrect = (userQ === currentFact.answer);
+      }
 
       let endTime = performance.now();
       let elapsed = (endTime - startTime - totalPausedTime) / 1000;
@@ -1737,8 +1990,9 @@
 
       let wasInWrongMap = wrongMap[key] !== undefined;
 
-      if (user === currentFact.answer) {
+      if (isCorrect) {
         isChecking = true;
+        clearTimers();
         // CORRECT ANSWER: Update time for this specific problem!
         stats[key].lastTime = elapsed;
         stats[key].times.push(elapsed);
@@ -1798,7 +2052,7 @@
       } else {
         // INCORRECT ANSWER: Update time and trigger mistake tracking
         isChecking = true;
-        clearWrongTimer();
+        clearTimers();
 
         stats[key].lastTime = elapsed;
         stats[key].times = stats[key].times || [];
@@ -1812,7 +2066,8 @@
         wrongPracticeCount[key] = (wrongPracticeCount[key] || 0) + 1;
         incorrectCount++;
 
-        feedbackEl.innerText = `${t.wrongFeedback} (${currentFact.text} = ${currentFact.answer})`;
+        let ansText = getFactAnswerText(currentFact);
+        feedbackEl.innerText = `${t.wrongFeedback} (${currentFact.text} = ${ansText})`;
         feedbackEl.className = "wrong";
 
         updateStats();
@@ -1934,15 +2189,16 @@
       let remaining = isWrong ? (stats[key]?.countdown ?? 0) : 0;
       const t = I18N[currentLang];
 
+      let ansText = getFactAnswerText(fact);
       if (isWrong) {
-        cell.title = `${fact.text} = ${fact.answer}\n❌ ${t.statsWrong}: [${remaining}x ${t.remainingSuffix}]\n${rawAtt}x | ${avgTime}s`;
+        cell.title = `${fact.text} = ${ansText}\n❌ ${t.statsWrong}: [${remaining}x ${t.remainingSuffix}]\n${rawAtt}x | ${avgTime}s`;
         let stepIndex = Math.min(5, remaining - 1);
         cell.style.backgroundColor = RED_STEPS[Math.max(0, stepIndex)];
       } else if (mc === 0) {
-        cell.title = `${fact.text} = ${fact.answer}\n${t.legendUnseen}\n${rawAtt}x | ${avgTime}s`;
+        cell.title = `${fact.text} = ${ansText}\n${t.legendUnseen}\n${rawAtt}x | ${avgTime}s`;
         cell.style.backgroundColor = "var(--border-strong)";
       } else {
-        cell.title = `${fact.text} = ${fact.answer}\n${t.legendMastered}: ${mc}x | ${rawAtt}x | ${avgTime}s`;
+        cell.title = `${fact.text} = ${ansText}\n${t.legendMastered}: ${mc}x | ${rawAtt}x | ${avgTime}s`;
         if (isSlow) {
           cell.title += `\n🐢 ${avgTime}s (≤ ${p80.toFixed(2)}s)`;
         }
@@ -1955,7 +2211,7 @@
       }
 
       cell.addEventListener("mouseenter", () => {
-        let textWithAns = `<b>${fact.text} = ${fact.answer}</b>`;
+        let textWithAns = `<b>${fact.text} = ${ansText}</b>`;
         if (isWrong) {
           document.getElementById("hovered-word-info").innerHTML =
             `${textWithAns} <span style='color:var(--danger);'>[❌ ${remaining}x]</span> &mdash; ${rawAtt}x, ${avgTime}s`;
@@ -1981,8 +2237,7 @@
           currentFact = fact;
           lastFactKey = currentFact.key;
           problemEl.innerText = currentFact.text + " =";
-          answerEl.value = "";
-          answerEl.focus();
+          setupProblemInputs(currentFact);
           startTime = performance.now();
           totalPausedTime = 0;
           highlightActiveCell();
