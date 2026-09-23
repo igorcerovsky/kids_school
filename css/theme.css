@@ -230,6 +230,61 @@ body {
   text-overflow: ellipsis;
 }
 
+/* Tab Navigation Group */
+.kubi-nav-tabs {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 3px;
+  max-width: 100%;
+}
+
+.kubi-tab-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.kubi-tab-link:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.kubi-tab-link.active {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  border-color: var(--border-strong);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+  .kubi-top-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .kubi-nav-tabs {
+    flex-wrap: wrap;
+  }
+  .kubi-tab-link {
+    padding: 4px 8px;
+    font-size: 0.78rem;
+  }
+}
+
 .kubi-nav-right {
   display: flex;
   align-items: center;

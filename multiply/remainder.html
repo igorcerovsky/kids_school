@@ -499,13 +499,13 @@
 </head>
 <body>
 
-  <!-- Top Navigation Bar -->
+  <!-- Top Navigation Bar with Tabs and Language Switcher -->
   <header class="kubi-top-bar">
-    <div class="kubi-nav-left">
-      <a href="../index.html" class="kubi-back-link" id="i18nBackLink">← All Activities</a>
-      <a href="index.html" class="kubi-back-link" id="i18nMathTrainerLink" style="color:var(--text-secondary);">✏️ Math Trainer</a>
-      <span class="kubi-page-title" id="i18nTitle" style="font-size: 1.05rem;">Division with Remainder ➗</span>
-    </div>
+    <nav class="kubi-nav-tabs" aria-label="Navigation Tabs">
+      <a href="../index.html" class="kubi-tab-link" id="i18nBackLink">← All Activities</a>
+      <a href="index.html" class="kubi-tab-link" id="i18nTabMath">✏️ Math Trainer</a>
+      <a href="remainder.html" class="kubi-tab-link active" id="i18nTabRemainder">➗ Division with Remainder</a>
+    </nav>
     <div class="nav-actions">
       <!-- Language Switcher: SK | EN | DE -->
       <div class="lang-selector">
@@ -687,7 +687,9 @@
     const I18N = {
       sk: {
         backLink: "← Prehľad aktivít",
-        mathTrainerLink: "✏️ Násobilka",
+        tabMath: "✏️ Math Trainer",
+        tabRemainder: "➗ Delenie so zvyškom",
+        mathTrainerLink: "✏️ Math Trainer",
         title: "Delenie so zvyškom ➗",
         rangeFrom: "Od",
         rangeTo: "do",
@@ -738,6 +740,8 @@
       },
       en: {
         backLink: "← Activities Hub",
+        tabMath: "✏️ Math Trainer",
+        tabRemainder: "➗ Division with Remainder",
         mathTrainerLink: "✏️ Math Trainer",
         title: "Division with Remainder ➗",
         rangeFrom: "From",
@@ -789,6 +793,8 @@
       },
       de: {
         backLink: "← Übersicht",
+        tabMath: "✏️ Mathe-Trainer",
+        tabRemainder: "➗ Division mit Rest",
         mathTrainerLink: "✏️ Mathe-Trainer",
         title: "Division mit Rest ➗",
         rangeFrom: "Von",
@@ -857,8 +863,8 @@
 
       const t = I18N[lang];
       document.getElementById("i18nBackLink").innerText = t.backLink;
-      document.getElementById("i18nMathTrainerLink").innerText = t.mathTrainerLink;
-      document.getElementById("i18nTitle").innerText = t.title;
+      if (document.getElementById("i18nTabMath")) document.getElementById("i18nTabMath").innerText = t.tabMath;
+      if (document.getElementById("i18nTabRemainder")) document.getElementById("i18nTabRemainder").innerText = t.tabRemainder;
       document.querySelectorAll(".i18n-from").forEach(el => el.innerText = t.rangeFrom);
       document.querySelectorAll(".i18n-to").forEach(el => el.innerText = t.rangeTo);
       document.getElementById("i18nModeLabel").innerText = t.modeLabel;
