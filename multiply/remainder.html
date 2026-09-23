@@ -1009,7 +1009,7 @@
     let wrongTimer = null;
     let focusAdvanceTimer = null;
     let inactivityTimer = null;
-    const INACTIVITY_TIMEOUT_MS = 20000;
+    const INACTIVITY_TIMEOUT_MS = 32000; // 32s auto-pause for division with remainder
 
     function resetInactivityTimer() {
       if (inactivityTimer) {
