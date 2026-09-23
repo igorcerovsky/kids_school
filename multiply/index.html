@@ -1138,6 +1138,29 @@
 
     // KEYDOWN & REAL-TIME INPUT LISTENERS (Auto-check as digits are typed)
     let wrongTimer = null;
+    let inactivityTimer = null;
+    const INACTIVITY_TIMEOUT_MS = 20000;
+
+    function resetInactivityTimer() {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+      }
+      if (!isPaused) {
+        inactivityTimer = setTimeout(() => {
+          if (!isPaused) {
+            pauseGame();
+          }
+        }, INACTIVITY_TIMEOUT_MS);
+      }
+    }
+
+    function clearInactivityTimer() {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+      }
+    }
 
     function clearTimers() {
       if (wrongTimer) {
@@ -1160,6 +1183,7 @@
     }
 
     answerEl.addEventListener("keydown", function(e) {
+      resetInactivityTimer();
       if (e.key === "Enter") {
         e.preventDefault();
         clearTimers();
@@ -1169,6 +1193,7 @@
 
     answerEl.addEventListener("input", function() {
       if (isPaused || !currentFact || isChecking) return;
+      resetInactivityTimer();
       clearTimers();
 
       let val = answerEl.value.trim();
@@ -1192,6 +1217,12 @@
           }
         }, delaySec * 1000);
       }
+    });
+
+    ["pointerdown", "keydown"].forEach(evt => {
+      document.addEventListener(evt, () => {
+        if (!isPaused) resetInactivityTimer();
+      }, { passive: true });
     });
 
     // VISIBILITY & PAUSE HANDLING
@@ -1793,6 +1824,7 @@
     function pauseGame() {
       const t = I18N[currentLang];
       isPaused = true;
+      clearInactivityTimer();
       document.getElementById("startBtn").style.opacity = "1";
       document.getElementById("pauseBtn").style.opacity = "0.7";
       problemEl.innerText = t.pausedText;
@@ -1821,12 +1853,14 @@
       pauseStart = 0;
 
       highlightActiveCell();
+      resetInactivityTimer();
     }
 
     let isChecking = false;
 
     function checkAnswer() {
       if (isPaused || !currentFact || isChecking) return;
+      clearInactivityTimer();
 
       let user = parseInt(answerEl.value.trim(), 10);
       if (isNaN(user)) return;
@@ -2109,6 +2143,7 @@
           startTime = performance.now();
           totalPausedTime = 0;
           highlightActiveCell();
+          resetInactivityTimer();
         }
       });
 

@@ -1008,6 +1008,29 @@
     // FOCUS & TIMERS
     let wrongTimer = null;
     let focusAdvanceTimer = null;
+    let inactivityTimer = null;
+    const INACTIVITY_TIMEOUT_MS = 20000;
+
+    function resetInactivityTimer() {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+      }
+      if (!isPaused) {
+        inactivityTimer = setTimeout(() => {
+          if (!isPaused) {
+            pauseGame();
+          }
+        }, INACTIVITY_TIMEOUT_MS);
+      }
+    }
+
+    function clearInactivityTimer() {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+      }
+    }
 
     function clearTimers() {
       if (wrongTimer) {
@@ -1041,6 +1064,7 @@
     }
 
     answerEl.addEventListener("keydown", function(e) {
+      resetInactivityTimer();
       if (e.key === "Enter" || e.key === "Tab" || e.key === " ") {
         e.preventDefault();
         clearTimers();
@@ -1051,6 +1075,7 @@
 
     answerEl.addEventListener("input", function() {
       if (isPaused || !currentFact || isChecking) return;
+      resetInactivityTimer();
       clearTimers();
 
       let val = answerEl.value.trim();
@@ -1081,6 +1106,7 @@
     });
 
     remainderEl.addEventListener("keydown", function(e) {
+      resetInactivityTimer();
       if (e.key === "Enter") {
         e.preventDefault();
         clearTimers();
@@ -1093,6 +1119,7 @@
 
     remainderEl.addEventListener("input", function() {
       if (isPaused || !currentFact || isChecking) return;
+      resetInactivityTimer();
       clearTimers();
 
       let rVal = remainderEl.value.trim();
@@ -1120,6 +1147,12 @@
           }
         }, delaySec * 1000);
       }
+    });
+
+    ["pointerdown", "keydown"].forEach(evt => {
+      document.addEventListener(evt, () => {
+        if (!isPaused) resetInactivityTimer();
+      }, { passive: true });
     });
 
     // VISIBILITY & PAUSE HANDLING
@@ -1548,12 +1581,14 @@
         problemEl.innerText = currentFact.text + " =";
         setupProblemInputs();
         highlightActiveCell();
+        resetInactivityTimer();
       }
     }
 
     function pauseGame() {
       if (isPaused) return;
       isPaused = true;
+      clearInactivityTimer();
       pauseStart = performance.now();
 
       document.getElementById("startBtn").classList.remove("active");
@@ -1586,10 +1621,12 @@
       pauseStart = 0;
 
       highlightActiveCell();
+      resetInactivityTimer();
     }
 
     function checkAnswer() {
       if (isPaused || !currentFact || isChecking) return;
+      clearInactivityTimer();
 
       let userQ = parseInt(answerEl.value.trim(), 10);
       let userR = parseInt(remainderEl.value.trim(), 10);
@@ -1875,6 +1912,7 @@
           startTime = performance.now();
           totalPausedTime = 0;
           highlightActiveCell();
+          resetInactivityTimer();
         }
       });
 
