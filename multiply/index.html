@@ -1309,12 +1309,23 @@
       } else if (op === "add") {
         let min = parseInt(document.getElementById("addMin").value, 10);
         if (isNaN(min)) min = 0;
-        let max = parseInt(document.getElementById("addMax").value, 10) || 10;
+        let max = parseInt(document.getElementById("addMax").value, 10);
+        if (isNaN(max)) max = 10;
         if (min > max) [min, max] = [max, min];
+
+        const easyColsToRemove = new Set([0, 1, 10]);
+        let cols = [];
+        for (let b = min; b <= max; b++) {
+          if (!easyColsToRemove.has(b)) cols.push(b);
+        }
+        if (cols.length === 0) {
+          for (let b = min; b <= max; b++) cols.push(b);
+        }
+
         for (let a = min; a <= max; a++) {
-          for (let b = min; b <= max; b++) {
+          for (let b of cols) {
             let key = `${a}+${b}`;
-            let item = { key, num1: a, num2: b, op: "+", answer: a + b, text: `${a} + ${b}` };
+            let item = { key, num1: a, num2: b, rowVal: a, colVal: b, op: "+", answer: a + b, text: `${a} + ${b}` };
             pool.push(item);
             factsByKey[key] = item;
           }
@@ -1322,25 +1333,53 @@
       } else if (op === "sub") {
         let min = parseInt(document.getElementById("subMin").value, 10);
         if (isNaN(min)) min = 0;
-        let max = parseInt(document.getElementById("subMax").value, 10) || 10;
+        let max = parseInt(document.getElementById("subMax").value, 10);
+        if (isNaN(max)) max = 10;
         if (min > max) [min, max] = [max, min];
-        for (let a = min; a <= max; a++) {
-          for (let b = min; b <= a; b++) {
+
+        const easyColsToRemove = new Set([0, 1, 10]);
+        let cols = [];
+        for (let b = min; b <= max; b++) {
+          if (!easyColsToRemove.has(b)) cols.push(b);
+        }
+        if (cols.length === 0) {
+          for (let b = min; b <= max; b++) cols.push(b);
+        }
+
+        for (let ans = min; ans <= max; ans++) {
+          for (let b of cols) {
+            let a = ans + b;
             let key = `${a}-${b}`;
-            let item = { key, num1: a, num2: b, op: "-", answer: a - b, text: `${a} − ${b}` };
+            let item = { key, num1: a, num2: b, rowVal: ans, colVal: b, op: "-", answer: ans, text: `${a} − ${b}` };
             pool.push(item);
             factsByKey[key] = item;
           }
         }
       } else if (op === "div") {
-        let min = parseInt(document.getElementById("divMin").value, 10) || 1;
-        let max = parseInt(document.getElementById("divMax").value, 10) || 10;
+        let min = parseInt(document.getElementById("divMin").value, 10);
+        if (isNaN(min) || min < 1) min = 1;
+        let max = parseInt(document.getElementById("divMax").value, 10);
+        if (isNaN(max)) max = 10;
         if (min > max) [min, max] = [max, min];
+
+        // Division by 0 is not allowed. Divisor b starts with 1 minimum.
+        // Columns 1 and 10 are easy/trivial divisors, so they are removed
+        const easyColsToRemove = new Set([0, 1, 10]);
+        let cols = [];
         for (let b = min; b <= max; b++) {
-          for (let ans = min; ans <= max; ans++) {
+          if (!easyColsToRemove.has(b)) cols.push(b);
+        }
+        if (cols.length === 0) {
+          for (let b = min; b <= max; b++) cols.push(b);
+        }
+
+        // Quotients start at 0 if min <= 1, else at min
+        let qMin = (min <= 1) ? 0 : min;
+        for (let ans = qMin; ans <= max; ans++) {
+          for (let b of cols) {
             let a = b * ans;
             let key = `${a}÷${b}`;
-            let item = { key, num1: a, num2: b, op: "÷", answer: ans, text: `${a} ÷ ${b}` };
+            let item = { key, num1: a, num2: b, rowVal: ans, colVal: b, op: "÷", answer: ans, text: `${a} ÷ ${b}` };
             pool.push(item);
             factsByKey[key] = item;
           }
@@ -2047,9 +2086,14 @@
       let { p80, slowFacts } = getSlowDoneFacts();
       let slowKeysSet = new Set(slowFacts.map(f => f.key));
 
-      let isStructured = (allFacts.every(f => f.op === "×") || allFacts.every(f => f.op === "+"));
-      let rowList = isStructured ? [...new Set(allFacts.map(f => f.num1))].sort((a, b) => a - b) : [];
-      let colList = isStructured ? [...new Set(allFacts.map(f => f.num2))].sort((a, b) => a - b) : [];
+      let isStructured = (
+        allFacts.every(f => f.op === "×") ||
+        allFacts.every(f => f.op === "+") ||
+        allFacts.every(f => f.op === "-") ||
+        allFacts.every(f => f.op === "÷")
+      );
+      let rowList = isStructured ? [...new Set(allFacts.map(f => f.rowVal ?? f.num1))].sort((a, b) => a - b) : [];
+      let colList = isStructured ? [...new Set(allFacts.map(f => f.colVal ?? f.num2))].sort((a, b) => a - b) : [];
 
       if (isStructured && (rowList.length * colList.length === allFacts.length) && colList.length <= 25) {
         container.style.display = "grid";
@@ -2069,6 +2113,11 @@
           container.appendChild(hdr);
         }
 
+        let factsByRowCol = {};
+        allFacts.forEach(f => {
+          factsByRowCol[`${f.rowVal ?? f.num1}_${f.colVal ?? f.num2}`] = f;
+        });
+
         for (let a of rowList) {
           let rowHdr = document.createElement("div");
           rowHdr.className = "matrix-hdr";
@@ -2076,8 +2125,8 @@
           container.appendChild(rowHdr);
 
           for (let b of colList) {
-            let key = `${a}${allFacts[0].op}${b}`;
-            let fact = factsByKey[key];
+            let fact = factsByRowCol[`${a}_${b}`];
+            let key = fact ? fact.key : `${a}${allFacts[0].op}${b}`;
             let cell = createMatrixCell(fact, key, slowKeysSet.has(key), p80);
             container.appendChild(cell);
           }
