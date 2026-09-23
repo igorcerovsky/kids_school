@@ -1935,7 +1935,7 @@
 
         if (feedbackEl.innerText.indexOf("!") === -1 && feedbackEl.innerText.indexOf("🎓") === -1) {
           let p80Now = calculatePercentile80();
-          let wasSlow = stats[key].attempts > 1 && ((stats[key].totalTime - elapsed) / (stats[key].attempts - 1)) > p80Now;
+          let wasSlow = p80Now !== null && stats[key].attempts > 1 && ((stats[key].totalTime - elapsed) / (stats[key].attempts - 1)) > p80Now;
           let newAvg = stats[key].totalTime / stats[key].attempts;
 
           if (wasSlow && newAvg <= p80Now) {
@@ -2266,6 +2266,7 @@
       const colorText = isDark ? "#94a3b8" : "#64748b";
       const colorLine = isDark ? "#38bdf8" : "#2563eb";
       const colorPoint = isDark ? "#60a5fa" : "#1d4ed8";
+      const colorP80 = isDark ? "#fbbf24" : "#d97706";
 
       if (recentTimes.length < 2) {
         ctx.font = "11px system-ui, sans-serif";
@@ -2311,7 +2312,6 @@
       // 80th Percentile Reference Line & Label (if enough data points)
       if (p80 !== null) {
         let yP80 = padT + graphH - ((p80 / maxTime) * graphH);
-        const colorP80 = isDark ? "#fbbf24" : "#d97706";
 
         ctx.save();
         ctx.setLineDash([4, 3]);
@@ -2369,7 +2369,7 @@
         let y = padT + graphH - ((val / maxTime) * graphH);
         ctx.beginPath();
         ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = (val > p80) ? colorP80 : colorPoint;
+        ctx.fillStyle = (p80 !== null && val > p80) ? colorP80 : colorPoint;
         ctx.fill();
       }
     }
