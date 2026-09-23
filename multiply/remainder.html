@@ -1491,75 +1491,82 @@
       if (allFacts.length === 0) return null;
 
       let pMode = practiceModeSelectEl?.value || "normal";
+      let activeKeys = allFacts.map(f => f.key);
       let wrongKeys = Object.keys(wrongMap).filter(k => factsByKey[k]);
-      let { p80, slowFacts } = getSlowDoneFacts();
+      let { p80, slowFacts, hasEnoughData } = getSlowDoneFacts();
       let slowKeys = slowFacts.map(f => f.key);
 
+      // Practice mode overrides
       if (pMode === "wrong") {
         if (wrongKeys.length > 0) {
-          let candidates = wrongKeys.filter(k => k !== lastFactKey);
-          if (candidates.length === 0) candidates = wrongKeys;
-          let chosenKey = candidates[Math.floor(Math.random() * candidates.length)];
-          return factsByKey[chosenKey];
+          let chosen = pickWeightedWithSpacing(wrongKeys);
+          return factsByKey[chosen];
+        }
+      } else if (pMode === "slow") {
+        let pool = (hasEnoughData && slowKeys.length > 0) ? slowKeys : wrongKeys;
+        if (pool.length > 0) {
+          let chosen = pickWeightedWithSpacing(pool);
+          return factsByKey[chosen];
         }
       }
 
-      if (pMode === "slow") {
-        if (slowKeys.length > 0) {
-          let candidates = slowKeys.filter(k => k !== lastFactKey);
-          if (candidates.length === 0) candidates = slowKeys;
-          let chosenKey = candidates[Math.floor(Math.random() * candidates.length)];
-          return factsByKey[chosenKey];
-        }
-      }
+      // Normal Adaptive Mode:
+      // Zero-cells: facts not yet seen this cycle (excluding wrong and slow)
+      let zeroCells = allFacts
+        .filter(f => (matrixCount[f.key] || 0) === 0 && !wrongKeys.includes(f.key) && !slowKeys.includes(f.key))
+        .map(f => f.key);
 
-      // Priority 1: Mistakes that are still in countdown
-      if (wrongKeys.length > 0) {
-        let candidates = wrongKeys.filter(k => k !== lastFactKey && !recentFacts.slice(-2).includes(k));
-        if (candidates.length === 0) candidates = wrongKeys.filter(k => k !== lastFactKey);
-        if (candidates.length === 0) candidates = wrongKeys;
-        let chosenKey = candidates[Math.floor(Math.random() * candidates.length)];
-        return factsByKey[chosenKey];
-      }
-
-      // Priority 2: Periodic repetition of slowest facts
       problemsSinceLastSlow++;
-      if (slowKeys.length > 0 && problemsSinceLastSlow >= nextSlowInterval) {
+      let isSlowInjectionTurn = hasEnoughData && (problemsSinceLastSlow >= nextSlowInterval);
+
+      let pool;
+      if (isSlowInjectionTurn && slowKeys.length > 0) {
+        // Take ONE of the N slowest problems repeatedly (every randomly 2 to N problems)
+        pool = slowKeys;
         problemsSinceLastSlow = 0;
         nextSlowInterval = getNextSlowInterval();
+      } else if (wrongKeys.length > 0 && (problemsSinceLastSlow % 3 === 0 || zeroCells.length === 0)) {
+        pool = wrongKeys;
+      } else if (zeroCells.length > 0) {
+        pool = zeroCells;
+      } else if (hasEnoughData && slowKeys.length > 0) {
+        pool = slowKeys;
+      } else {
+        let minCount = Math.min(...allFacts.map(f => matrixCount[f.key] || 0));
+        pool = allFacts
+          .filter(f => (matrixCount[f.key] || 0) === minCount && !wrongKeys.includes(f.key))
+          .map(f => f.key);
+        if (pool.length === 0) pool = activeKeys;
+      }
 
-        let sCount = parseInt(document.getElementById("slowCountInput")?.value || "5", 10);
-        let topSlowKeys = slowKeys.slice(0, sCount);
-        let candidates = topSlowKeys.filter(k => k !== lastFactKey && !recentFacts.slice(-3).includes(k));
-        if (candidates.length === 0) candidates = topSlowKeys.filter(k => k !== lastFactKey);
-        if (candidates.length > 0) {
-          let chosenKey = candidates[Math.floor(Math.random() * candidates.length)];
-          return factsByKey[chosenKey];
+      let chosenKey = pickWeightedWithSpacing(pool);
+      return factsByKey[chosenKey] || allFacts[0];
+    }
+
+    // WEIGHTED RANDOM PICK WITH ANTI-REPEAT BUFFER
+    function pickWeightedWithSpacing(keys) {
+      if (!keys || keys.length === 0) return allFacts[0]?.key;
+      let available = keys.filter(k => k !== lastFactKey && !recentFacts.slice(-3).includes(k));
+      if (available.length === 0) available = keys.filter(k => k !== lastFactKey);
+      if (available.length === 0) available = keys;
+
+      let weights = available.map(k => {
+        if (wrongMap[k] !== undefined) {
+          return 3.0;
+        }
+        return 1.0;
+      });
+
+      let totalWeight = weights.reduce((acc, w) => acc + w, 0);
+      let rand = Math.random() * totalWeight;
+      let running = 0;
+      for (let i = 0; i < available.length; i++) {
+        running += weights[i];
+        if (rand <= running) {
+          return available[i];
         }
       }
-
-      // Priority 3: Unpracticed facts
-      let unseenFacts = allFacts
-        .filter(f => (matrixCount[f.key] || 0) === 0 && !wrongKeys.includes(f.key) && !slowKeys.includes(f.key))
-        .filter(f => f.key !== lastFactKey && !recentFacts.slice(-2).includes(f.key));
-
-      if (unseenFacts.length > 0) {
-        return unseenFacts[Math.floor(Math.random() * unseenFacts.length)];
-      }
-
-      // Priority 4: Lowest count facts
-      let minCount = Math.min(...allFacts.map(f => matrixCount[f.key] || 0));
-      let lowestCountFacts = allFacts
-        .filter(f => (matrixCount[f.key] || 0) === minCount && !wrongKeys.includes(f.key))
-        .filter(f => f.key !== lastFactKey && !recentFacts.slice(-3).includes(f.key));
-
-      if (lowestCountFacts.length > 0) {
-        return lowestCountFacts[Math.floor(Math.random() * lowestCountFacts.length)];
-      }
-
-      let fallbackCandidates = allFacts.filter(f => f.key !== lastFactKey);
-      if (fallbackCandidates.length === 0) fallbackCandidates = allFacts;
-      return fallbackCandidates[Math.floor(Math.random() * fallbackCandidates.length)];
+      return available[available.length - 1];
     }
 
     // GAME CONTROLS
@@ -1745,8 +1752,19 @@
       }
     }
 
+    function tetrisCheck() {
+      if (allFacts.length === 0) return;
+      let allFilled = allFacts.every(f => (matrixCount[f.key] || 0) >= 1);
+      if (allFilled) {
+        allFacts.forEach(f => {
+          matrixCount[f.key] = Math.max(0, (matrixCount[f.key] || 0) - 1);
+        });
+      }
+    }
+
     function matrixCountIncrement(key) {
       matrixCount[key] = (matrixCount[key] || 0) + 1;
+      tetrisCheck();
     }
 
     // STATS UPDATE & UI SYNCHRONIZATION
