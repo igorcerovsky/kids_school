@@ -293,23 +293,39 @@
       box-shadow: 0 0 2px #f59e0b;
     }
 
-    #hovered-word-info {
-      font-size: 0.76rem;
-      min-height: 1.4em;
-      margin-top: 6px;
-      text-align: center;
-      color: var(--text-secondary);
-      font-family: var(--font-sans);
-    }
-
     .matrix-legend {
       display: flex;
       flex-direction: column;
       gap: 3px;
-      margin-top: 8px;
+      margin-top: 6px;
       padding-top: 6px;
       border-top: 1px solid var(--border-subtle);
       width: 100%;
+      flex-shrink: 0;
+    }
+
+    #hovered-word-info {
+      margin-top: 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      height: 38px;
+      min-height: 38px;
+      max-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      line-height: 1.25;
+      flex-shrink: 0;
+      overflow: hidden;
+      box-sizing: border-box;
+      font-family: var(--font-sans);
     }
 
     .legend-row {
@@ -554,6 +570,10 @@
           <input type="number" id="slowCountInput" class="toolbar-input" value="5" min="1" max="15" onchange="onSettingsChange()">
         </div>
         <div class="toolbar-setting-item">
+          <span id="i18nP80MinPoints">P80 min:</span>
+          <input type="number" id="p80MinPointsInput" class="toolbar-input" value="20" min="5" max="100" onchange="onSettingsChange()" title="Minimum data points required before computing 80th percentile and slowest problems">
+        </div>
+        <div class="toolbar-setting-item">
           <span id="i18nSlowRepeat">Repeat (2–N):</span>
           <input type="number" id="slowIntervalInput" class="toolbar-input" value="5" min="2" max="20" onchange="onSettingsChange()" title="Repeat slowest fact every 2nd to N-th problem">
         </div>
@@ -579,7 +599,6 @@
         </div>
         
         <div id="wordMatrix" class="word-matrix"></div>
-        <div id="hovered-word-info">Hover over the table...</div>
 
         <!-- Micro-Legend -->
         <div class="matrix-legend">
@@ -616,6 +635,9 @@
             <span id="i18nLegendSlow">🐢 Slowest completed (> 80th perc.)</span>
           </div>
         </div>
+
+        <!-- Fixed Matrix Info Pane under Legend -->
+        <div id="hovered-word-info">Hover over the table...</div>
       </section>
 
       <!-- CENTER COLUMN: Active Problem Stage (Dual Inputs) -->
@@ -697,6 +719,9 @@
         modeNormal: "Normálny (adaptívny cyklus)",
         modeSlow: "Iba najpomalšie",
         modeWrong: "Iba chybné",
+        p80MinPoints: "P80 min:",
+        p80MinPointsTitle: "Minimálny počet príkladov na výpočet 80. percentilu",
+        needMoreSamples: (curr, req) => `Zbieranie údajov pre 80. percentil (${curr}/${req} bodov)...`,
         slowN: "Pomalé N:",
         slowRepeat: "Opakovať (2–N):",
         wrongDelay: "Chyba po [s]:",
@@ -750,6 +775,9 @@
         modeNormal: "Normal (Adaptive cycle)",
         modeSlow: "Slowest only",
         modeWrong: "Mistakes only",
+        p80MinPoints: "P80 min:",
+        p80MinPointsTitle: "Minimum data points required before computing 80th percentile and slowest problems",
+        needMoreSamples: (curr, req) => `Collecting data for 80th percentile (${curr}/${req} points)...`,
         slowN: "Slow N:",
         slowRepeat: "Repeat (2–N):",
         wrongDelay: "Wrong after [s]:",
@@ -803,6 +831,9 @@
         modeNormal: "Normal (Adaptiver Zyklus)",
         modeSlow: "Nur die langsamsten",
         modeWrong: "Nur Fehler",
+        p80MinPoints: "P80 Min:",
+        p80MinPointsTitle: "Mindestanzahl an Datenpunkten zur Berechnung des 80. Perzentils",
+        needMoreSamples: (curr, req) => `Sammle Daten für das 80. Perzentil (${curr}/${req} Punkte)...`,
         slowN: "Langsam N:",
         slowRepeat: "Wiederholen (2–N):",
         wrongDelay: "Fehler nach [s]:",
@@ -871,6 +902,12 @@
       document.getElementById("i18nModeNormal").innerText = t.modeNormal;
       document.getElementById("i18nModeSlow").innerText = t.modeSlow;
       document.getElementById("i18nModeWrong").innerText = t.modeWrong;
+      if (document.getElementById("i18nP80MinPoints")) {
+        document.getElementById("i18nP80MinPoints").innerText = t.p80MinPoints;
+      }
+      if (document.getElementById("p80MinPointsInput")) {
+        document.getElementById("p80MinPointsInput").title = t.p80MinPointsTitle;
+      }
       document.getElementById("i18nSlowN").innerText = t.slowN;
       document.getElementById("i18nSlowRepeat").innerText = t.slowRepeat;
       document.getElementById("i18nWrongDelay").innerText = t.wrongDelay;
@@ -1216,6 +1253,10 @@
             let sInp = document.getElementById("slowCountInput");
             if (sInp) sInp.value = data.slowCount;
           }
+          if (data.p80MinPoints !== undefined) {
+            let p80Inp = document.getElementById("p80MinPointsInput");
+            if (p80Inp) p80Inp.value = data.p80MinPoints;
+          }
           if (data.slowInterval !== undefined) {
             let sInt = document.getElementById("slowIntervalInput");
             if (sInt) sInt.value = data.slowInterval;
@@ -1236,7 +1277,8 @@
           if (data.lastPlayedDate !== today) {
             correctCount = 0;
             incorrectCount = 0;
-            speedSamples = [];
+            // Preserve recent speed distribution for percentile calculation across days
+            speedSamples = (data.speedSamples || []).slice(-200);
           } else {
             correctCount = data.correctCount || 0;
             incorrectCount = data.incorrectCount || 0;
@@ -1262,6 +1304,7 @@
         speedSamples: speedSamples,
         recentTimes: recentTimes,
         slowCount: parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5,
+        p80MinPoints: parseInt(document.getElementById("p80MinPointsInput")?.value || "20", 10) || 20,
         slowInterval: parseInt(document.getElementById("slowIntervalInput")?.value || "5", 10) || 5,
         wrongDelay: parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10) || 3,
         successThreshold: parseInt(document.getElementById("successThreshold")?.value || "4", 10) || 4,
@@ -1332,36 +1375,80 @@
 
     // PERCENTILE & SLOW PROBLEM ALGORITHM
     function calculatePercentile80() {
-      let times = [];
-      allFacts.forEach(f => {
-        let st = stats[f.key];
-        if (st && st.attempts > 0 && st.totalTime > 0) {
-          times.push(st.totalTime / st.attempts);
-        }
-      });
+      let minPoints = parseInt(document.getElementById("p80MinPointsInput")?.value || "20", 10) || 20;
 
-      if (times.length < 3) return 4.0;
-      times.sort((a, b) => a - b);
-      let idx = Math.floor(0.80 * (times.length - 1));
-      return times[idx];
+      // Outlier filtering: exclude pause times and distractions (> 15s or < 0.2s)
+      let samples = speedSamples.filter(t => typeof t === "number" && t >= 0.2 && t <= 15.0);
+
+      if (samples.length < minPoints) {
+        return null; // Not enough data points available yet
+      }
+
+      samples.sort((a, b) => a - b);
+
+      // Exclude top 5% extreme outliers if we have at least 10 samples
+      let effective = samples;
+      if (samples.length >= 10) {
+        let cutoff = Math.floor(samples.length * 0.95);
+        effective = samples.slice(0, cutoff);
+      }
+
+      let idx = (effective.length - 1) * 0.80;
+      let i0 = Math.floor(idx);
+      let frac = idx - i0;
+      let p80 = effective[i0] + (i0 + 1 < effective.length ? frac * (effective[i0 + 1] - effective[i0]) : 0);
+
+      return Math.max(1.2, p80);
     }
 
     function getSlowDoneFacts() {
+      let nTarget = parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5;
+      let minPoints = parseInt(document.getElementById("p80MinPointsInput")?.value || "20", 10) || 20;
+      let samples = speedSamples.filter(t => typeof t === "number" && t >= 0.2 && t <= 15.0);
       let p80 = calculatePercentile80();
-      let slowFacts = allFacts
-        .filter(f => {
-          let st = stats[f.key];
-          if (!st || st.attempts === 0) return false;
-          let avg = st.totalTime / st.attempts;
-          return avg > p80 && (matrixCount[f.key] || 0) >= 1 && wrongMap[f.key] === undefined;
-        })
+
+      if (p80 === null || samples.length < minPoints) {
+        return {
+          p80: null,
+          slowFacts: [],
+          allDoneSlowCount: 0,
+          hasEnoughData: false,
+          currentCount: samples.length,
+          requiredCount: minPoints
+        };
+      }
+
+      let activeKeys = allFacts.map(f => f.key);
+      let wrongKeys = Object.keys(wrongMap).filter(k => activeKeys.includes(k));
+
+      let doneFacts = allFacts.filter(f => 
+        (matrixCount[f.key] || 0) >= 1 && 
+        !wrongKeys.includes(f.key) &&
+        stats[f.key] && 
+        stats[f.key].attempts > 0
+      );
+
+      let allSlowDone = doneFacts.filter(f => {
+        let avg = stats[f.key].totalTime / stats[f.key].attempts;
+        return avg > p80;
+      });
+
+      let slowFacts = [...allSlowDone]
         .sort((a, b) => {
           let avgA = stats[a.key].totalTime / stats[a.key].attempts;
           let avgB = stats[b.key].totalTime / stats[b.key].attempts;
           return avgB - avgA;
-        });
+        })
+        .slice(0, nTarget);
 
-      return { p80, slowFacts };
+      return {
+        p80,
+        slowFacts,
+        allDoneSlowCount: allSlowDone.length,
+        hasEnoughData: true,
+        currentCount: samples.length,
+        requiredCount: minPoints
+      };
     }
 
     // PROBLEM SELECTION ALGORITHM
@@ -1562,7 +1649,7 @@
 
         if (feedbackEl.innerText.indexOf("!") === -1 && feedbackEl.innerText.indexOf("🎓") === -1) {
           let p80Now = calculatePercentile80();
-          let wasSlow = stats[key].attempts > 1 && ((stats[key].totalTime - elapsed) / (stats[key].attempts - 1)) > p80Now;
+          let wasSlow = p80Now !== null && stats[key].attempts > 1 && ((stats[key].totalTime - elapsed) / (stats[key].attempts - 1)) > p80Now;
           let newAvg = stats[key].totalTime / stats[key].attempts;
 
           if (wasSlow && newAvg <= p80Now) {
@@ -1659,8 +1746,15 @@
     }
 
     function displaySlowWords() {
-      let { p80, slowFacts } = getSlowDoneFacts();
+      let { p80, slowFacts, hasEnoughData, currentCount, requiredCount } = getSlowDoneFacts();
       const t = I18N[currentLang];
+
+      if (!hasEnoughData) {
+        slowWordsEl.innerHTML =
+          `<b>${t.slowHeader}:</b><br>` +
+          `<span style='color: var(--text-muted); font-size:0.8rem;'>${t.needMoreSamples(currentCount, requiredCount)}</span>`;
+        return;
+      }
 
       let tags = slowFacts.map(f => {
         let avg = (stats[f.key].totalTime / stats[f.key].attempts).toFixed(2);
@@ -1850,7 +1944,10 @@
       }
 
       let p80 = calculatePercentile80();
-      let maxTime = Math.max(...recentTimes, p80 * 1.08);
+      let maxTime = Math.max(...recentTimes);
+      if (p80 !== null) {
+        maxTime = Math.max(maxTime, p80 * 1.08);
+      }
       maxTime = Math.max(maxTime, 3);
 
       let padL = 34;
@@ -1888,7 +1985,7 @@
       ctx.stroke();
 
       // 80th Percentile Threshold Line
-      if (p80 > 0 && p80 <= maxTime) {
+      if (p80 !== null && p80 > 0 && p80 <= maxTime) {
         let yP80 = padT + graphH - (p80 / maxTime) * graphH;
         ctx.save();
         ctx.strokeStyle = "#f59e0b";

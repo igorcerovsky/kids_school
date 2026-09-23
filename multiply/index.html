@@ -290,12 +290,23 @@
       z-index: 2;
     }
 
+    .matrix-legend {
+      margin-top: 6px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
     #hovered-word-info {
       margin-top: 6px;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
       color: var(--text-secondary);
-      min-height: 28px;
+      height: 38px;
+      min-height: 38px;
+      max-height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -303,17 +314,12 @@
       width: 100%;
       background: var(--surface);
       border-radius: var(--radius-sm);
-      padding: 3px 6px;
+      padding: 2px 6px;
       border: 1px solid var(--border);
       line-height: 1.25;
-    }
-
-    .matrix-legend {
-      margin-top: 6px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+      flex-shrink: 0;
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     .legend-row {
@@ -619,6 +625,10 @@
           <input type="number" id="successThreshold" class="toolbar-input" value="4" min="1" max="20" onchange="onSettingsChange()">
           <span id="i18nGradSuffix">x</span>
         </div>
+        <div class="toolbar-setting-item">
+          <span id="i18nP80MinPoints">P80 min pts:</span>
+          <input type="number" id="p80MinPointsInput" class="toolbar-input" value="20" min="5" max="100" onchange="onSettingsChange()" title="Minimum data points required before computing 80th percentile and slowest problems (default 20)">
+        </div>
       </div>
 
       <div class="settings-row-divider"></div>
@@ -686,7 +696,6 @@
         </div>
         
         <div id="wordMatrix" class="word-matrix"></div>
-        <div id="hovered-word-info">Hover over the table...</div>
 
         <!-- Micro-Legend -->
         <div class="matrix-legend">
@@ -723,6 +732,9 @@
             <span id="i18nLegendSlow">🐢 Slowest completed (&gt; 80th perc.)</span>
           </div>
         </div>
+
+        <!-- Fixed Matrix Info Pane under Legend -->
+        <div id="hovered-word-info">Hover over the table...</div>
       </section>
 
       <!-- CENTER COLUMN: Active Problem Stage -->
@@ -798,6 +810,9 @@
         wrongDelayTitle: "Ak má odpoveď očakávaný počet číslic a je nesprávna, po N sekundách označiť za chybu a prejsť ďalej (default 3s)",
         gradN: "Vyradenie:",
         gradSuffix: "x",
+        p80MinPoints: "P80 min bodov:",
+        p80MinPointsTitle: "Minimálny počet vyriešených príkladov potrebných na výpočet 80. percentilu a sledovanie najpomalších príkladov (default 20)",
+        needMoreSamples: (curr, req) => `Zber údajov pre 80. percentil (${curr}/${req} bodov)...`,
         settingsBtn: "⚙️ Nastavenia",
         opMul: "✖ Násobenie",
         opAdd: "➕ Sčítanie",
@@ -863,6 +878,9 @@
         wrongDelayTitle: "If answer has expected digits and is wrong, mark wrong after N seconds and advance (default 3s)",
         gradN: "Graduate:",
         gradSuffix: "x",
+        p80MinPoints: "P80 min points:",
+        p80MinPointsTitle: "Minimum data points required before computing 80th percentile and slowest problems (default 20)",
+        needMoreSamples: (curr, req) => `Collecting data for 80th percentile (${curr}/${req} points)...`,
         settingsBtn: "⚙️ Settings",
         opMul: "✖ Multiplication",
         opAdd: "➕ Addition",
@@ -928,6 +946,9 @@
         wrongDelayTitle: "Wenn die Antwort die erwartete Ziffernanzahl hat und falsch ist, nach N Sekunden als Fehler werten und weitergehen (Standard 3s)",
         gradN: "Abschluss:",
         gradSuffix: "x",
+        p80MinPoints: "P80 Min-Punkte:",
+        p80MinPointsTitle: "Mindestanzahl gelöster Aufgaben zur Berechnung des 80. Perzentils und Verfolgung der langsamsten Aufgaben (Standard 20)",
+        needMoreSamples: (curr, req) => `Datenerfassung für 80. Perzentil (${curr}/${req} Werte)...`,
         settingsBtn: "⚙️ Einstellungen",
         opMul: "✖ Multiplikation",
         opAdd: "➕ Addition",
@@ -1012,6 +1033,10 @@
       document.getElementById("wrongDelayInput").title = t.wrongDelayTitle;
       document.getElementById("i18nGradN").innerText = t.gradN;
       document.getElementById("i18nGradSuffix").innerText = t.gradSuffix;
+      if (document.getElementById("i18nP80MinPoints")) {
+        document.getElementById("i18nP80MinPoints").innerText = t.p80MinPoints;
+        document.getElementById("p80MinPointsInput").title = t.p80MinPointsTitle;
+      }
       document.getElementById("i18nSettingsBtn").innerText = t.settingsBtn;
       document.getElementById("i18nOpMul").innerText = t.opMul;
       document.getElementById("i18nOpAdd").innerText = t.opAdd;
@@ -1474,13 +1499,16 @@
           if (data.lastPlayedDate !== today) {
             correctCount = 0;
             incorrectCount = 0;
-            speedSamples = [];
+            speedSamples = data.speedSamples ? data.speedSamples.slice(-200) : [];
           } else {
             correctCount = data.correctCount || 0;
             incorrectCount = data.incorrectCount || 0;
             speedSamples = data.speedSamples || [];
           }
           recentTimes = data.recentTimes || [];
+          if (data.p80MinPoints !== undefined && document.getElementById("p80MinPointsInput")) {
+            document.getElementById("p80MinPointsInput").value = data.p80MinPoints;
+          }
         } catch (e) {
           console.error("Error loading progress", e);
         }
@@ -1505,6 +1533,7 @@
         slowInterval: parseInt(document.getElementById("slowIntervalInput")?.value || "5", 10) || 5,
         wrongDelay: parseInt(document.getElementById("wrongDelayInput")?.value || "3", 10) || 3,
         successThreshold: parseInt(document.getElementById("successThreshold")?.value || "4", 10) || 4,
+        p80MinPoints: parseInt(document.getElementById("p80MinPointsInput")?.value || "20", 10) || 20,
         practiceMode: document.getElementById("practiceModeSelect")?.value || "normal",
         lastPlayedDate: new Date().toLocaleDateString('en-CA'),
         activeOp: getActiveOp(),
@@ -1588,27 +1617,13 @@
 
     // STATISTICAL CALCULATION: 80th PERCENTILE (EXCLUDING OUTLIERS)
     function calculatePercentile80() {
+      let minPoints = parseInt(document.getElementById("p80MinPointsInput")?.value || "20", 10) || 20;
+
       // Outlier filtering: exclude pause times and distractions (> 15s or < 0.2s)
       let samples = speedSamples.filter(t => typeof t === "number" && t >= 0.2 && t <= 15.0);
 
-      if (samples.length < 5 && recentTimes && recentTimes.length > 0) {
-        recentTimes.forEach(t => {
-          if (typeof t === "number" && t >= 0.2 && t <= 15.0) samples.push(t);
-        });
-      }
-
-      if (samples.length < 5) {
-        allFacts.forEach(f => {
-          let s = stats[f.key];
-          if (s && s.attempts > 0) {
-            let avg = s.totalTime / s.attempts;
-            if (avg >= 0.2 && avg <= 15.0) samples.push(avg);
-          }
-        });
-      }
-
-      if (samples.length < 3) {
-        return 3.0; // Default when little data
+      if (samples.length < minPoints) {
+        return null; // Not enough data points available yet
       }
 
       samples.sort((a, b) => a - b);
@@ -1631,7 +1646,20 @@
     // IDENTIFY N-SLOWEST FACTS FROM ALREADY MARKED AS DONE
     function getSlowDoneFacts() {
       let nTarget = parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5;
+      let minPoints = parseInt(document.getElementById("p80MinPointsInput")?.value || "20", 10) || 20;
+      let samples = speedSamples.filter(t => typeof t === "number" && t >= 0.2 && t <= 15.0);
       let p80 = calculatePercentile80();
+
+      if (p80 === null || samples.length < minPoints) {
+        return {
+          p80: null,
+          slowFacts: [],
+          allDoneSlowCount: 0,
+          hasEnoughData: false,
+          currentCount: samples.length,
+          requiredCount: minPoints
+        };
+      }
 
       let activeKeys = allFacts.map(f => f.key);
       let wrongKeys = Object.keys(wrongMap).filter(k => activeKeys.includes(k));
@@ -1657,7 +1685,10 @@
       return {
         p80: p80,
         slowFacts: slowCandidates.slice(0, nTarget),
-        allDoneSlowCount: slowCandidates.length
+        allDoneSlowCount: slowCandidates.length,
+        hasEnoughData: true,
+        currentCount: samples.length,
+        requiredCount: minPoints
       };
     }
 
@@ -1667,7 +1698,7 @@
       let activeKeys = allFacts.map(f => f.key);
       let wrongKeys = Object.keys(wrongMap).filter(k => activeKeys.includes(k));
 
-      let { p80, slowFacts } = getSlowDoneFacts();
+      let { p80, slowFacts, hasEnoughData } = getSlowDoneFacts();
       let slowKeys = slowFacts.map(f => f.key);
 
       // Practice mode overrides
@@ -1677,7 +1708,7 @@
           return factsByKey[chosen];
         }
       } else if (mode === "slow") {
-        let pool = slowKeys.length > 0 ? slowKeys : wrongKeys;
+        let pool = (hasEnoughData && slowKeys.length > 0) ? slowKeys : wrongKeys;
         if (pool.length > 0) {
           let chosen = pickWeightedWithSpacing(pool);
           slowModeForced = true;
@@ -1692,7 +1723,7 @@
         .map(f => f.key);
 
       problemsSinceLastSlow++;
-      let isSlowInjectionTurn = (problemsSinceLastSlow >= nextSlowInterval);
+      let isSlowInjectionTurn = hasEnoughData && (problemsSinceLastSlow >= nextSlowInterval);
 
       let pool;
       if (isSlowInjectionTurn && slowKeys.length > 0) {
@@ -1704,7 +1735,7 @@
         pool = wrongKeys;
       } else if (zeroCells.length > 0) {
         pool = zeroCells;
-      } else if (slowKeys.length > 0) {
+      } else if (hasEnoughData && slowKeys.length > 0) {
         pool = slowKeys;
       } else {
         let minCount = Math.min(...allFacts.map(f => matrixCount[f.key] || 0));
@@ -1948,8 +1979,15 @@
     }
 
     function displaySlowWords() {
-      let { p80, slowFacts } = getSlowDoneFacts();
+      let { p80, slowFacts, hasEnoughData, currentCount, requiredCount } = getSlowDoneFacts();
       const t = I18N[currentLang];
+
+      if (!hasEnoughData) {
+        slowWordsEl.innerHTML =
+          `<b>${t.slowHeader}:</b><br>` +
+          `<span style='color: var(--text-muted); font-size:0.8rem;'>${t.needMoreSamples(currentCount, requiredCount)}</span>`;
+        return;
+      }
 
       let tags = slowFacts.map(f => {
         let avg = (stats[f.key].totalTime / stats[f.key].attempts).toFixed(2);
@@ -2187,7 +2225,10 @@
       }
 
       let p80 = calculatePercentile80();
-      let maxTime = Math.max(...recentTimes, p80 * 1.08);
+      let maxTime = Math.max(...recentTimes);
+      if (p80 !== null) {
+        maxTime = Math.max(maxTime, p80 * 1.08);
+      }
       maxTime = Math.max(maxTime, 3);
 
       let padL = 34;
@@ -2216,35 +2257,37 @@
       }
       ctx.stroke();
 
-      // 80th Percentile Reference Line & Label
-      let yP80 = padT + graphH - ((p80 / maxTime) * graphH);
-      const colorP80 = isDark ? "#fbbf24" : "#d97706";
+      // 80th Percentile Reference Line & Label (if enough data points)
+      if (p80 !== null) {
+        let yP80 = padT + graphH - ((p80 / maxTime) * graphH);
+        const colorP80 = isDark ? "#fbbf24" : "#d97706";
 
-      ctx.save();
-      ctx.setLineDash([4, 3]);
-      ctx.strokeStyle = colorP80;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(padL, yP80);
-      ctx.lineTo(w - padR, yP80);
-      ctx.stroke();
-      ctx.restore();
+        ctx.save();
+        ctx.setLineDash([4, 3]);
+        ctx.strokeStyle = colorP80;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(padL, yP80);
+        ctx.lineTo(w - padR, yP80);
+        ctx.stroke();
+        ctx.restore();
 
-      // 80th Percentile Label badge (P80: X.Xs)
-      ctx.font = "bold 9px system-ui, sans-serif";
-      const p80Label = `P80: ${p80.toFixed(1)}s`;
-      const textWidth = ctx.measureText(p80Label).width;
-      const labelX = w - padR;
-      const isNearTop = (yP80 - padT) < 14;
-      const bgY = isNearTop ? yP80 + 1 : yP80 - 12;
+        // 80th Percentile Label badge (P80: X.Xs)
+        ctx.font = "bold 9px system-ui, sans-serif";
+        const p80Label = `P80: ${p80.toFixed(1)}s`;
+        const textWidth = ctx.measureText(p80Label).width;
+        const labelX = w - padR;
+        const isNearTop = (yP80 - padT) < 14;
+        const bgY = isNearTop ? yP80 + 1 : yP80 - 12;
 
-      ctx.fillStyle = isDark ? "rgba(21, 29, 48, 0.85)" : "rgba(255, 255, 255, 0.85)";
-      ctx.fillRect(labelX - textWidth - 5, bgY, textWidth + 5, 11);
+        ctx.fillStyle = isDark ? "rgba(21, 29, 48, 0.85)" : "rgba(255, 255, 255, 0.85)";
+        ctx.fillRect(labelX - textWidth - 5, bgY, textWidth + 5, 11);
 
-      ctx.fillStyle = colorP80;
-      ctx.textAlign = "right";
-      ctx.textBaseline = isNearTop ? "top" : "bottom";
-      ctx.fillText(p80Label, labelX - 2, isNearTop ? yP80 + 3 : yP80 - 2);
+        ctx.fillStyle = colorP80;
+        ctx.textAlign = "right";
+        ctx.textBaseline = isNearTop ? "top" : "bottom";
+        ctx.fillText(p80Label, labelX - 2, isNearTop ? yP80 + 3 : yP80 - 2);
+      }
 
       // Axes
       ctx.strokeStyle = colorAxis;
