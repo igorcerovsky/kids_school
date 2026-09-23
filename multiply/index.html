@@ -175,7 +175,7 @@
     /* 3-Column Dashboard Grid (Fits 1 Screen) */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 228px minmax(320px, 1fr) 280px;
+      grid-template-columns: 240px minmax(320px, 1fr) 280px;
       gap: 12px;
       align-items: stretch;
     }
@@ -197,7 +197,8 @@
       background: var(--bg-subtle);
       width: 100%;
       box-sizing: border-box;
-      overflow: hidden;
+      overflow: visible;
+      min-height: min-content;
     }
 
     .panel-title {
@@ -215,11 +216,12 @@
     .word-matrix {
       background: transparent;
       padding: 2px;
-      margin: 2px auto auto;
+      margin: 4px auto 0;
       user-select: none;
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
+      flex-shrink: 0;
     }
 
     .matrix-hdr {
@@ -1444,8 +1446,20 @@
 
       // Fallback
       if (pool.length === 0) {
-        document.getElementById("modeMul").checked = true;
-        return buildProblemPool();
+        document.querySelectorAll('input[name="opMode"]').forEach(r => {
+          r.checked = (r.value === "mul");
+        });
+        updateMatrixTitle();
+        updatePresetButtons();
+        const cols = [2, 3, 4, 5, 6, 7, 8, 9];
+        for (let a = 0; a <= 10; a++) {
+          for (let b of cols) {
+            let key = `${a}×${b}`;
+            let item = { key, num1: a, num2: b, op: "×", answer: a * b, text: `${a} × ${b}` };
+            pool.push(item);
+            factsByKey[key] = item;
+          }
+        }
       }
 
       allFacts = pool;
@@ -1489,10 +1503,12 @@
           matrixCount = data.matrixCount || {};
           wrongPracticeCount = data.wrongPracticeCount || {};
 
-          if (data.activeOp) {
-            let r = document.querySelector(`input[name="opMode"][value="${data.activeOp}"]`);
-            if (r) r.checked = true;
-          }
+          let targetOp = ["mul", "add", "sub", "div"].includes(data.activeOp) ? data.activeOp : "mul";
+          document.querySelectorAll('input[name="opMode"]').forEach(r => {
+            r.checked = (r.value === targetOp);
+          });
+          updateMatrixTitle();
+          updatePresetButtons();
           if (data.mulMin !== undefined) document.getElementById("mulMin").value = data.mulMin;
           if (data.mulMax !== undefined) document.getElementById("mulMax").value = data.mulMax;
           if (data.addMin !== undefined) document.getElementById("addMin").value = data.addMin;
@@ -2361,9 +2377,9 @@
     // INIT
     window.addEventListener("DOMContentLoaded", () => {
       loadProgress();
+      buildProblemPool();
       nextSlowInterval = getNextSlowInterval();
       setLanguage(currentLang);
-      buildProblemPool();
       updateStats();
       displayDailyHistory();
 

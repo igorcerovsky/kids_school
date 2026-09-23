@@ -202,7 +202,8 @@
       background: var(--bg-subtle);
       width: 100%;
       box-sizing: border-box;
-      overflow: hidden;
+      overflow: visible;
+      min-height: min-content;
     }
 
     .panel-title {
@@ -220,11 +221,12 @@
     .word-matrix {
       background: transparent;
       padding: 2px;
-      margin: 2px auto auto;
+      margin: 4px auto 0;
       user-select: none;
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
+      flex-shrink: 0;
     }
 
     .matrix-hdr {
