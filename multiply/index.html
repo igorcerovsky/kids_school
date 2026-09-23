@@ -632,7 +632,7 @@
           </label>
           <div style="display:flex; gap:4px; align-items:center;">
             <span class="i18n-from">From</span>
-            <input type="number" id="mulMin" class="toolbar-input" value="1" min="1" max="20" onchange="onCustomRangeChange()">
+            <input type="number" id="mulMin" class="toolbar-input" value="0" min="0" max="20" onchange="onCustomRangeChange()">
             <span class="i18n-to">to</span>
             <input type="number" id="mulMax" class="toolbar-input" value="10" min="1" max="20" onchange="onCustomRangeChange()">
           </div>
@@ -1219,8 +1219,8 @@
 
     function updatePresetButtons() {
       const { minEl, maxEl } = getActiveRangeInputs();
-      const min = parseInt(minEl?.value || "1", 10);
-      const max = parseInt(maxEl?.value || "10", 10);
+      const min = parseInt(minEl?.value ?? "0", 10);
+      const max = parseInt(maxEl?.value ?? "10", 10);
 
       const btn0_10 = document.getElementById("preset0_10");
       const btn1_10 = document.getElementById("preset1_10");
@@ -1234,7 +1234,7 @@
     function setOpPreset(min, max) {
       const op = getActiveOp();
       const { minEl, maxEl } = getActiveRangeInputs();
-      if (op === "mul" || op === "div") {
+      if (op === "div") {
         min = Math.max(1, min);
       }
       if (minEl) minEl.value = min;
@@ -1279,11 +1279,27 @@
       const op = getActiveOp();
 
       if (op === "mul") {
-        let min = parseInt(document.getElementById("mulMin").value, 10) || 1;
-        let max = parseInt(document.getElementById("mulMax").value, 10) || 10;
+        let min = parseInt(document.getElementById("mulMin").value, 10);
+        if (isNaN(min)) min = 0;
+        let max = parseInt(document.getElementById("mulMax").value, 10);
+        if (isNaN(max)) max = 10;
         if (min > max) [min, max] = [max, min];
+
+        // Easy problems (0*x, 1*x, 10*x) are kept as rows, but their commutative columns (b = 0, 1, 10) are removed
+        const easyColsToRemove = new Set([0, 1, 10]);
+        let cols = [];
+        for (let b = min; b <= max; b++) {
+          if (!easyColsToRemove.has(b)) {
+            cols.push(b);
+          }
+        }
+        // Fallback if all columns in range were in {0, 1, 10} so problem pool is not empty
+        if (cols.length === 0) {
+          for (let b = min; b <= max; b++) cols.push(b);
+        }
+
         for (let a = min; a <= max; a++) {
-          for (let b = min; b <= max; b++) {
+          for (let b of cols) {
             let key = `${a}×${b}`;
             let item = { key, num1: a, num2: b, op: "×", answer: a * b, text: `${a} × ${b}` };
             pool.push(item);
@@ -1453,7 +1469,7 @@
         practiceMode: document.getElementById("practiceModeSelect")?.value || "normal",
         lastPlayedDate: new Date().toLocaleDateString('en-CA'),
         activeOp: getActiveOp(),
-        mulMin: parseInt(document.getElementById("mulMin")?.value || "1", 10) || 1,
+        mulMin: isNaN(parseInt(document.getElementById("mulMin")?.value, 10)) ? 0 : parseInt(document.getElementById("mulMin")?.value, 10),
         mulMax: parseInt(document.getElementById("mulMax")?.value || "10", 10) || 10,
         addMin: parseInt(document.getElementById("addMin")?.value || "0", 10) || 0,
         addMax: parseInt(document.getElementById("addMax")?.value || "10", 10) || 10,
@@ -2032,16 +2048,12 @@
       let slowKeysSet = new Set(slowFacts.map(f => f.key));
 
       let isStructured = (allFacts.every(f => f.op === "×") || allFacts.every(f => f.op === "+"));
-      let minA = isStructured ? Math.min(...allFacts.map(f => f.num1)) : 0;
-      let maxA = isStructured ? Math.max(...allFacts.map(f => f.num1)) : 0;
-      let minB = isStructured ? Math.min(...allFacts.map(f => f.num2)) : 0;
-      let maxB = isStructured ? Math.max(...allFacts.map(f => f.num2)) : 0;
-      let countA = maxA - minA + 1;
-      let countB = maxB - minB + 1;
+      let rowList = isStructured ? [...new Set(allFacts.map(f => f.num1))].sort((a, b) => a - b) : [];
+      let colList = isStructured ? [...new Set(allFacts.map(f => f.num2))].sort((a, b) => a - b) : [];
 
-      if (isStructured && (countA * countB === allFacts.length) && countB <= 15) {
+      if (isStructured && (rowList.length * colList.length === allFacts.length) && colList.length <= 25) {
         container.style.display = "grid";
-        container.style.gridTemplateColumns = `repeat(${countB + 1}, minmax(0, 1fr))`;
+        container.style.gridTemplateColumns = `repeat(${colList.length + 1}, minmax(0, 1fr))`;
         container.style.gap = "1.5px";
         container.style.justifyContent = "center";
 
@@ -2050,20 +2062,20 @@
         corner.textContent = allFacts[0].op;
         container.appendChild(corner);
 
-        for (let b = minB; b <= maxB; b++) {
+        for (let b of colList) {
           let hdr = document.createElement("div");
           hdr.className = "matrix-hdr";
           hdr.textContent = b;
           container.appendChild(hdr);
         }
 
-        for (let a = minA; a <= maxA; a++) {
+        for (let a of rowList) {
           let rowHdr = document.createElement("div");
           rowHdr.className = "matrix-hdr";
           rowHdr.textContent = a;
           container.appendChild(rowHdr);
 
-          for (let b = minB; b <= maxB; b++) {
+          for (let b of colList) {
             let key = `${a}${allFacts[0].op}${b}`;
             let fact = factsByKey[key];
             let cell = createMatrixCell(fact, key, slowKeysSet.has(key), p80);
