@@ -596,6 +596,8 @@
         <button type="button" class="preset-btn letter-btn" data-group="V" onclick="setLetterGroup('V')">V</button>
         <button type="button" class="preset-btn letter-btn" data-group="Z" onclick="setLetterGroup('Z')">Z</button>
         <button type="button" class="preset-btn letter-btn" data-group="L" onclick="setLetterGroup('L')">L</button>
+        <button type="button" class="preset-btn letter-btn" data-group="C" onclick="setLetterGroup('C')">C</button>
+        <button type="button" class="preset-btn letter-btn" data-group="F" onclick="setLetterGroup('F')">F</button>
       </div>
 
       <!-- Sub-filter & Settings Toggle -->
@@ -614,15 +616,17 @@
         <div class="toolbar-setting-item">
           <label for="letterGroupSelect"><b>Skupina:</b></label>
           <select id="letterGroupSelect" class="toolbar-select" onchange="setLetterGroup(this.value)">
-            <option value="all">Všetky vybrané slová (B, M, P, R, S, V, Z, L)</option>
+            <option value="all">Všetky skupiny (B, M, P, R, S, V, Z, L, C, F)</option>
             <option value="B">B — by, bylina, bystrý, bývať, kobyla...</option>
             <option value="M">M — my, mykať, mýliť sa, myslieť, myš...</option>
             <option value="P">P — pýcha, pýtať sa, pytliak, kopyto, pysk...</option>
             <option value="R">R — ryba, rýchly, rys, ryť, koryto, ryža...</option>
             <option value="S">S — syn, sypať, syr, syseľ, sýty, sychravý...</option>
-            <option value="V">V — vy, vysoký, zvyk, jazyk, vydra, výr...</option>
+            <option value="V">V — vy, vysoký, zvyk, vydra, výr...</option>
             <option value="Z">Z — jazyk, ozývať sa, pozývať, vyzývať...</option>
             <option value="L">L — lyko, lýtko, lyžica, lyže, plyn, mlyn...</option>
+            <option value="C">C — cyklista, bicykel, cyklus, cylinder, cibuľa...</option>
+            <option value="F">F — fyzika, fyzik, fyzický, film, finta...</option>
           </select>
         </div>
 
@@ -902,18 +906,37 @@
           "slimáčik", "slivka", "slizko", "kalina", "klinec", "klinček", "balík", "balíček", "liter",
           "literatúra", "pilina", "kúpalisko", "ihlica"
         ]
+      },
+      C: {
+        vybrane: [
+          "cyklista", "cyklistka", "bicykel", "cyklus", "cylinder", "cynik", "cynický", "cypruštek",
+          "encyklopédia", "motocykel", "recyklovať", "cyklotrasa", "Cyril", "cyklón", "cysta"
+        ],
+        makke: [
+          "cibuľa", "cibuľka", "citrón", "cirkus", "cítiť", "pocit", "cica", "cicať", "ciciak",
+          "cín", "ciferník", "cifra", "cifrovaný", "cícer", "cikať"
+        ]
+      },
+      F: {
+        vybrane: [
+          "fyzika", "fyzik", "fyzický", "fyzikálny", "fyziológia", "fyzioterapia", "fytoterapia"
+        ],
+        makke: [
+          "film", "filmový", "figa", "finta", "finále", "figúrka", "fikcia", "filozof", "filozofia",
+          "fígeľ", "filter", "filtrovať", "filtračný"
+        ]
       }
     };
 
     // ACTIVE SELECTION STATE
-    let currentLetterGroup = "all"; // "all" or "B", "M", "P", "R", "S", "V", "Z", "L"
+    let currentLetterGroup = "all"; // "all" or "B", "M", "P", "R", "S", "V", "Z", "L", "C", "F"
     let currentSubFilter = "all";   // "all", "vybrane", "makke"
     let words = [];
 
     // Helper: checks if word has at least one valid gap for the active group
     // (Diphthongs ia, ie, iu are NEVER gapped, written as is)
     function hasValidGap(word, group) {
-      let allowed = (group === 'all') ? "bmprsvzl" : group.toLowerCase();
+      let allowed = (group === 'all') ? "bmprsvzlcf" : group.toLowerCase();
       for (let i = 0; i < word.length; i++) {
         if (i > 0 && allowed.includes(word[i - 1].toLowerCase()) && "iyíý".includes(word[i])) {
           let nextChar = (i + 1 < word.length) ? word[i + 1].toLowerCase() : '';
@@ -928,7 +951,7 @@
 
     function computeWordPool(group, sub) {
       let pool = [];
-      let letters = (group === "all") ? ["B", "M", "P", "R", "S", "V", "Z", "L"] : [group];
+      let letters = (group === "all") ? ["B", "M", "P", "R", "S", "V", "Z", "L", "C", "F"] : [group];
 
       letters.forEach(letter => {
         let entry = VYBRANE_DATA[letter];
@@ -1307,7 +1330,7 @@
     function createGaps(word) {
       gapPositions = [];
       let allowedPreceding = (currentLetterGroup === 'all')
-        ? "bmprsvzl"
+        ? "bmprsvzlcf"
         : currentLetterGroup.toLowerCase();
 
       for (let i = 0; i < word.length; i++) {
