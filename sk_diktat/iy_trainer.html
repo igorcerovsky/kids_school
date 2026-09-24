@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>I / Y po L Trenažér | Kubi Kids School</title>
+  <title>I / Y Trenažér | Vybrané slová | Kubi Kids School</title>
 
   <link rel="stylesheet" href="../css/theme.css">
   <script src="../css/theme.js"></script>
@@ -56,7 +56,7 @@
     .toolbar-group {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       flex-wrap: wrap;
       font-size: 0.82rem;
       color: var(--text);
@@ -72,7 +72,7 @@
 
     .preset-btn {
       font-size: 0.78rem;
-      padding: 3px 9px;
+      padding: 3px 8px;
       border-radius: var(--radius-sm);
       cursor: pointer;
       font-weight: 600;
@@ -80,6 +80,7 @@
       border: 1px solid var(--border);
       color: var(--text);
       transition: var(--transition);
+      user-select: none;
     }
 
     .preset-btn:hover {
@@ -90,6 +91,12 @@
       background: var(--primary);
       color: #ffffff;
       border-color: var(--primary);
+    }
+
+    .letter-btn {
+      min-width: 28px;
+      text-align: center;
+      font-weight: 700;
     }
 
     .toolbar-input {
@@ -566,9 +573,7 @@
   <header class="kubi-top-bar">
     <nav class="kubi-nav-tabs" aria-label="Navigation Tabs">
       <a href="../index.html" class="kubi-tab-link">← Prehľad aktivít</a>
-      <a href="iy_l_adaptive_v3.html" class="kubi-tab-link active">📘 I / Y po L</a>
-      <a href="iy_adaptive_full_v3.html" class="kubi-tab-link">🇸🇰 Všetky I/Y</a>
-      <a href="dopln_iy.html" class="kubi-tab-link">⚡ Rýchle dopĺňanie</a>
+      <a href="iy_trainer.html" class="kubi-tab-link active">📘 I / Y Trenažér</a>
     </nav>
     <div class="nav-actions">
       <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
@@ -577,15 +582,27 @@
 
   <main class="app-container">
 
-    <!-- Slim Toolbar: Word Categories + Settings Toggle -->
+    <!-- Slim Toolbar: Letter Group Selector + Sub-filter + Settings -->
     <section class="trainer-toolbar">
+      <!-- Letter Groups -->
       <div class="toolbar-group">
-        <button type="button" class="preset-btn active" id="filterAll" onclick="setWordCategory('all')">Všetky (128)</button>
-        <button type="button" class="preset-btn" id="filterVybrane" onclick="setWordCategory('vybrane')">Vybrané (y/ý)</button>
-        <button type="button" class="preset-btn" id="filterMakke" onclick="setWordCategory('makke')">Mäkké (i/í)</button>
+        <span style="font-weight: 700; margin-right: 2px;">Písmeno:</span>
+        <button type="button" class="preset-btn letter-btn active" data-group="all" onclick="setLetterGroup('all')">Všetky</button>
+        <button type="button" class="preset-btn letter-btn" data-group="B" onclick="setLetterGroup('B')">B</button>
+        <button type="button" class="preset-btn letter-btn" data-group="M" onclick="setLetterGroup('M')">M</button>
+        <button type="button" class="preset-btn letter-btn" data-group="P" onclick="setLetterGroup('P')">P</button>
+        <button type="button" class="preset-btn letter-btn" data-group="R" onclick="setLetterGroup('R')">R</button>
+        <button type="button" class="preset-btn letter-btn" data-group="S" onclick="setLetterGroup('S')">S</button>
+        <button type="button" class="preset-btn letter-btn" data-group="V" onclick="setLetterGroup('V')">V</button>
+        <button type="button" class="preset-btn letter-btn" data-group="Z" onclick="setLetterGroup('Z')">Z</button>
+        <button type="button" class="preset-btn letter-btn" data-group="L" onclick="setLetterGroup('L')">L</button>
       </div>
 
+      <!-- Sub-filter & Settings Toggle -->
       <div class="toolbar-group">
+        <button type="button" class="preset-btn active" data-sub="all" onclick="setSubFilter('all')" id="subFilterAll">Všetky slová</button>
+        <button type="button" class="preset-btn" data-sub="vybrane" onclick="setSubFilter('vybrane')" id="subFilterVybrane">Vybrané (y/ý)</button>
+        <button type="button" class="preset-btn" data-sub="makke" onclick="setSubFilter('makke')" id="subFilterMakke">Mäkké (i/í)</button>
         <button type="button" class="preset-btn" id="settingsToggleBtn" onclick="toggleSettingsDrawer()">⚙️ Nastavenia</button>
       </div>
     </section>
@@ -593,6 +610,22 @@
     <!-- Collapsible Settings Drawer -->
     <div id="settingsDrawer" class="settings-drawer" style="display: none;">
       <div class="settings-row">
+        <!-- Letter Group in Settings -->
+        <div class="toolbar-setting-item">
+          <label for="letterGroupSelect"><b>Skupina:</b></label>
+          <select id="letterGroupSelect" class="toolbar-select" onchange="setLetterGroup(this.value)">
+            <option value="all">Všetky vybrané slová (B, M, P, R, S, V, Z, L)</option>
+            <option value="B">B — by, bylina, bystrý, bývať, kobyla...</option>
+            <option value="M">M — my, mykať, mýliť sa, myslieť, myš...</option>
+            <option value="P">P — pýcha, pýtať sa, pytliak, kopyto, pysk...</option>
+            <option value="R">R — ryba, rýchly, rys, ryť, koryto, ryža...</option>
+            <option value="S">S — syn, sypať, syr, syseľ, sýty, sychravý...</option>
+            <option value="V">V — vy, vysoký, zvyk, jazyk, vydra, výr...</option>
+            <option value="Z">Z — jazyk, ozývať sa, pozývať, vyzývať...</option>
+            <option value="L">L — lyko, lýtko, lyžica, lyže, plyn, mlyn...</option>
+          </select>
+        </div>
+
         <!-- Practice Mode -->
         <div class="toolbar-setting-item">
           <label for="practiceModeSelect"><b>Režim:</b></label>
@@ -631,7 +664,7 @@
 
       <!-- LEFT COLUMN: Word Matrix & Mastery Progress -->
       <section class="panel-card matrix-panel">
-        <div class="panel-title">
+        <div class="panel-title" id="matrixTitle">
           📊 Pokrok slov
         </div>
 
@@ -751,6 +784,7 @@
       const circle = document.getElementById('centerCircle');
       if (circle) circle.classList.add('unlocked');
       document.querySelectorAll('button.choice').forEach(b => b.classList.remove('locked'));
+      resetInactivityTimer();
     }
 
     const centerCircleEl = document.getElementById('centerCircle');
@@ -758,44 +792,162 @@
     centerCircleEl.addEventListener('touchstart', unlockButtons, { passive: true });
 
     // STORAGE KEYS
-    const STORAGE_KEY = "iy_l_practice_progress_v1";
-    const DAILY_KEY = "iy_l_daily_history";
+    const STORAGE_KEY = "iy_trainer_progress_v1";
+    const DAILY_KEY = "iy_trainer_daily_history";
 
-    // WORDS LIST (Vybrané a odvodené slová po L + Mäkké slabiky po L)
-    const WORDS_VYBRANE = [
-      "lyko", "lykovec", "lykový", "lykožrút",
-      "lýtko", "lýtkový", "lyžica", "lyžička", "lyžicový",
-      "lyže", "lyžovať", "lyžovanie", "lyžiar", "lyžiarka", "lyžiarsky", "lyžovačka",
-      "lysý", "lysina", "lyska",
-      "lýra", "lyrický", "lyrik",
-      "lýceum", "lyceálny",
-      "plyn", "plynový", "plynovod", "plynáreň", "plynár", "plynúť", "plynutie", "plynulo", "plynule", "rozplynúť sa", "uplynúť",
-      "plytký", "plytčina", "plytvať", "plytvanie",
-      "mlyn", "mlynár", "mlynárka", "mlynček", "mlynárik",
-      "blýskať sa", "zablýskať sa", "blýskavica", "blýskavý", "blysnúť sa", "blyšťať sa",
-      "vzlykať", "vzlyk", "povzlyknúť si",
-      "zlyhať", "zlyhanie",
-      "vplyv", "vplyvno", "vplývať",
-      "splývať", "splývavo", "splývanie",
-      "plyš", "plyšovo", "plyšák", "oplývať"
-    ];
+    // COMPLETE VYBRANÉ SLOVÁ DATA BY LETTER (B, M, P, R, S, V, Z, L)
+    // Words containing diphthongs (ia, ie, iu) like "myšlienka" are included:
+    // the diphthongs are written AS IS ("m_šlienka") and only target consonants are tested.
+    const VYBRANE_DATA = {
+      B: {
+        vybrane: [
+          "by", "aby", "keby", "bylina", "bylinka", "byľ", "bylinožravec", "bystrý", "bystrosť", "Banská Bystrica",
+          "byt", "bývať", "bývanie", "bytosť", "bývalý", "byvol", "nábytok", "zbytočný", "zbytočne", "prebytok",
+          "odbyt", "úbytok", "dobytok", "dobytkár", "kobyla", "kobylka", "býk", "býček", "starobylý",
+          "nadbytok", "bystrina"
+        ],
+        makke: [
+          "biť", "bije", "bitka", "bidlo", "bič", "bičík", "bicykel", "bicyklovať", "bifľovať",
+          "bistro", "bizón", "ľúbiť", "holubica", "trúbiť", "zabíjať", "dobíjať",
+          "biskup", "zabiť", "dobiť", "prebiť", "ubitý"
+        ]
+      },
+      M: {
+        vybrane: [
+          "my", "mykať", "myknúť", "zamykať", "odomykať", "šmýkať sa", "šmyk", "šmykľavka", "šmykľavý",
+          "priesmyk", "mýliť sa", "mýlka", "omyl", "mysel", "mysliteľ", "myslieť", "myšlienka", "zmysel",
+          "nezmysel", "priemysel", "priemyselný", "výmysel", "úmysel", "namyslený", "rozmyslieť", "mys",
+          "myš", "myška", "myšiak", "umývať", "umyť", "umývadlo", "umývačka", "pomyje", "mydlo", "mydlový",
+          "mydliť", "hmýriť sa", "hmyz", "hmyzožravec", "mýto", "mýtny", "mýtnica", "vymýtať"
+        ],
+        makke: [
+          "milý", "milo", "milovať", "miláčik", "milosť", "minca", "minúť", "minúta", "miska", "misa",
+          "mikina", "mixér", "míňať", "mihnúť sa", "mimika", "minister", "miznúť", "pomilovať",
+          "kŕmiť", "kominár", "mamina"
+        ]
+      },
+      P: {
+        vybrane: [
+          "pýcha", "pyšný", "pyšne", "pýšiť sa", "prepych", "prepychový", "pýtať sa", "opýtať sa", "spýtať sa", "dopyt",
+          "vypytovať sa", "pytliak", "pytliactvo", "kopyto", "kopýtko", "kopytník", "pykať", "odpykať", "odpykávať",
+          "pysk", "pyskatý", "pyžamo", "pyré"
+        ],
+        makke: [
+          "písať", "písmeno", "písmo", "spisovateľ", "piskot", "pískať", "píšťalka", "pivo", "pivovar", "pilot",
+          "pirát", "piraňa", "piškóta", "pilina", "pichnúť", "piť", "pije", "pivnica", "napísať",
+          "topiť sa", "kúpiť", "stúpiť", "vypísať", "zapísať"
+        ]
+      },
+      R: {
+        vybrane: [
+          "ryba", "rybka", "rybník", "rybár", "rybársky", "rybina", "rýchly", "rýchlo", "rýchlik", "rýchlosť",
+          "zrýchliť", "rys", "rysovať", "rysovanie", "rysovanka", "ryť", "rozryť", "rýpať", "rypák", "rytec",
+          "rytina", "rýľ", "rýľovať", "ryža", "ryžový", "bryndza", "bryndzový", "koryto", "korýtko",
+          "korytnačka", "kryť", "skryť", "skrýša", "úkryt", "pokrývka", "kryt", "prikrývka", "strýko", "strýc",
+          "stryná", "trýzniť", "trýzeň", "rýdzi", "rýdzik", "ryšavý", "ryšavec", "prýštiť", "kryha", "korytnica"
+        ],
+        makke: [
+          "ríša", "riziko", "richtár", "ríbezľa", "ríbezľový", "rímsa", "rinčať", "rebrík", "rebríček", "veriť",
+          "variť", "kričať", "krik", "strihať", "striga", "hríb", "hríbik", "skriňa", "mariť", "krívať"
+        ]
+      },
+      S: {
+        vybrane: [
+          "syn", "synak", "synček", "synovec", "synovstvo", "sypať", "sypký", "sýpka", "nasypať", "vysypať",
+          "posypať", "zásyp", "posyp", "syr", "syrový", "syreček", "syráreň", "syseľ", "sýty",
+          "sýto", "nasýtiť sa", "presýtený", "nenásytný", "sýtiť", "vysychať", "usychať", "zasychať", "sychravý", "sychravo",
+          "syčať", "sykot"
+        ],
+        makke: [
+          "sitko", "sito", "sivý", "sirup", "sirupový", "sirota", "silný", "sila", "silák", "silo",
+          "singel", "siréna", "sipot", "prosiť", "nosiť", "kosiť", "hlásiť", "posila", "hasiť"
+        ]
+      },
+      V: {
+        vybrane: [
+          "vy", "vykať", "vykanie", "vysoký", "vysoko", "výška", "výškový", "vysočina", "zvýšiť", "zvýšenie",
+          "zvyšok", "navyše", "vyť", "zavýjať", "výskot", "výskať", "zavýskať", "výkrik", "vydra", "vyhňa",
+          "výr", "zvyk", "zvyknúť si", "návyk", "zlozvyk", "zvyčajný", "zvyčajne", "nazvyš", "výzva", "vyžla"
+        ],
+        makke: [
+          "víla", "víno", "vinič", "vidlička", "víťaz", "víťazstvo", "víťaziť", "viť", "zavinúť",
+          "vinica", "víchor", "víchrica", "vír", "víriť", "vítací", "loviť", "staviť", "baviť sa",
+          "pravidlo", "novina", "chvíľa", "cvičiť"
+        ]
+      },
+      Z: {
+        vybrane: [
+          "jazyk", "jazykový", "dvojjazyčný", "jazyčnica", "jazýček", "ozývať sa", "pozývať", "vyzývať", "vzývať", "prizývať", "prezývať", "prezývka", "zyzlať"
+        ],
+        makke: [
+          "zima", "zimný", "zimomriavky", "zívať", "zívnuť", "zisk", "získať", "ziskový", "zips",
+          "zišli sa", "vozík", "plaziť sa", "cudzinec", "pokaziť", "slziť"
+        ]
+      },
+      L: {
+        vybrane: [
+          "lyko", "lykovec", "lykový", "lykožrút", "lýtko", "lýtkový", "lyžica", "lyžička", "lyžicový", "lyže",
+          "lyžovať", "lyžovanie", "lyžiar", "lyžiarka", "lyžiarsky", "lyžovačka", "lysý", "lysina", "lyska", "lýra",
+          "lyrický", "lyrik", "lýceum", "lyceálny", "plyn", "plynový", "plynovod", "plynáreň", "plynár", "plynúť",
+          "plynutie", "plynulo", "plynule", "rozplynúť sa", "uplynúť", "plytký", "plytčina", "plytvať", "plytvanie", "mlyn",
+          "mlynár", "mlynárka", "mlynček", "mlynárik", "blýskať sa", "zablýskať sa", "blýskavica", "blýskavý", "blysnúť sa",
+          "blyšťať sa", "vzlykať", "vzlyk", "povzlyknúť si", "zlyhať", "zlyhanie", "vplyv", "vplyvno", "vplývať", "splývať",
+          "splývavo", "splývanie", "plyš", "plyšovo", "plyšák", "oplývať"
+        ],
+        makke: [
+          "list", "lístok", "listina", "limonáda", "linajka", "lipa", "lipový", "lízať", "lízanka",
+          "líška", "lícovať", "líce", "liga", "kolísať", "kolíska", "kolísanie", "ulica", "polica", "polička",
+          "králik", "králiček", "malina", "malinový", "slina", "hlina", "hliník", "dolinka", "blikať",
+          "blízko", "blížiť sa", "oliva", "palica", "palička", "tulipán", "velikán", "slimák",
+          "slimáčik", "slivka", "slizko", "kalina", "klinec", "klinček", "balík", "balíček", "liter",
+          "literatúra", "pilina", "kúpalisko", "ihlica"
+        ]
+      }
+    };
 
-    const WORDS_MAKKE = [
-      "list", "lístok", "lístie", "listina", "liana", "limonáda", "linajka", "lipa", "lipový", "lízať", "lízanka", "líška", "líščia", "línia", "lícovať", "líce", "liga", "liatina", "liatinový", "liať",
-      "kolísať", "kolíska", "kolísanie",
-      "ulica", "polica", "polička", "králik", "králiček", "malina", "malinový", "slina", "hlina", "hliník", "dolinka",
-      "blikať", "blízko", "blízkemu", "blížiť sa",
-      "oliva", "palica", "palička", "tulipán", "velikán",
-      "milión", "milionár",
-      "slimák", "slimáčik", "slivka", "slizko", "kalina", "klinec", "klinček",
-      "balík", "balíček", "liter", "literatúra", "maliar", "pilina",
-      "kúpalisko", "bielizeň", "bielidlo",
-      "solila", "blížil", "chválil", "kreslil"
-    ];
+    // ACTIVE SELECTION STATE
+    let currentLetterGroup = "all"; // "all" or "B", "M", "P", "R", "S", "V", "Z", "L"
+    let currentSubFilter = "all";   // "all", "vybrane", "makke"
+    let words = [];
 
-    const ALL_WORDS = [...WORDS_VYBRANE, ...WORDS_MAKKE];
-    let currentCategory = 'all';
-    let words = ALL_WORDS;
+    // Helper: checks if word has at least one valid gap for the active group
+    // (Diphthongs ia, ie, iu are NEVER gapped, written as is)
+    function hasValidGap(word, group) {
+      let allowed = (group === 'all') ? "bmprsvzl" : group.toLowerCase();
+      for (let i = 0; i < word.length; i++) {
+        if (i > 0 && allowed.includes(word[i - 1].toLowerCase()) && "iyíý".includes(word[i])) {
+          let nextChar = (i + 1 < word.length) ? word[i + 1].toLowerCase() : '';
+          if (nextChar && "aeuáéú".includes(nextChar)) {
+            continue; // Diphthong (ia, ie, iu) - written as is, not gapped
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function computeWordPool(group, sub) {
+      let pool = [];
+      let letters = (group === "all") ? ["B", "M", "P", "R", "S", "V", "Z", "L"] : [group];
+
+      letters.forEach(letter => {
+        let entry = VYBRANE_DATA[letter];
+        if (!entry) return;
+        if (sub === "all" || sub === "vybrane") {
+          pool.push(...entry.vybrane);
+        }
+        if (sub === "all" || sub === "makke") {
+          pool.push(...entry.makke);
+        }
+      });
+
+      // Filter: only keep words that have at least one valid gap for the active group
+      // (Diphthongs ia, ie, iu are never gapped and are written as is)
+      pool = pool.filter(w => hasValidGap(w, group));
+
+      // Deduplicate words
+      return Array.from(new Set(pool));
+    }
 
     // STATE VARIABLES
     const SLOW_FEATURED_EVERY = 5;
@@ -825,9 +977,9 @@
     let slowModeForced = false;
     let isPaused = false;
 
-    // IDLE & PAUSE
-    let idleTimeout = null;
-    let idleLimit = 10000;
+    // INACTIVITY & PAUSE (Auto-pause after 20s of inactivity, matching Math Trainer)
+    let inactivityTimer = null;
+    const INACTIVITY_TIMEOUT_MS = 20000;
     let pauseStart = 0;
     let totalPausedTime = 0;
 
@@ -866,19 +1018,15 @@
           const audioEl = document.getElementById("autoAudioCheckbox");
           if (audioEl) audioEl.checked = data.autoAudio;
         }
-        if (data.category && ['all', 'vybrane', 'makke'].includes(data.category)) {
-          setWordCategory(data.category, false);
+        if (data.letterGroup) {
+          currentLetterGroup = data.letterGroup;
+        }
+        if (data.subFilter) {
+          currentSubFilter = data.subFilter;
         }
       }
 
-      ALL_WORDS.forEach(w => {
-        if (!stats[w]) {
-          stats[w] = { totalTime: 0, attempts: 0 };
-        }
-        if (matrixCount[w] === undefined) {
-          matrixCount[w] = 0;
-        }
-      });
+      applyFilterState(false);
     }
 
     // SAVE PROGRESS & SETTINGS
@@ -895,33 +1043,58 @@
         threshold: parseInt(document.getElementById("successThreshold")?.value || "4", 10),
         practiceMode: document.getElementById("practiceModeSelect")?.value || "normal",
         autoAudio: document.getElementById("autoAudioCheckbox")?.checked ?? true,
-        category: currentCategory,
+        letterGroup: currentLetterGroup,
+        subFilter: currentSubFilter,
         lastPlayedDate: new Date().toLocaleDateString('en-CA')
       };
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    // WORD CATEGORY PRESETS (All, Vybrané, Mäkké)
-    function setWordCategory(cat, doSave = true) {
-      currentCategory = cat;
-      document.querySelectorAll(".toolbar-group .preset-btn").forEach(b => {
-        if (b.id.startsWith("filter")) b.classList.remove("active");
+    // LETTER GROUP & SUB-FILTER SWITCHING
+    function setLetterGroup(group, doSave = true) {
+      currentLetterGroup = group;
+      applyFilterState(doSave);
+    }
+
+    function setSubFilter(sub, doSave = true) {
+      currentSubFilter = sub;
+      applyFilterState(doSave);
+    }
+
+    function applyFilterState(doSave = true) {
+      // Sync toolbar group buttons
+      document.querySelectorAll(".letter-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.group === currentLetterGroup);
       });
 
-      if (cat === "vybrane") {
-        words = WORDS_VYBRANE;
-        document.getElementById("filterVybrane")?.classList.add("active");
-      } else if (cat === "makke") {
-        words = WORDS_MAKKE;
-        document.getElementById("filterMakke")?.classList.add("active");
-      } else {
-        words = ALL_WORDS;
-        document.getElementById("filterAll")?.classList.add("active");
+      // Sync select dropdown in settings
+      const selectEl = document.getElementById("letterGroupSelect");
+      if (selectEl) selectEl.value = currentLetterGroup;
+
+      // Sync sub-filter buttons
+      document.querySelectorAll("[data-sub]").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.sub === currentSubFilter);
+      });
+
+      words = computeWordPool(currentLetterGroup, currentSubFilter);
+
+      // Ensure stats and matrixCount exist for all current words
+      words.forEach(w => {
+        if (!stats[w]) stats[w] = { totalTime: 0, attempts: 0 };
+        if (matrixCount[w] === undefined) matrixCount[w] = 0;
+      });
+
+      // Update matrix title
+      const titleEl = document.getElementById("matrixTitle");
+      if (titleEl) {
+        let label = (currentLetterGroup === "all") ? "Všetky vybrané slová" : `Vybrané slová po ${currentLetterGroup}`;
+        titleEl.textContent = `📊 Pokrok: ${label} (${words.length})`;
       }
 
       recentWords = [];
       renderMatrix();
+
       if (!words.includes(currentWord)) {
         showWord();
       } else {
@@ -955,34 +1128,70 @@
       showWord();
     }
 
-    // PAUSE / RESUME TOGGLE
-    function togglePause() {
-      isPaused = !isPaused;
-      const pauseBtn = document.getElementById("pauseBtn");
-      const wordDiv = document.getElementById("word");
+    // PAUSE / RESUME CONTROLS
+    function pauseTrainer() {
+      if (isPaused) return;
+      isPaused = true;
+      clearInactivityTimer();
+      pauseStart = performance.now();
 
-      if (isPaused) {
-        pauseStart = performance.now();
-        pauseBtn.innerHTML = "▶️ Pokračovať";
+      const pauseBtn = document.getElementById("pauseBtn");
+      if (pauseBtn) pauseBtn.innerHTML = "▶️ Pokračovať";
+
+      const wordDiv = document.getElementById("word");
+      if (wordDiv) {
         wordDiv.textContent = "Pauza ⏸";
         wordDiv.classList.remove("correctWord");
-        document.querySelectorAll('button.choice').forEach(b => b.classList.add('locked'));
-      } else {
-        if (pauseStart !== 0) {
-          totalPausedTime += performance.now() - pauseStart;
-          pauseStart = 0;
-        }
-        pauseBtn.innerHTML = "⏸ Pauza";
-        wordDiv.textContent = createGaps(currentWord);
+      }
 
-        buttonsEnabled = false;
-        const circle = document.getElementById('centerCircle');
+      document.querySelectorAll('button.choice').forEach(b => b.classList.add('locked'));
+      buttonsEnabled = false;
+
+      const circle = document.getElementById('centerCircle');
+      if (circle) {
+        circle.classList.remove('unlocked');
+        circle.style.pointerEvents = 'none';
+      }
+
+      highlightActiveCell();
+    }
+
+    function resumeTrainer() {
+      if (!isPaused) return;
+      isPaused = false;
+
+      if (pauseStart !== 0) {
+        totalPausedTime += performance.now() - pauseStart;
+        pauseStart = 0;
+      }
+
+      const pauseBtn = document.getElementById("pauseBtn");
+      if (pauseBtn) pauseBtn.innerHTML = "⏸ Pauza";
+
+      const wordDiv = document.getElementById("word");
+      if (wordDiv && currentWord) {
+        wordDiv.textContent = createGaps(currentWord);
+      }
+
+      buttonsEnabled = false;
+      const circle = document.getElementById('centerCircle');
+      if (circle) {
         circle.classList.remove('unlocked');
         circle.style.pointerEvents = 'auto';
         if (circle.matches(':hover')) {
           unlockButtons();
         }
-        resetIdleTimer();
+      }
+
+      highlightActiveCell();
+      resetInactivityTimer();
+    }
+
+    function togglePause() {
+      if (isPaused) {
+        resumeTrainer();
+      } else {
+        pauseTrainer();
       }
     }
 
@@ -1045,36 +1254,84 @@
       }
     }
 
-    // IDLE TIMER
-    function resetIdleTimer() {
-      clearTimeout(idleTimeout);
-      idleTimeout = setTimeout(handleIdle, idleLimit);
+    // INACTIVITY TIMER (Auto-pause after 20s of inactivity)
+    function resetInactivityTimer() {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+      }
+      if (!isPaused) {
+        inactivityTimer = setTimeout(() => {
+          if (!isPaused) {
+            pauseTrainer();
+          }
+        }, INACTIVITY_TIMEOUT_MS);
+      }
     }
 
-    function handleIdle() {
-      if (isPaused) return;
-      pauseStart = performance.now();
-      speakWord();
+    function clearInactivityTimer() {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+      }
     }
 
-    // TAB VISIBILITY SWITCH HANDLING
+    // Keep inactivity timer reset during active user interactions
+    ["pointerdown", "keydown"].forEach(evt => {
+      document.addEventListener(evt, () => {
+        if (!isPaused) {
+          resetInactivityTimer();
+        }
+      }, { passive: true });
+    });
+
+    // TAB VISIBILITY SWITCH HANDLING (Tracks pause duration & auto-pauses when backgrounded)
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
-        pauseStart = performance.now();
+        if (!isPaused) {
+          pauseStart = performance.now();
+        }
       } else {
-        if (pauseStart !== 0) {
-          totalPausedTime += performance.now() - pauseStart;
-          pauseStart = 0;
+        if (!isPaused) {
+          if (pauseStart !== 0) {
+            totalPausedTime += performance.now() - pauseStart;
+            pauseStart = 0;
+          }
+          resetInactivityTimer();
         }
       }
     });
 
-    // GAP GENERATOR (Identifies 'i', 'y', 'í', 'ý' preceded by 'l' or 'L')
+    // GAP GENERATOR (Gaps i, y, í, ý preceded by target consonants)
+    // NEVER gap diphthongs (ia, ie, iu) - they remain written as is (e.g. "myšlienka" -> "m_šlienka")
     function createGaps(word) {
       gapPositions = [];
+      let allowedPreceding = (currentLetterGroup === 'all')
+        ? "bmprsvzl"
+        : currentLetterGroup.toLowerCase();
+
       for (let i = 0; i < word.length; i++) {
-        if (i > 0 && (word[i - 1] === 'l' || word[i - 1] === 'L') && "iyíý".includes(word[i])) {
+        if (i > 0 && allowedPreceding.includes(word[i - 1].toLowerCase()) && "iyíý".includes(word[i])) {
+          // If 'i' or 'í' is immediately followed by a, e, u -> it is part of a diphthong (ia, ie, iu), do NOT gap it
+          let nextChar = (i + 1 < word.length) ? word[i + 1].toLowerCase() : '';
+          if (nextChar && "aeuáéú".includes(nextChar)) {
+            continue;
+          }
           gapPositions.push(i);
+        }
+      }
+
+      // Fallback: any i/y if no preceding match found (excluding diphthongs)
+      if (gapPositions.length === 0) {
+        for (let i = 0; i < word.length; i++) {
+          if ("iyíý".includes(word[i])) {
+            let nextChar = (i + 1 < word.length) ? word[i + 1].toLowerCase() : '';
+            if (nextChar && "aeuáéú".includes(nextChar)) {
+              continue;
+            }
+            gapPositions.push(i);
+            break;
+          }
         }
       }
 
@@ -1088,7 +1345,7 @@
 
     // SHOW NEXT ADAPTIVE WORD
     function showWord() {
-      if (isPaused) return;
+      if (isPaused || words.length === 0) return;
 
       let mode = document.getElementById("practiceModeSelect")?.value || "normal";
       let wrongKeys = Object.keys(wrongMap).filter(w => words.includes(w));
@@ -1174,13 +1431,13 @@
       }
 
       highlightActiveCell();
-      resetIdleTimer();
+      resetInactivityTimer();
     }
 
     // USER CHOOSES A LETTER (i, y, í, ý)
     function chooseLetter(letter) {
       if (isPaused || !buttonsEnabled) return;
-      resetIdleTimer();
+      resetInactivityTimer();
 
       if (pauseStart !== 0) {
         totalPausedTime += performance.now() - pauseStart;
@@ -1248,12 +1505,12 @@
     function finishWord() {
       let endTime = performance.now();
       let time = (endTime - startTime - totalPausedTime) / 1000;
-      let perLetter = time / gapPositions.length;
+      let perLetter = time / (gapPositions.length || 1);
 
-      // Filter outliers
+      // Filter extreme outliers (> 15s)
       if (perLetter > 15) {
         perLetter = 15;
-        time = 15 * gapPositions.length;
+        time = 15 * (gapPositions.length || 1);
       }
 
       recentTimes.push(perLetter);
@@ -1449,6 +1706,11 @@
       container.innerHTML = "";
 
       let N = words.length;
+      if (N === 0) {
+        container.innerHTML = "<div style='color:var(--text-muted); font-size:0.8rem; padding:10px;'>Žiadne slová vo vybranej kategórii.</div>";
+        return;
+      }
+
       let grid = calculateOptimalGrid(N);
 
       container.style.display = "grid";
@@ -1494,7 +1756,7 @@
         cell.className = "matrix-cell";
         cell.dataset.word = w;
 
-        // Multi-line tooltip
+        // Tooltip
         if (isWrong) {
           cell.title = `Slovo: ${w}\n❌ Nesprávne [zostáva: ${remaining}x]\nCelkom: ${rawAtt}x | ${avgTime}s`;
           let stepIndex = Math.min(5, remaining - 1);
@@ -1560,7 +1822,7 @@
               unlockButtons();
             }
             highlightActiveCell();
-            resetIdleTimer();
+            resetInactivityTimer();
           }
         });
 
@@ -1581,7 +1843,7 @@
       highlightActiveCell();
     }
 
-    // THEME-AWARE SPEED CHART CANVAS (Compact sparkline matching Math Trainer)
+    // THEME-AWARE SPEED CHART CANVAS
     function drawChart() {
       const canvas = document.getElementById("speedChart");
       if (!canvas) return;

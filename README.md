@@ -18,10 +18,7 @@ An interactive educational portal with web applications and practice tools desig
 | **Math Trainer** (Násobilka & Aritmetika) | Mathematics | [Open Math Trainer](https://igorcerovsky.github.io/kids_school/multiply/) |
 | **Division with Remainder** (Delenie so zvyškom) | Mathematics | [Open Remainder Trainer](https://igorcerovsky.github.io/kids_school/multiply/remainder.html) |
 | **Zahlenpyramide** (Číselné pyramídy) | Mathematics | [Open Zahlenpyramide](https://igorcerovsky.github.io/kids_school/multiply/pyramide.html) |
-| **I / Y Adaptívny Trenažér** (Vybrané slová) | Slovak Language | [Open I/Y Trenažér](https://igorcerovsky.github.io/kids_school/sk_diktat/iy_adaptive_full_v3.html) |
-| **I / Y po obojakom L** | Slovak Language | [Open I/Y po L](https://igorcerovsky.github.io/kids_school/sk_diktat/iy_l_adaptive_v3.html) |
-| **Rýchle dopĺňanie I / Y** | Slovak Language | [Open Dopĺňanie](https://igorcerovsky.github.io/kids_school/sk_diktat/dopln_iy.html) |
-| **Interaktívny Diktát** | Slovak Language | [Open Diktát](https://igorcerovsky.github.io/kids_school/sk_diktat/diktat_1.html) |
+| **I / Y Trenažér** (Vybrané slová B, M, P, R, S, V, Z, L) | Slovak Language | [Open I/Y Trenažér](https://igorcerovsky.github.io/kids_school/sk_diktat/iy_trainer.html) |
 | **Wortarten Lernspiel** (Nomen, Verben, Adjektive) | German Language | [Open Wortarten](https://igorcerovsky.github.io/kids_school/noun_verb_adjektiv/) |
 | **Tasteninstrumente Quiz** (Klávesové nástroje) | Music Education | [Open Quiz 1](https://igorcerovsky.github.io/kids_school/musik/instrumente_1.html) |
 | **Saiteninstrumente Quiz 1** (Strunové nástroje) | Music Education | [Open Quiz 2](https://igorcerovsky.github.io/kids_school/musik/instrumente_2.html) |

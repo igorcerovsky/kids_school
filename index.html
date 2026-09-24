@@ -239,10 +239,39 @@
       color: var(--primary);
     }
 
+    .hero-action {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+      min-width: 220px;
+    }
+
+    .card-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .card-pill {
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
     @media (max-width: 768px) {
       .hero-card {
         grid-template-columns: 1fr;
         padding: 24px 20px;
+      }
+      .hero-action {
+        width: 100%;
       }
       .btn-hero {
         width: 100%;
@@ -290,6 +319,9 @@
         <a href="multiply/index.html" class="btn btn-primary btn-lg btn-hero" id="btn-hero-multiply">
           Launch Math Trainer →
         </a>
+        <a href="sk_diktat/iy_trainer.html" class="btn btn-secondary btn-lg btn-hero" id="btn-hero-iy">
+          📘 Launch I / Y Trainer →
+        </a>
       </div>
     </section>
 
@@ -314,6 +346,11 @@
           </div>
           <h3 class="card-title" id="cardTitleMath">Math Trainer</h3>
           <p class="card-desc" id="cardDescMath">Practice multiplication, division, addition, and subtraction with speed tracking and statistics.</p>
+          <div class="card-pills">
+            <span class="card-pill">✖️ ➗ ➕ ➖</span>
+            <span class="card-pill">10×10 Matrix</span>
+            <span class="card-pill">P80 Analytics</span>
+          </div>
         </div>
         <div class="card-action">
           <span class="card-action-text">Launch app</span>
@@ -330,6 +367,10 @@
           </div>
           <h3 class="card-title" id="cardTitlePyramid">Number Pyramid</h3>
           <p class="card-desc" id="cardDescPyramid">Number pyramids for addition and multiplication. Fun logical math challenge for kids.</p>
+          <div class="card-pills">
+            <span class="card-pill">Pyramid Logic</span>
+            <span class="card-pill">Addition & Mult</span>
+          </div>
         </div>
         <div class="card-action">
           <span class="card-action-text">Launch app</span>
@@ -346,22 +387,10 @@
           </div>
           <h3 class="card-title" id="cardTitleRemainder">Division with Remainder</h3>
           <p class="card-desc" id="cardDescRemainder">Practice integer division with remainders, dual quotient-remainder input, and visual remainder matrix.</p>
-        </div>
-        <div class="card-action">
-          <span class="card-action-text">Launch app</span>
-          <span>→</span>
-        </div>
-      </a>
-
-      <!-- I/Y Adaptívny trenažér Full -->
-      <a href="sk_diktat/iy_adaptive_full_v3.html" class="app-card" data-category="slovak">
-        <div>
-          <div class="card-top">
-            <div class="card-icon">🇸🇰</div>
-            <span class="badge badge-success badge-cat-slovak">Slovak</span>
+          <div class="card-pills">
+            <span class="card-pill">Quotient + Remainder</span>
+            <span class="card-pill">Visual Matrix</span>
           </div>
-          <h3 class="card-title" id="cardTitleIyFull">I / Y Adaptive Trainer</h3>
-          <p class="card-desc" id="cardDescIyFull">Comprehensive practice of Slovak spelling and i/y rules with an adaptive repetition algorithm.</p>
         </div>
         <div class="card-action">
           <span class="card-action-text">Launch app</span>
@@ -369,47 +398,20 @@
         </div>
       </a>
 
-      <!-- I/Y po L -->
-      <a href="sk_diktat/iy_l_adaptive_v3.html" class="app-card" data-category="slovak">
+      <!-- I/Y Trenažér (Vybrané slová) -->
+      <a href="sk_diktat/iy_trainer.html" class="app-card" data-category="slovak">
         <div>
           <div class="card-top">
             <div class="card-icon">📘</div>
             <span class="badge badge-success badge-cat-slovak">Slovak</span>
           </div>
-          <h3 class="card-title" id="cardTitleIyL">I / Y after L</h3>
-          <p class="card-desc" id="cardDescIyL">Focused on Slovak root and derived words with the letter L, with instant feedback.</p>
-        </div>
-        <div class="card-action">
-          <span class="card-action-text">Launch app</span>
-          <span>→</span>
-        </div>
-      </a>
-
-      <!-- Dopĺňanie I/Y -->
-      <a href="sk_diktat/dopln_iy.html" class="app-card" data-category="slovak">
-        <div>
-          <div class="card-top">
-            <div class="card-icon">⚡</div>
-            <span class="badge badge-success badge-cat-slovak">Slovak</span>
+          <h3 class="card-title" id="cardTitleIyTrainer">I / Y Trainer (Vybrané slová)</h3>
+          <p class="card-desc" id="cardDescIyTrainer">Comprehensive practice of Slovak spelling and vybrané slová (B, M, P, R, S, V, Z, L) with an adaptive repetition cycle.</p>
+          <div class="card-pills">
+            <span class="card-pill">B, M, P, R, S, V, Z, L</span>
+            <span class="card-pill">Adaptive Cycle</span>
+            <span class="card-pill">Matrix & Sparkline</span>
           </div>
-          <h3 class="card-title" id="cardTitleDoplnIy">Fast I / Y Fill-in</h3>
-          <p class="card-desc" id="cardDescDoplnIy">Speed training for correct Slovak i/y spelling with large touch-friendly buttons.</p>
-        </div>
-        <div class="card-action">
-          <span class="card-action-text">Launch app</span>
-          <span>→</span>
-        </div>
-      </a>
-
-      <!-- Diktát 1 -->
-      <a href="sk_diktat/diktat_1.html" class="app-card" data-category="slovak">
-        <div>
-          <div class="card-top">
-            <div class="card-icon">✍️</div>
-            <span class="badge badge-success badge-cat-slovak">Slovak</span>
-          </div>
-          <h3 class="card-title" id="cardTitleDiktat">Interactive Dictation</h3>
-          <p class="card-desc" id="cardDescDiktat">Writing and verifying full Slovak sentences with audio speech dictation.</p>
         </div>
         <div class="card-action">
           <span class="card-action-text">Launch app</span>
@@ -426,6 +428,11 @@
           </div>
           <h3 class="card-title" id="cardTitleWortarten">Parts of Speech Game (Wortarten)</h3>
           <p class="card-desc" id="cardDescWortarten">Playful German grammar: classifying parts of speech (Nouns, Verbs, Adjectives).</p>
+          <div class="card-pills">
+            <span class="card-pill">Nomen</span>
+            <span class="card-pill">Verben</span>
+            <span class="card-pill">Adjektive</span>
+          </div>
         </div>
         <div class="card-action">
           <span class="card-action-text">Launch app</span>
@@ -501,6 +508,7 @@
         heroDesc: "Interactive arithmetic practice with response time tracking, mistake analysis, timer, and custom number ranges.",
         heroTags: ["⏱️ Speed measurement", "📊 Mistake frequency stats", "⚙️ Custom ranges & operators", "📱 Mobile & desktop optimized"],
         heroBtn: "Launch Math Trainer →",
+        heroBtnIy: "📘 Launch I / Y Trainer →",
         filters: { all: "All Activities", math: "Mathematics", slovak: "Slovak", german: "German", music: "Music" },
         catBadges: { math: "Mathematics", slovak: "Slovak", german: "German", music: "Music" },
         actionText: "Launch app",
@@ -509,10 +517,7 @@
           math: { title: "Math Trainer", desc: "Practice multiplication, division, addition, and subtraction with speed tracking and statistics." },
           remainder: { title: "Division with Remainder", desc: "Practice division with remainders, dual quotient-remainder input, and visual remainder matrix." },
           pyramid: { title: "Number Pyramid", desc: "Number pyramids for addition and multiplication. Fun logical math challenge for kids." },
-          iyFull: { title: "I / Y Adaptive Trainer", desc: "Comprehensive practice of Slovak spelling and i/y rules with an adaptive repetition algorithm." },
-          iyL: { title: "I / Y after L", desc: "Focused on Slovak root and derived words with the letter L, with instant feedback." },
-          doplnIy: { title: "Fast I / Y Fill-in", desc: "Speed training for correct Slovak i/y spelling with large touch-friendly buttons." },
-          diktat: { title: "Interactive Dictation", desc: "Writing and verifying full Slovak sentences with audio speech dictation." },
+          iyTrainer: { title: "I / Y Trainer (Vybrané slová)", desc: "Comprehensive practice of Slovak spelling and vybrané slová (B, M, P, R, S, V, Z, L) with an adaptive cycle." },
           wortarten: { title: "Parts of Speech Game (Wortarten)", desc: "Playful German grammar: classifying parts of speech (Nouns, Verbs, Adjectives)." },
           mus1: { title: "Keyboard Instruments Quiz", desc: "Learn about keyboard musical instruments with an interactive quiz." },
           mus2: { title: "String Instruments Quiz 1", desc: "Quiz on string musical instruments for children (Part 1)." },
@@ -530,6 +535,7 @@
         heroDesc: "Interaktívny trenažér aritmetiky s meraním rýchlosti odpovedí, sledovaním chýb, časovačom a nastaviteľnými rozsahmi čísel.",
         heroTags: ["⏱️ Meranie rýchlosti", "📊 Štatistika problematických príkladov", "⚙️ Vlastné rozsahy & operátory", "📱 Optimalizované pre mobil aj PC"],
         heroBtn: "Spustiť Math Trainer →",
+        heroBtnIy: "📘 Spustiť I / Y Trenažér →",
         filters: { all: "Všetky aktivity", math: "Matematika", slovak: "Slovenčina", german: "Nemčina", music: "Hudobná výchova" },
         catBadges: { math: "Matematika", slovak: "Slovenčina", german: "Nemčina", music: "Hudba" },
         actionText: "Spustiť aplikáciu",
@@ -538,10 +544,7 @@
           math: { title: "Math Trainer", desc: "Precvičovanie násobenia, delenia, sčítania a odčítania s meraním času a štatistikou." },
           remainder: { title: "Delenie so zvyškom", desc: "Precvičovanie delenia so zvyškom, zadávanie podielu a zvyšku a vizuálna matica zvyškov." },
           pyramid: { title: "Zahlenpyramide", desc: "Číselné pyramídy pre sčítanie a násobenie. Zábavná logicko-matematická výzva pre deti." },
-          iyFull: { title: "I / Y Adaptívny Trenažér", desc: "Kompletné precvičovanie vybraných slov a pravopisu i/y s adaptívnym algoritmom opakovania." },
-          iyL: { title: "I / Y po obojakom L", desc: "Zamerané na vybrané a odvodené slová po písmene L s okamžitou spätnou väzbou." },
-          doplnIy: { title: "Rýchle dopĺňanie I / Y", desc: "Tréning postrehu a správneho písania i/y v slovách s veľkými tlačidlami pre mobil." },
-          diktat: { title: "Interaktívny Diktát", desc: "Písanie a overovanie celých viet zo slovenského jazyka s hlasovým diktovaním." },
+          iyTrainer: { title: "I / Y Trenažér (Vybrané slová)", desc: "Kompletné precvičovanie vybraných slov po B, M, P, R, S, V, Z, L s adaptívnym algoritmom a okamžitou spätnou väzbou." },
           wortarten: { title: "Wortarten Lernspiel", desc: "Nemecká gramatika hrou: určovanie a triedenie slovných druhov (Nomen, Verben, Adjektive)." },
           mus1: { title: "Tasteninstrumente Quiz", desc: "Poznávanie klávesových hudobných nástrojov a kvíz z hudobnej výchovy." },
           mus2: { title: "Saiteninstrumente Quiz 1", desc: "Kvíz o strunových hudobných nástrojoch pre deti (1. časť)." },
@@ -559,6 +562,7 @@
         heroDesc: "Interaktives Rechentraining mit Reaktionszeitmessung, Fehleranalyse, Timer und anpassbaren Zahlenbereichen.",
         heroTags: ["⏱️ Reaktionszeitmessung", "📊 Fehlerschwerpunkt-Statistik", "⚙️ Eigene Bereiche & Operatoren", "📱 Optimiert für Smartphone & PC"],
         heroBtn: "Mathe-Trainer starten →",
+        heroBtnIy: "📘 I / Y Trainer starten →",
         filters: { all: "Alle Aktivitäten", math: "Mathematik", slovak: "Slowakisch", german: "Deutsch", music: "Musiklehre" },
         catBadges: { math: "Mathematik", slovak: "Slowakisch", german: "Deutsch", music: "Musik" },
         actionText: "App starten",
@@ -567,10 +571,7 @@
           math: { title: "Mathe-Trainer", desc: "Üben von Multiplikation, Division, Addition und Subtraktion mit Zeitmessung und Statistik." },
           remainder: { title: "Division mit Rest", desc: "Üben von Division mit Rest, zweistufige Eingabe von Quotient und Rest und Rest-Divisionsmatrix." },
           pyramid: { title: "Zahlenpyramide", desc: "Zahlenpyramiden für Addition und Multiplikation. Spielerische Mathe-Herausforderung für Kinder." },
-          iyFull: { title: "I / Y Adaptiver Trainer", desc: "Umfassendes Üben der slowakischen i/y-Rechtschreibung mit adaptivem Wiederholungsalgorithmus." },
-          iyL: { title: "I / Y nach L", desc: "Gezieltes Training slowakischer Wörter nach dem Buchstaben L mit sofortigem Feedback." },
-          doplnIy: { title: "Schnelles I / Y Ausfüllen", desc: "Schnelligkeitstraining für die slowakische i/y-Schreibung mit großen Touch-Tasten." },
-          diktat: { title: "Interaktives Diktat", desc: "Schreiben und Prüfen ganzer slowakischer Sätze mit Sprachausgabe." },
+          iyTrainer: { title: "I / Y Trainer (Vybrané slová)", desc: "Umfassendes Training slowakischer Wörter (B, M, P, R, S, V, Z, L) mit adaptivem Wiederholungszyklus." },
           wortarten: { title: "Wortarten Lernspiel", desc: "Deutsche Grammatik spielerisch lernen: Wortarten bestimmen (Nomen, Verben, Adjektive)." },
           mus1: { title: "Tasteninstrumente Quiz", desc: "Tasteninstrumente kennenlernen mit einem interaktiven Musikquiz." },
           mus2: { title: "Saiteninstrumente Quiz 1", desc: "Quiz über Saiteninstrumente für Kinder (Teil 1)." },
@@ -604,6 +605,7 @@
       document.getElementById("heroTag3").innerText = t.heroTags[2];
       document.getElementById("heroTag4").innerText = t.heroTags[3];
       document.getElementById("btn-hero-multiply").innerText = t.heroBtn;
+      document.getElementById("btn-hero-iy").innerText = t.heroBtnIy;
 
       document.getElementById("filterAll").innerText = t.filters.all;
       document.getElementById("filterMath").innerText = t.filters.math;
@@ -623,14 +625,8 @@
       document.getElementById("cardDescRemainder").innerText = t.cards.remainder.desc;
       document.getElementById("cardTitlePyramid").innerText = t.cards.pyramid.title;
       document.getElementById("cardDescPyramid").innerText = t.cards.pyramid.desc;
-      document.getElementById("cardTitleIyFull").innerText = t.cards.iyFull.title;
-      document.getElementById("cardDescIyFull").innerText = t.cards.iyFull.desc;
-      document.getElementById("cardTitleIyL").innerText = t.cards.iyL.title;
-      document.getElementById("cardDescIyL").innerText = t.cards.iyL.desc;
-      document.getElementById("cardTitleDoplnIy").innerText = t.cards.doplnIy.title;
-      document.getElementById("cardDescDoplnIy").innerText = t.cards.doplnIy.desc;
-      document.getElementById("cardTitleDiktat").innerText = t.cards.diktat.title;
-      document.getElementById("cardDescDiktat").innerText = t.cards.diktat.desc;
+      document.getElementById("cardTitleIyTrainer").innerText = t.cards.iyTrainer.title;
+      document.getElementById("cardDescIyTrainer").innerText = t.cards.iyTrainer.desc;
       document.getElementById("cardTitleWortarten").innerText = t.cards.wortarten.title;
       document.getElementById("cardDescWortarten").innerText = t.cards.wortarten.desc;
       document.getElementById("cardTitleMus1").innerText = t.cards.mus1.title;
