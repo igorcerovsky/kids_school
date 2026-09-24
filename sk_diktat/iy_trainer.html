@@ -303,7 +303,8 @@
     }
 
     .legend-swatch-teal,
-    .legend-swatch-red {
+    .legend-swatch-red,
+    .legend-swatch-blue {
       display: flex;
       gap: 1px;
       overflow: hidden;
@@ -340,16 +341,76 @@
       color: var(--success) !important;
     }
 
+    .choices-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     .button-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       justify-content: center;
-      margin-bottom: 16px;
       width: fit-content;
-      margin-left: auto;
-      margin-right: auto;
       position: relative;
+    }
+
+    button.choice-help {
+      width: 74px;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border: 2px solid #3b82f6;
+      background: rgba(59, 130, 246, 0.08);
+      color: #2563eb;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    button.choice-help:hover {
+      border-color: #2563eb;
+      background: rgba(59, 130, 246, 0.18);
+      color: #1d4ed8;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.28);
+      transform: translateY(-2px);
+    }
+
+    [data-theme="dark"] button.choice-help {
+      border-color: #60a5fa;
+      background: rgba(96, 165, 250, 0.12);
+      color: #93c5fd;
+    }
+
+    [data-theme="dark"] button.choice-help:hover {
+      border-color: #93c5fd;
+      background: rgba(96, 165, 250, 0.22);
+      color: #bfdbfe;
+      box-shadow: 0 4px 14px rgba(96, 165, 250, 0.32);
+    }
+
+    .help-q {
+      font-size: 2.3rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .help-lbl {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.9;
     }
 
     button.choice {
@@ -477,6 +538,15 @@
       animation: shake 0.25s ease-out;
     }
 
+    #feedback.help {
+      color: #2563eb;
+      animation: pop 0.25s ease-out;
+    }
+
+    [data-theme="dark"] #feedback.help {
+      color: #60a5fa;
+    }
+
     @keyframes pop {
       0% { transform: scale(0.85); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
@@ -518,6 +588,26 @@
       margin: 1px;
       font-weight: 600;
       font-size: 0.76rem;
+    }
+
+    .tag-help {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #2563eb;
+      padding: 1px 5px;
+      border-radius: var(--radius-sm);
+      margin: 1px;
+      font-weight: 600;
+      font-size: 0.76rem;
+    }
+
+    [data-theme="dark"] .tag-help {
+      background: rgba(96, 165, 250, 0.18);
+      border-color: rgba(96, 165, 250, 0.4);
+      color: #93c5fd;
     }
 
     .tag-slow {
@@ -703,6 +793,17 @@
             <span>S chybou (1–6)</span>
           </div>
           <div class="legend-row">
+            <div class="legend-swatch legend-swatch-blue">
+              <div class="ls-step" style="background:hsl(215,80%,82%)"></div>
+              <div class="ls-step" style="background:hsl(215,80%,72%)"></div>
+              <div class="ls-step" style="background:hsl(215,80%,62%)"></div>
+              <div class="ls-step" style="background:hsl(215,80%,52%)"></div>
+              <div class="ls-step" style="background:hsl(215,80%,42%)"></div>
+              <div class="ls-step" style="background:hsl(215,80%,32%)"></div>
+            </div>
+            <span>S pomocou ? (1–6)</span>
+          </div>
+          <div class="legend-row">
             <div class="legend-swatch" style="background:hsl(174,70%,62%); position:relative; display:flex; align-items:center; justify-content:center; border-radius:2px;">
               <span style="position:absolute; top:2px; right:2px; width:5px; height:5px; border-radius:50%; background:#f59e0b; box-shadow:0 0 3px #f59e0b;"></span>
             </div>
@@ -720,12 +821,18 @@
           načítavam...
         </div>
 
-        <div class="button-container">
-          <button class="choice locked" id="btn-i" onclick="chooseLetter('i')">i</button>
-          <button class="choice locked" id="btn-y" onclick="chooseLetter('y')">y</button>
-          <div id="centerCircle" class="center-circle" title="Prejdi kurzorom sem!"></div>
-          <button class="choice locked" id="btn-ii" onclick="chooseLetter('í')">í</button>
-          <button class="choice locked" id="btn-yy" onclick="chooseLetter('ý')">ý</button>
+        <div class="choices-stage">
+          <div class="button-container">
+            <button class="choice locked" id="btn-i" onclick="chooseLetter('i')">i</button>
+            <button class="choice locked" id="btn-y" onclick="chooseLetter('y')">y</button>
+            <div id="centerCircle" class="center-circle" title="Prejdi kurzorom sem!"></div>
+            <button class="choice locked" id="btn-ii" onclick="chooseLetter('í')">í</button>
+            <button class="choice locked" id="btn-yy" onclick="chooseLetter('ý')">ý</button>
+          </div>
+          <button class="choice choice-help locked" id="btn-help" onclick="chooseHelp()" title="Neviem / Pomoc (?)">
+            <span class="help-q">?</span>
+            <span class="help-lbl">Neviem</span>
+          </button>
         </div>
 
         <div class="controls-row">
@@ -747,6 +854,7 @@
 
         <div id="slowWords" class="info-box-compact"></div>
         <div id="wrongWords" class="info-box-compact"></div>
+        <div id="helpWords" class="info-box-compact"></div>
 
         <details style="margin-top: auto; font-size: 0.8rem; color: var(--text-secondary);">
           <summary style="cursor: pointer; font-weight: 700;">📅 Denná história</summary>
@@ -763,18 +871,21 @@
   </main>
 
   <script>
-    // KEYBOARD NAVIGATION (i, y, í, ý + Spacebar for speech)
+    // KEYBOARD NAVIGATION (i, y, í, ý, ? / 0 / H + Spacebar for speech)
     document.addEventListener('keydown', (e) => {
       let key = e.key.toLowerCase();
       if (['i', 'y', 'í', 'ý'].includes(key)) {
         if (isPaused || !buttonsEnabled) return;
         let buttons = document.querySelectorAll('.choice');
         for (let btn of buttons) {
-          if (btn.textContent === key) {
+          if (btn.textContent.trim() === key) {
             btn.click();
             break;
           }
         }
+      } else if (key === '?' || e.code === 'Slash' || e.code === 'Digit0' || e.code === 'Numpad0' || key === 'h') {
+        if (isPaused || !buttonsEnabled) return;
+        chooseHelp();
       } else if (e.code === 'Space') {
         e.preventDefault();
         speakWord();
@@ -978,8 +1089,10 @@
 
     let stats = {};
     let wrongMap = {};
+    let helpMap = {};
     let matrixCount = {};
     let wrongCount = {};
+    let helpCount = 0;
 
     let correctCount = 0;
     let incorrectCount = 0;
@@ -1015,16 +1128,20 @@
         let data = JSON.parse(saved);
         stats = data.stats || {};
         wrongMap = data.wrongMap || {};
+        helpMap = data.helpMap || {};
         matrixCount = data.matrixCount || {};
         wrongCount = data.wrongCount || {};
+        helpCount = data.helpCount || 0;
 
         if (data.lastPlayedDate !== today) {
           correctCount = 0;
           incorrectCount = 0;
+          helpCount = 0;
           speedSamples = [];
         } else {
           correctCount = data.correctCount || 0;
           incorrectCount = data.incorrectCount || 0;
+          helpCount = data.helpCount || 0;
           speedSamples = data.speedSamples || [];
         }
         recentTimes = data.recentTimes || [];
@@ -1057,8 +1174,10 @@
       let data = {
         stats: stats,
         wrongMap: wrongMap,
+        helpMap: helpMap,
         matrixCount: matrixCount,
         wrongCount: wrongCount,
+        helpCount: helpCount,
         correctCount: correctCount,
         incorrectCount: incorrectCount,
         speedSamples: speedSamples,
@@ -1372,6 +1491,8 @@
 
       let mode = document.getElementById("practiceModeSelect")?.value || "normal";
       let wrongKeys = Object.keys(wrongMap).filter(w => words.includes(w));
+      let helpKeys = Object.keys(helpMap).filter(w => words.includes(w));
+      let needPracticeKeys = Array.from(new Set([...wrongKeys, ...helpKeys]));
 
       let practicedWords = words.filter(w => stats[w] && stats[w].attempts > 0);
       let meanSpeed = 0;
@@ -1383,38 +1504,38 @@
 
       let slowN = parseInt(document.getElementById("slowCountInput")?.value || "5", 10) || 5;
       let slowWords = practicedWords
-        .filter(w => !wrongKeys.includes(w) && (stats[w].totalTime / stats[w].attempts) > slowThreshold)
+        .filter(w => !needPracticeKeys.includes(w) && (stats[w].totalTime / stats[w].attempts) > slowThreshold)
         .sort((a, b) => (stats[b].totalTime / stats[b].attempts) - (stats[a].totalTime / stats[a].attempts))
         .slice(0, slowN);
 
       let pool;
       if (mode === "wrong") {
-        pool = wrongKeys.length > 0 ? wrongKeys : words;
+        pool = needPracticeKeys.length > 0 ? needPracticeKeys : words;
       } else if (mode === "slow") {
-        pool = slowWords.length > 0 ? slowWords : (wrongKeys.length > 0 ? wrongKeys : words);
+        pool = slowWords.length > 0 ? slowWords : (needPracticeKeys.length > 0 ? needPracticeKeys : words);
         slowModeForced = slowWords.length > 0;
       } else {
         // Normal adaptive cycle
         let zeroCells = words.filter(w =>
           (matrixCount[w] || 0) === 0 &&
-          !wrongKeys.includes(w) &&
+          !needPracticeKeys.includes(w) &&
           !slowWords.includes(w)
         );
 
         slowModeCounter++;
         let isInjectionTurn = (slowModeCounter % SLOW_FEATURED_EVERY === 0);
 
-        if (isInjectionTurn && (wrongKeys.length > 0 || slowWords.length > 0)) {
-          pool = wrongKeys.length > 0 ? wrongKeys : slowWords;
-        } else if (wrongKeys.length > 0 && zeroCells.length === 0) {
-          pool = wrongKeys;
+        if (isInjectionTurn && (needPracticeKeys.length > 0 || slowWords.length > 0)) {
+          pool = needPracticeKeys.length > 0 ? needPracticeKeys : slowWords;
+        } else if (needPracticeKeys.length > 0 && zeroCells.length === 0) {
+          pool = needPracticeKeys;
         } else if (zeroCells.length > 0) {
           pool = zeroCells;
         } else {
           let minCount = Math.min(...words.map(w => matrixCount[w] || 0));
           pool = words.filter(w =>
             (matrixCount[w] || 0) === minCount &&
-            !wrongKeys.includes(w)
+            !needPracticeKeys.includes(w)
           );
           if (pool.length === 0) pool = words;
         }
@@ -1506,6 +1627,68 @@
       }
     }
 
+    // USER CLICKS '?' (HELP / "NEVIEM" BUTTON)
+    function chooseHelp() {
+      if (isPaused || !buttonsEnabled) return;
+      resetInactivityTimer();
+
+      if (pauseStart !== 0) {
+        totalPausedTime += performance.now() - pauseStart;
+        pauseStart = 0;
+      }
+
+      let correctLetter = currentWord[gapPositions[gapIndex]];
+      if (!correctLetter) return;
+
+      // Fill in correct letter on screen
+      fillLetter(correctLetter);
+
+      let targetN = parseInt(document.getElementById("successThreshold")?.value || "4", 10);
+      if (!stats[currentWord]) {
+        stats[currentWord] = { totalTime: 0, attempts: 0, countdown: targetN };
+      }
+      stats[currentWord].countdown = targetN;
+
+      // Register in helpMap (NOT wrongMap)
+      helpMap[currentWord] = true;
+      helpCount++;
+
+      const feedbackEl = document.getElementById("feedback");
+      feedbackEl.innerHTML = `Nevadí 😊 Správne je <b>${correctLetter}</b>`;
+      feedbackEl.className = "help";
+
+      // Lock buttons while showing help hint
+      buttonsEnabled = false;
+      document.querySelectorAll('button.choice').forEach(b => b.classList.add('locked'));
+
+      updateStats();
+      saveProgress();
+
+      setTimeout(() => {
+        gapIndex++;
+        if (gapIndex >= gapPositions.length) {
+          let wordDiv = document.getElementById("word");
+          if (wordDiv) {
+            wordDiv.textContent = currentWord;
+            wordDiv.classList.add("correctWord");
+          }
+          setTimeout(() => {
+            showWord();
+          }, 800);
+        } else {
+          buttonsEnabled = false;
+          const circle = document.getElementById('centerCircle');
+          if (circle) {
+            circle.classList.remove('unlocked');
+            circle.style.pointerEvents = 'auto';
+            if (circle.matches(':hover')) {
+              unlockButtons();
+            }
+          }
+        }
+      }, 1000);
+    }
+
     function logWrongLetter(letter) {
       let pos = gapPositions[gapIndex];
       if (!wrongMap[currentWord]) {
@@ -1557,9 +1740,10 @@
       stats[currentWord].totalTime += time;
 
       let wasInWrongMap = wrongMap[currentWord] !== undefined;
+      let wasInHelpMap = !wasInWrongMap && helpMap[currentWord] !== undefined;
       let graduated = false;
 
-      if (!wasInWrongMap) {
+      if (!wasInWrongMap && !wasInHelpMap) {
         correctCount++;
       }
 
@@ -1575,20 +1759,32 @@
           incorrectCount = Math.max(0, incorrectCount - mistakesForgiven);
           delete wrongMap[currentWord];
           delete wrongCount[currentWord];
+          delete helpMap[currentWord];
           matrixCountIncrement(currentWord);
           graduated = true;
         } else {
           wrongCount[currentWord] = (wrongCount[currentWord] || 0) + 1;
         }
+      } else if (mistakesThisWord === 0 && wasInHelpMap) {
+        if (stats[currentWord].countdown === undefined) stats[currentWord].countdown = targetN;
+        stats[currentWord].countdown -= 1;
+
+        if (stats[currentWord].countdown <= 0) {
+          delete helpMap[currentWord];
+          matrixCountIncrement(currentWord);
+          graduated = true;
+        }
       } else if (wasInWrongMap) {
         wrongCount[currentWord] = (wrongCount[currentWord] || 0) + 1;
+      } else if (wasInHelpMap) {
+        // Kept in helpMap for practice
       } else {
         matrixCountIncrement(currentWord);
       }
 
       const feedbackEl = document.getElementById("feedback");
       if (graduated) {
-        feedbackEl.textContent = `Výborne! Slovo "${currentWord}" vyradené z chýb! 🎓`;
+        feedbackEl.textContent = `Výborne! Slovo "${currentWord}" úspešne zvládnuté! 🎓`;
       } else {
         feedbackEl.textContent = "Správne! 🎉";
       }
@@ -1619,12 +1815,17 @@
       let total = correctCount + incorrectCount;
       let accuracy = total > 0 ? (correctCount / total * 100).toFixed(1) : 0;
 
-      document.getElementById("stats").textContent =
-        "Správne: " + correctCount +
-        " | Nesprávne: " + incorrectCount +
-        " | Presnosť: " + accuracy + "%";
+      let statsTxt = "Správne: " + correctCount +
+        " | Nesprávne: " + incorrectCount;
+      if (helpCount > 0) {
+        statsTxt += " | Pomoc (?): " + helpCount;
+      }
+      statsTxt += " | Presnosť: " + accuracy + "%";
+
+      document.getElementById("stats").textContent = statsTxt;
 
       displayWrongWords();
+      displayHelpWords();
       displaySlowWords();
       drawChart();
       renderMatrix();
@@ -1647,6 +1848,27 @@
       }
 
       document.getElementById("wrongWords").innerHTML = html;
+    }
+
+    // DISPLAY HELP WORDS (Compact Blue Badges)
+    function displayHelpWords() {
+      let el = document.getElementById("helpWords");
+      if (!el) return;
+      let helpKeys = Object.keys(helpMap).filter(w => words.includes(w));
+      let html = "<b>❓ Slová s pomocou (?):</b><br>";
+
+      if (helpKeys.length === 0) {
+        html += "<span style='color:var(--text-muted); font-size:0.76rem;'>Žiadne slová s pomocou.</span>";
+      } else {
+        let tags = helpKeys.map(w => {
+          let count = stats[w]?.countdown;
+          let countTxt = count ? ` (${count}x)` : '';
+          return `<span class="tag-help">${w}${countTxt}</span>`;
+        });
+        html += tags.join(" ");
+      }
+
+      el.innerHTML = html;
     }
 
     // DISPLAY SLOW WORDS (Compact Badges)
@@ -1756,6 +1978,14 @@
         "hsl(0,70%,42%)",
         "hsl(0,70%,32%)"
       ];
+      const BLUE_STEPS = [
+        "hsl(215,80%,82%)",
+        "hsl(215,80%,72%)",
+        "hsl(215,80%,62%)",
+        "hsl(215,80%,52%)",
+        "hsl(215,80%,42%)",
+        "hsl(215,80%,32%)"
+      ];
 
       // Slow words set
       let practiced = words.filter(w => stats[w] && stats[w].attempts > 0);
@@ -1772,8 +2002,10 @@
         let rawAtt = stats[w]?.attempts || 0;
         let avgTime = rawAtt > 0 ? (stats[w].totalTime / rawAtt).toFixed(1) : "-";
         let isWrong = wrongMap[w] !== undefined;
+        let isHelp = !isWrong && helpMap[w] !== undefined;
         let isSlow = slowSet.has(w);
-        let remaining = isWrong ? (stats[w]?.countdown ?? 0) : 0;
+        let remainingWrong = isWrong ? (stats[w]?.countdown ?? 0) : 0;
+        let remainingHelp = isHelp ? (stats[w]?.countdown ?? 0) : 0;
 
         let cell = document.createElement("div");
         cell.className = "matrix-cell";
@@ -1781,9 +2013,13 @@
 
         // Tooltip
         if (isWrong) {
-          cell.title = `Slovo: ${w}\n❌ Nesprávne [zostáva: ${remaining}x]\nCelkom: ${rawAtt}x | ${avgTime}s`;
-          let stepIndex = Math.min(5, remaining - 1);
+          cell.title = `Slovo: ${w}\n❌ Nesprávne [zostáva: ${remainingWrong}x]\nCelkom: ${rawAtt}x | ${avgTime}s`;
+          let stepIndex = Math.min(5, remainingWrong - 1);
           cell.style.backgroundColor = RED_STEPS[Math.max(0, stepIndex)];
+        } else if (isHelp) {
+          cell.title = `Slovo: ${w}\n❓ Pomoc [zostáva: ${remainingHelp}x]\nCelkom: ${rawAtt}x | ${avgTime}s`;
+          let stepIndex = Math.min(5, remainingHelp - 1);
+          cell.style.backgroundColor = BLUE_STEPS[Math.max(0, stepIndex)];
         } else if (mc === 0) {
           cell.title = `Slovo: ${w}\nNeprecvičené\nCelkom: ${rawAtt}x | ${avgTime}s`;
           cell.style.backgroundColor = "var(--border-strong)";
@@ -1794,7 +2030,7 @@
           cell.style.backgroundColor = TEAL_STEPS[stepIndex];
         }
 
-        if (isSlow && !isWrong && mc > 0) {
+        if (isSlow && !isWrong && !isHelp && mc > 0) {
           cell.classList.add("is-slow");
         }
 
@@ -1802,7 +2038,10 @@
         cell.addEventListener("mouseenter", () => {
           if (isWrong) {
             document.getElementById("hovered-word-info").innerHTML =
-              `Slovo: <b>${w}</b> <span style='color:var(--danger);'>[❌ ${remaining}x zostáva]</span> &mdash; celkom: ${rawAtt}x, ${avgTime}s`;
+              `Slovo: <b>${w}</b> <span style='color:var(--danger);'>[❌ ${remainingWrong}x zostáva]</span> &mdash; celkom: ${rawAtt}x, ${avgTime}s`;
+          } else if (isHelp) {
+            document.getElementById("hovered-word-info").innerHTML =
+              `Slovo: <b>${w}</b> <span style='color:#2563eb;'>[❓ ${remainingHelp}x na precvičenie]</span> &mdash; celkom: ${rawAtt}x, ${avgTime}s`;
           } else if (mc === 0) {
             document.getElementById("hovered-word-info").innerHTML =
               `Slovo: <b>${w}</b> &mdash; Neprecvičené (${rawAtt}x, ${avgTime}s)`;
