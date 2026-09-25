@@ -55,6 +55,12 @@ Dedicated trainer for integer division with remainders:
 
 ---
 
+## 📐 Architecture & Standards
+
+For details on the shared 3-column dashboard grid, 20s auto-pause outlier mitigation, response time sparkline chart, matrix heatmap, and local storage data persistence across trainers, see **[TRAINER_STANDARDS.md](TRAINER_STANDARDS.md)**.
+
+---
+
 ## 💻 Local Development
 
 No build tools or bundlers are required. The project consists of standard HTML5, CSS3, and modern Vanilla JavaScript.
