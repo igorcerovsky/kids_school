@@ -707,16 +707,16 @@
           <label for="letterGroupSelect"><b>Skupina:</b></label>
           <select id="letterGroupSelect" class="toolbar-select" onchange="setLetterGroup(this.value)">
             <option value="all">Všetky skupiny (B, M, P, R, S, V, Z, L, C, F)</option>
-            <option value="B">B — by, bylina, bystrý, bývať, kobyla...</option>
-            <option value="M">M — my, mykať, mýliť sa, myslieť, myš...</option>
+            <option value="B">B — by, bylina, bystrý, Bystrík, bývať, Bytča, kobyla...</option>
+            <option value="M">M — my, mykať, mýliť sa, myslieť, Milan, Myjava, myš...</option>
             <option value="P">P — pýcha, pýtať sa, pytliak, kopyto, pysk...</option>
-            <option value="R">R — ryba, rýchly, rys, ryť, koryto, ryža...</option>
-            <option value="S">S — syn, sypať, syr, syseľ, sýty, sychravý...</option>
-            <option value="V">V — vy, vysoký, zvyk, vydra, výr...</option>
-            <option value="Z">Z — jazyk, ozývať sa, pozývať, vyzývať...</option>
-            <option value="L">L — lyko, lýtko, lyžica, lyže, plyn, mlyn...</option>
-            <option value="C">C — cyklista, bicykel, cyklus, Cyril, Cyrila...</option>
-            <option value="F">F — fyzika, fyzik, fyzický, film, finta...</option>
+            <option value="R">R — ryba, rýchly, Cyril, Richard, Torysa, Korytnica, ryža...</option>
+            <option value="S">S — syn, sypať, syr, Silvia, Sybila, sýty, sychravý...</option>
+            <option value="V">V — vy, vysoký, Viktor, zvyk, vydra, výr...</option>
+            <option value="Z">Z — jazyk, ozývať sa, Zita, pozývať, vyzývať...</option>
+            <option value="L">L — lyko, lýtko, Lýdia, lyžica, lyže, Linda, plyn...</option>
+            <option value="C">C — cyklista, bicykel, cyklus, Cyril, Cyrila, Cyprián...</option>
+            <option value="F">F — fyzika, fyzik, fyzický, Filip, film, finta...</option>
           </select>
         </div>
 
@@ -917,14 +917,14 @@
       B: {
         vybrane: [
           "by", "aby", "keby", "bylina", "bylinka", "byľ", "bylinožravec", "bystrý", "bystrosť", "Banská Bystrica",
-          "Bystrík", "Bystrica", "byt", "bývať", "bývanie", "bytosť", "bývalý", "byvol", "nábytok", "zbytočný",
+          "Bystrík", "Bystrica", "Bytča", "Považská Bystrica", "byt", "bývať", "bývanie", "bytosť", "bývalý", "byvol", "nábytok", "zbytočný",
           "zbytočne", "prebytok", "odbyt", "úbytok", "dobytok", "dobytkár", "kobyla", "kobylka", "býk", "býček",
           "starobylý", "nadbytok", "bystrina"
         ],
         makke: [
           "biť", "bije", "bitka", "bidlo", "bič", "bičík", "bicykel", "bicyklovať", "bifľovať",
           "bistro", "bizón", "ľúbiť", "holubica", "trúbiť", "zabíjať", "dobíjať",
-          "biskup", "zabiť", "dobiť", "prebiť", "ubitý"
+          "biskup", "zabiť", "dobiť", "prebiť", "ubitý", "Biba", "Bibiána"
         ]
       },
       M: {
@@ -938,7 +938,7 @@
         makke: [
           "milý", "milo", "milovať", "miláčik", "milosť", "minca", "minúť", "minúta", "miska", "misa",
           "mikina", "mixér", "míňať", "mihnúť sa", "mimika", "minister", "miznúť", "pomilovať",
-          "kŕmiť", "kominár", "mamina"
+          "kŕmiť", "kominár", "mamina", "Milan", "Milka", "Miloš", "Milada", "Michal", "Miroslav", "Mirko"
         ]
       },
       P: {
@@ -959,11 +959,12 @@
           "zrýchliť", "rys", "rysovať", "rysovanie", "rysovanka", "ryť", "rozryť", "rýpať", "rypák", "rytec",
           "rytina", "rýľ", "rýľovať", "ryža", "ryžový", "bryndza", "bryndzový", "koryto", "korýtko",
           "korytnačka", "Korytnica", "Torysa", "kryť", "skryť", "skrýša", "úkryt", "pokrývka", "kryt", "prikrývka", "strýko", "strýc",
-          "stryná", "trýzniť", "trýzeň", "rýdzi", "rýdzik", "ryšavý", "ryšavec", "prýštiť", "kryha", "korytnica"
+          "stryná", "trýzniť", "trýzeň", "rýdzi", "rýdzik", "ryšavý", "ryšavec", "prýštiť", "kryha"
         ],
         makke: [
           "ríša", "riziko", "richtár", "ríbezľa", "ríbezľový", "rímsa", "rinčať", "rebrík", "rebríček", "veriť",
-          "variť", "kričať", "krik", "strihať", "striga", "hríb", "hríbik", "skriňa", "mariť", "krívať"
+          "variť", "kričať", "krik", "strihať", "striga", "hríb", "hríbik", "skriňa", "mariť", "krívať",
+          "Cyril", "Cyrila", "Cyrilko", "Richard", "Riško", "Rita"
         ]
       },
       S: {
@@ -971,23 +972,24 @@
           "syn", "synak", "synček", "synovec", "synovstvo", "sypať", "sypký", "sýpka", "nasypať", "vysypať",
           "posypať", "zásyp", "posyp", "syr", "syrový", "syreček", "syráreň", "syseľ", "sýty",
           "sýto", "nasýtiť sa", "presýtený", "nenásytný", "sýtiť", "vysychať", "usychať", "zasychať", "sychravý", "sychravo",
-          "syčať", "sykot"
+          "syčať", "sykot", "Sybila"
         ],
         makke: [
           "sitko", "sito", "sivý", "sirup", "sirupový", "sirota", "silný", "sila", "silák", "silo",
-          "singel", "siréna", "sipot", "prosiť", "nosiť", "kosiť", "hlásiť", "posila", "hasiť"
+          "singel", "siréna", "sipot", "prosiť", "nosiť", "kosiť", "hlásiť", "posila", "hasiť",
+          "Silvia", "Silvester", "Simona"
         ]
       },
       V: {
         vybrane: [
-          "vy", "vykať", "vykanie", "vysoký", "vysoko", "výška", "výškový", "vysočina", "zvýšiť", "zvýšenie",
-          "zvyšok", "navyše", "vyť", "zavýjať", "výskot", "výskať", "zavýskať", "výkrik", "vydra", "vyhňa",
+          "vy", "vykať", "vykanie", "vysoký", "vysoko", "výška", "výškový", "vysočina", "Vysoké Tatry", "zvýšiť", "zvýšenie",
+          "zvyšok", "navyše", "vyť", "zavýjať", "výskot", "výskať", "zavýskať", "výkrik", "vydra", "vyhňa", "Vyhne",
           "výr", "zvyk", "zvyknúť si", "návyk", "zlozvyk", "zvyčajný", "zvyčajne", "nazvyš", "výzva", "vyžla"
         ],
         makke: [
           "víla", "víno", "vinič", "vidlička", "víťaz", "víťazstvo", "víťaziť", "viť", "zavinúť",
           "vinica", "víchor", "víchrica", "vír", "víriť", "vítací", "loviť", "staviť", "baviť sa",
-          "pravidlo", "novina", "chvíľa", "cvičiť"
+          "pravidlo", "novina", "chvíľa", "cvičiť", "Viktor", "Viktória", "Viliam"
         ]
       },
       Z: {
@@ -996,7 +998,7 @@
         ],
         makke: [
           "zima", "zimný", "zimomriavky", "zívať", "zívnuť", "zisk", "získať", "ziskový", "zips",
-          "zišli sa", "vozík", "plaziť sa", "cudzinec", "pokaziť", "slziť"
+          "zišli sa", "vozík", "plaziť sa", "cudzinec", "pokaziť", "slziť", "Zita", "Zitka", "Zina"
         ]
       },
       L: {
@@ -1007,7 +1009,7 @@
           "plynutie", "plynulo", "plynule", "rozplynúť sa", "uplynúť", "plytký", "plytčina", "plytvať", "plytvanie", "mlyn",
           "mlynár", "mlynárka", "mlynček", "mlynárik", "blýskať sa", "zablýskať sa", "blýskavica", "blýskavý", "blysnúť sa",
           "blyšťať sa", "vzlykať", "vzlyk", "povzlyknúť si", "zlyhať", "zlyhanie", "vplyv", "vplyvno", "vplývať", "splývať",
-          "splývavo", "splývanie", "plyš", "plyšovo", "plyšák", "oplývať"
+          "splývavo", "splývanie", "plyš", "plyšovo", "plyšák", "oplývať", "Lýdia", "Lydka"
         ],
         makke: [
           "list", "lístok", "listina", "limonáda", "linajka", "lipa", "lipový", "lízať", "lízanka",
@@ -1015,17 +1017,17 @@
           "králik", "králiček", "malina", "malinový", "slina", "hlina", "hliník", "dolinka", "blikať",
           "blízko", "blížiť sa", "oliva", "palica", "palička", "tulipán", "velikán", "slimák",
           "slimáčik", "slivka", "slizko", "kalina", "klinec", "klinček", "balík", "balíček", "liter",
-          "literatúra", "pilina", "kúpalisko", "ihlica"
+          "literatúra", "pilina", "kúpalisko", "ihlica", "Linda", "Lívia", "Libuša", "Liptov"
         ]
       },
       C: {
         vybrane: [
           "cyklista", "cyklistka", "bicykel", "cyklus", "cylinder", "cynik", "cynický", "cypruštek",
-          "encyklopédia", "motocykel", "recyklovať", "cyklotrasa", "Cyril", "Cyrila", "Cyrilko", "cyklón", "cysta"
+          "encyklopédia", "motocykel", "recyklovať", "cyklotrasa", "Cyril", "Cyrila", "Cyrilko", "Cyprián", "cyklón", "cysta"
         ],
         makke: [
           "cibuľa", "cibuľka", "citrón", "cirkus", "cítiť", "pocit", "cica", "cicať", "ciciak",
-          "cín", "ciferník", "cifra", "cifrovaný", "cícer", "cikať"
+          "cín", "ciferník", "cifra", "cifrovaný", "cícer", "cikať", "Cecília", "Cilka"
         ]
       },
       F: {
@@ -1034,7 +1036,7 @@
         ],
         makke: [
           "film", "filmový", "figa", "finta", "finále", "figúrka", "fikcia", "filozof", "filozofia",
-          "fígeľ", "filter", "filtrovať", "filtračný"
+          "fígeľ", "filter", "filtrovať", "filtračný", "Filip", "Filípek"
         ]
       }
     };
