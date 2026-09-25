@@ -911,41 +911,43 @@
     const DAILY_KEY = "iy_trainer_daily_history";
 
     // COMPLETE VYBRANÉ SLOVÁ DATA BY LETTER (B, M, P, R, S, V, Z, L)
-    // Words containing diphthongs (ia, ie, iu) like "myšlienka" are included:
-    // the diphthongs are written AS IS ("m_šlienka") and only target consonants are tested.
     const VYBRANE_DATA = {
       B: {
         vybrane: [
-          "by", "aby", "keby", "bylina", "bylinka", "byľ", "bylinožravec", "bystrý", "bystrosť", "Banská Bystrica",
-          "Bystrík", "Bystrica", "Bytča", "Považská Bystrica", "byt", "bývať", "bývanie", "bytosť", "bývalý", "byvol", "nábytok", "zbytočný",
-          "zbytočne", "prebytok", "odbyt", "úbytok", "dobytok", "dobytkár", "kobyla", "kobylka", "býk", "býček",
-          "starobylý", "nadbytok", "bystrina"
+          "by", "byť v škole", "dobyť hrad", "aby", "keby", "bylina", "bylinka", "byľ", "bylinožravec",
+          "bystrý", "bystrosť", "bystrina", "Banská Bystrica", "Bystrík", "Bystrica", "Bytča", "Považská Bystrica",
+          "byt", "bývať", "bývanie", "obývať", "obyvateľ", "bydlisko", "príbytok", "ubytovňa", "bytosť",
+          "bývalý", "živobytie", "byvol", "nábytok", "zbytočný", "zbytočne", "prebytok", "odbyt", "úbytok",
+          "dobytok", "dobytkár", "kobyla", "kobylka", "býk", "býček", "obyčaj", "obyčajný", "obyčajne",
+          "starobylý", "nadbytok"
         ],
         makke: [
-          "biť", "bije", "bitka", "bidlo", "bič", "bičík", "bicykel", "bicyklovať", "bifľovať",
+          "zabiť klinec", "biť sa", "bije", "bitka", "bidlo", "bič", "bičík", "bicykel", "bicyklovať", "bifľovať",
           "bistro", "bizón", "ľúbiť", "holubica", "trúbiť", "zabíjať", "dobíjať",
-          "biskup", "zabiť", "dobiť", "prebiť", "ubitý", "Biba", "Bibiána"
+          "biskup", "dobiť batériu", "prebiť", "ubitý", "Biba", "Bibiána"
         ]
       },
       M: {
         vybrane: [
-          "my", "mykať", "myknúť", "zamykať", "odomykať", "šmýkať sa", "šmyk", "šmykľavka", "šmykľavý",
-          "priesmyk", "mýliť sa", "mýlka", "omyl", "mysel", "mysliteľ", "myslieť", "myšlienka", "zmysel",
-          "nezmysel", "priemysel", "priemyselný", "výmysel", "úmysel", "namyslený", "rozmyslieť", "mys",
-          "myš", "myška", "myšiak", "Myjava", "umývať", "umyť", "umývadlo", "umývačka", "pomyje", "mydlo", "mydlový",
-          "mydliť", "hmýriť sa", "hmyz", "hmyzožravec", "mýto", "mýtny", "mýtnica", "vymýtať"
+          "my všetci", "mykať", "myknúť", "mykať sa", "zamykať", "odomykať", "pomykov", "šmýkať sa", "šmyk",
+          "šmykľavka", "šmykľavý", "priesmyk", "mýliť sa", "mýlka", "omyl", "neomylný", "myseľ", "mysliteľ",
+          "myslieť", "myšlienka", "premýšľať", "zamyslieť sa", "zmysel", "nezmysel", "priemysel", "priemyselný",
+          "výmysel", "úmysel", "namyslený", "rozmyslieť", "mys", "myš", "myška", "myšiak", "Myjava", "umývať",
+          "umyť", "umývať sa", "umývadlo", "umývačka", "pomyje", "mydlo", "mydlový", "mydliť", "hmýriť sa",
+          "hmyz", "hmyzožravec", "žmýkať", "žmýkačka", "mýto", "mýtny", "mýtnica", "vymýtať"
         ],
         makke: [
-          "milý", "milo", "milovať", "miláčik", "milosť", "minca", "minúť", "minúta", "miska", "misa",
+          "daj mi", "milý", "milo", "milovať", "miláčik", "milosť", "minca", "minúť", "minúta", "miska", "misa",
           "mikina", "mixér", "míňať", "mihnúť sa", "mimika", "minister", "miznúť", "pomilovať",
-          "kŕmiť", "kominár", "mamina", "Milan", "Milka", "Miloš", "Milada", "Michal", "Miroslav", "Mirko"
+          "kŕmiť", "kominár", "mamina", "Milan", "Miloš", "Milada", "Michal", "Miroslav", "Mirko"
         ]
       },
       P: {
         vybrane: [
-          "pýcha", "pyšný", "pyšne", "pýšiť sa", "prepych", "prepychový", "pýtať sa", "opýtať sa", "spýtať sa", "dopyt",
-          "vypytovať sa", "pytliak", "pytliactvo", "kopyto", "kopýtko", "kopytník", "pykať", "odpykať", "odpykávať",
-          "pysk", "pyskatý", "pyžamo", "pyré"
+          "pýcha", "pyšný", "pyšne", "pýšiť sa", "pyšnieť", "prepych", "prepychový", "pýtať sa", "opýtať sa",
+          "spýtať sa", "vypytovať sa", "spytovať sa", "dopyt", "pytač", "pytliak", "pytliactvo", "kopyto",
+          "kopýtko", "kopytník", "pykať", "odpykať", "odpykávať", "pysk", "pyskatý", "pýr", "pýriť sa",
+          "zapýriť sa", "pyžamo", "pyré"
         ],
         makke: [
           "písať", "písmeno", "písmo", "spisovateľ", "piskot", "pískať", "píšťalka", "pivo", "pivovar", "pilot",
@@ -956,10 +958,12 @@
       R: {
         vybrane: [
           "ryba", "rybka", "rybník", "rybár", "rybársky", "rybina", "rýchly", "rýchlo", "rýchlik", "rýchlosť",
-          "zrýchliť", "rys", "rysovať", "rysovanie", "rysovanka", "ryť", "rozryť", "rýpať", "rypák", "rytec",
-          "rytina", "rýľ", "rýľovať", "ryža", "ryžový", "bryndza", "bryndzový", "koryto", "korýtko",
-          "korytnačka", "Korytnica", "Torysa", "kryť", "skryť", "skrýša", "úkryt", "pokrývka", "kryt", "prikrývka", "strýko", "strýc",
-          "stryná", "trýzniť", "trýzeň", "rýdzi", "rýdzik", "ryšavý", "ryšavec", "prýštiť", "kryha"
+          "zrýchliť", "rys", "rysovať", "rysovanie", "rysovanka", "ryť", "rozryť", "podryť", "rýpať", "rypák",
+          "rytec", "rytina", "rýľ", "rýľovať", "ryha", "ryža", "ryžový", "bryndza", "bryndzový", "koryto",
+          "korýtko", "korytnačka", "Korytnica", "Torysa", "kryť", "skryť", "skrýša", "úkryt", "pokrývka",
+          "kryt", "prikrývka", "kryha", "strýko", "strýc", "stryná", "ryčať", "zaryčať", "hrýzť", "zahryznúť",
+          "trýzniť", "trýzeň", "rýdzi", "rýdzik", "ryšavý", "ryšavec", "prýštiť", "rým", "rýmovať", "rytier",
+          "rytiersky", "trysk", "kryštál", "kryštálový", "brýzgať", "úryvok", "rytmus"
         ],
         makke: [
           "ríša", "riziko", "richtár", "ríbezľa", "ríbezľový", "rímsa", "rinčať", "rebrík", "rebríček", "veriť",
@@ -969,10 +973,10 @@
       },
       S: {
         vybrane: [
-          "syn", "synak", "synček", "synovec", "synovstvo", "sypať", "sypký", "sýpka", "nasypať", "vysypať",
-          "posypať", "zásyp", "posyp", "syr", "syrový", "syreček", "syráreň", "syseľ", "sýty",
-          "sýto", "nasýtiť sa", "presýtený", "nenásytný", "sýtiť", "vysychať", "usychať", "zasychať", "sychravý", "sychravo",
-          "syčať", "sykot", "Sybila"
+          "syn", "synak", "synček", "synovec", "synovstvo", "synovský", "sypať", "sypký", "sýpka", "nasypať",
+          "vysypať", "posypať", "zásyp", "posyp", "presypať", "rozsypať", "syr", "syrový", "syreček", "syráreň",
+          "syseľ", "sýty", "nasýtiť sa", "presýtený", "nenásytný", "sýtiť", "dosýta", "vysychať", "usychať",
+          "zasychať", "sychravý", "sychravo", "syčať", "sykot", "sykať", "sýkorka", "osýpky", "Sybila"
         ],
         makke: [
           "sitko", "sito", "sivý", "sirup", "sirupový", "sirota", "silný", "sila", "silák", "silo",
@@ -982,19 +986,23 @@
       },
       V: {
         vybrane: [
-          "vy", "vykať", "vykanie", "vysoký", "vysoko", "výška", "výškový", "vysočina", "Vysoké Tatry", "zvýšiť", "zvýšenie",
-          "zvyšok", "navyše", "vyť", "zavýjať", "výskot", "výskať", "zavýskať", "výkrik", "vydra", "vyhňa", "Vyhne",
-          "výr", "zvyk", "zvyknúť si", "návyk", "zlozvyk", "zvyčajný", "zvyčajne", "nazvyš", "výzva", "vyžla"
+          "vy všetci", "vykať", "vykanie", "vysoký", "vysoko", "výška", "výškový", "vysočina", "Vysoké Tatry",
+          "zvýšiť", "zvýšenie", "zvyšok", "navyše", "nazvyš", "vyť na mesiac", "zavýjať", "výskot", "výskať",
+          "zavýskať", "výkrik", "vydra", "vyhňa", "Vyhne", "výr skalný", "zvyk", "zvyknúť si", "návyk",
+          "zlozvyk", "zvyčajný", "zvyčajne", "odvyknúť", "výzva", "vyžla", "výsosť", "výskyt", "výživa",
+          "výťah", "výraz", "výrazný", "vyrážka", "výskum", "výstava", "výlet", "výber", "výrobok", "výkres",
+          "výkon", "výhľad", "výhra", "výsledok", "výpočet"
         ],
         makke: [
-          "víla", "víno", "vinič", "vidlička", "víťaz", "víťazstvo", "víťaziť", "viť", "zavinúť",
-          "vinica", "víchor", "víchrica", "vír", "víriť", "vítací", "loviť", "staviť", "baviť sa",
+          "víla", "víno", "vinič", "vidlička", "víťaz", "víťazstvo", "víťaziť", "viť veniec", "zavinúť",
+          "vinica", "víchor", "víchrica", "vodný vír", "víriť", "vítací", "loviť", "staviť", "baviť sa",
           "pravidlo", "novina", "chvíľa", "cvičiť", "Viktor", "Viktória", "Viliam"
         ]
       },
       Z: {
         vybrane: [
-          "jazyk", "jazykový", "dvojjazyčný", "jazyčnica", "jazýček", "ozývať sa", "pozývať", "vyzývať", "vzývať", "prizývať", "prezývať", "prezývka", "zyzlať"
+          "jazyk", "jazykový", "dvojjazyčný", "jazyčnica", "jazýček", "jazykoveda", "nazývať sa", "ozývať sa",
+          "pozývať", "vyzývať", "vzývať", "prizývať", "prezývať", "prezývka", "zyzlať"
         ],
         makke: [
           "zima", "zimný", "zimomriavky", "zívať", "zívnuť", "zisk", "získať", "ziskový", "zips",
@@ -1004,12 +1012,13 @@
       L: {
         vybrane: [
           "lyko", "lykovec", "lykový", "lykožrút", "lýtko", "lýtkový", "lyžica", "lyžička", "lyžicový", "lyže",
-          "lyžovať", "lyžovanie", "lyžiar", "lyžiarka", "lyžiarsky", "lyžovačka", "lysý", "lysina", "lyska", "lýra",
-          "lyrický", "lyrik", "lýceum", "lyceálny", "plyn", "plynový", "plynovod", "plynáreň", "plynár", "plynúť",
-          "plynutie", "plynulo", "plynule", "rozplynúť sa", "uplynúť", "plytký", "plytčina", "plytvať", "plytvanie", "mlyn",
-          "mlynár", "mlynárka", "mlynček", "mlynárik", "blýskať sa", "zablýskať sa", "blýskavica", "blýskavý", "blysnúť sa",
-          "blyšťať sa", "vzlykať", "vzlyk", "povzlyknúť si", "zlyhať", "zlyhanie", "vplyv", "vplyvno", "vplývať", "splývať",
-          "splývavo", "splývanie", "plyš", "plyšovo", "plyšák", "oplývať", "Lýdia", "Lydka"
+          "lyžovať", "lyžovanie", "lyžiar", "lyžiarka", "lyžiarsky", "lyžovačka", "lysý", "lysina", "lyska",
+          "lýra", "lyrický", "lyrik", "lyrika", "lýceum", "lyceálny", "plyn", "plynový", "plynovod", "plynáreň",
+          "plynár", "plynúť", "plynutie", "plynulo", "plynule", "rozplynúť sa", "uplynúť", "plytký", "plytčina",
+          "plytvať", "plytvanie", "mlyn", "mlynár", "mlynárka", "mlynček", "mlynárik", "mlynica", "blýskať sa",
+          "zablýskať sa", "blýskavica", "blýskavý", "blysnúť sa", "blyšťať sa", "vzlykať", "vzlyk", "povzlyknúť si",
+          "zlyhať", "zlyhanie", "vplyv", "vplyvno", "vplývať", "splývať", "splývavo", "splývanie", "plyš",
+          "plyšový", "plyšák", "oplývať", "slýchať", "neslýchaný", "nedoslýchavý", "pomaly", "Lýdia", "Lydka"
         ],
         makke: [
           "list", "lístok", "listina", "limonáda", "linajka", "lipa", "lipový", "lízať", "lízanka",
@@ -1941,7 +1950,7 @@
     function highlightActiveCell() {
       document.querySelectorAll(".matrix-cell").forEach(c => c.classList.remove("active-target"));
       if (!currentWord) return;
-      let target = document.querySelector(`.matrix-cell[data-word="${currentWord}"]`);
+      let target = Array.from(document.querySelectorAll(".matrix-cell")).find(c => c.dataset.word === currentWord);
       if (target) target.classList.add("active-target");
     }
 
