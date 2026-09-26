@@ -106,6 +106,20 @@
       border-color: var(--primary);
     }
 
+    .recap-btn {
+      font-weight: 700;
+      border-color: rgba(11, 78, 162, 0.35);
+      background: rgba(11, 78, 162, 0.08);
+      color: var(--primary);
+    }
+
+    .recap-btn.active {
+      background: var(--primary) !important;
+      color: #ffffff !important;
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 6px rgba(11, 78, 162, 0.45);
+    }
+
     .letter-btn {
       min-width: 28px;
       text-align: center;
@@ -769,6 +783,14 @@
           <button type="button" class="preset-btn letter-btn" data-group="makke_Ľ" onclick="setLetterGroup('makke_Ľ')">Ľ</button>
         </div>
       </div>
+
+      <!-- Row 4: Špeciálne opakovanie -->
+      <div class="toolbar-row" style="background: rgba(11, 78, 162, 0.05); border: 1px dashed rgba(11, 78, 162, 0.25); border-radius: var(--radius-sm); padding: 4px 8px; margin-top: 2px;">
+        <div class="toolbar-group" style="align-items: center; gap: 8px;">
+          <span class="group-label" style="color: var(--primary); font-weight: 700;">🔁 Špeciálne:</span>
+          <button type="button" class="preset-btn letter-btn recap-btn" data-group="opakovanie" onclick="setLetterGroup('opakovanie')" id="recapBtn" title="Špeciálne opakovanie 88 zadaných slov">🔁 Opakovanie (88 zadaných slov)</button>
+        </div>
+      </div>
     </section>
 
     <!-- Collapsible Settings Drawer -->
@@ -815,6 +837,9 @@
               <option value="makke_Ť">Ť — vrátiť, platiť, svietiť, ticho, tisíc...</option>
               <option value="makke_Ň">Ň — zvoniť, brániť, chrániť, niť, nízko...</option>
               <option value="makke_Ľ">Ľ — chváliť, páliť, deliť, modliť sa, list...</option>
+            </optgroup>
+            <optgroup label="🔁 Špeciálne opakovanie">
+              <option value="opakovanie">🔁 Špeciálne opakovanie (88 zadaných slov)</option>
             </optgroup>
           </select>
         </div>
@@ -1337,8 +1362,22 @@
         if (letter === "ľ") return cons === "ľ" || cons === "l";
         return cons === letter;
       }
+      if (group === "opakovanie") return true;
       return cons === group.toLowerCase();
     }
+
+    // SPECIAL RECAP LIST (Exactly the 88 words entered by user)
+    const OPAKOVANIE_WORDS = [
+      "hit", "kivi", "dikobraz", "Gitka", "chichotať sa", "Monika", "liter", "tím", "kilogram", "lišta",
+      "hymna", "hýľ", "hygiena", "hydina", "hýbať sa", "hydrant", "hyacint", "ohýbať", "mohyla", "pohyb",
+      "chirurg", "gitara", "limuzína", "tiger", "tenisky", "kimono", "kilometer", "chytro", "chyba", "chýbať",
+      "chýr", "chyža", "chytiť", "pochybovať", "kýchnuť", "kyslé", "kyslý", "kyslík", "kysnuté", "zakývať",
+      "kyvadlo", "kypí", "gymnázium", "gymnastika", "burgyňa", "gýč", "gyps", "Egypt", "dyňa", "dym",
+      "dýchať", "oddychovať", "dychovka", "Londýn", "dotyk", "tykať", "tykať niekomu", "týrať", "tyč", "tyčinky",
+      "motýľ", "týždeň", "tyrkysový", "kostým", "začína", "lístie", "chystať", "pršiplášť", "dáždniky", "prázdniny",
+      "oddych", "skončili", "uplynuli", "čítať", "počítať", "tešíte sa", "ticho", "šírka", "kýchať", "kniha",
+      "činka", "štyri", "divák", "nylon", "slimák", "lykožrút", "cudzinec", "krajina"
+    ];
 
     // Helper: checks if word has at least one valid gap for the active group
     // (Diphthongs ia, ie, iu are NEVER gapped, written as is)
@@ -1396,6 +1435,15 @@
           if (sub === "all" || sub === "vybrane") pool.push(...entry.y);
           if (sub === "all" || sub === "makke") pool.push(...entry.i);
         });
+      } else if (group === "opakovanie") {
+        OPAKOVANIE_WORDS.forEach(w => {
+          let hasY = /[yý]/i.test(w);
+          let hasI = /[ií]/i.test(w);
+          if (sub === "all") pool.push(w);
+          else if (sub === "vybrane" && hasY) pool.push(w);
+          else if (sub === "makke" && hasI) pool.push(w);
+        });
+        if (pool.length === 0) pool = [...OPAKOVANIE_WORDS];
       }
 
       // Filter: only keep words that have at least one valid gap for the active group
@@ -1561,7 +1609,9 @@
       const titleEl = document.getElementById("matrixTitle");
       if (titleEl) {
         let label = "";
-        if (currentLetterGroup === "vybrane_all") {
+        if (currentLetterGroup === "opakovanie") {
+          label = "Špeciálne opakovanie (zadané slová)";
+        } else if (currentLetterGroup === "vybrane_all") {
           label = "Všetky vybrané slová";
         } else if (currentLetterGroup.startsWith("vybrane_")) {
           label = `Vybrané slová po ${currentLetterGroup.replace("vybrane_", "")}`;
