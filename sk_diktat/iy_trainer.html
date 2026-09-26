@@ -2115,13 +2115,190 @@
       setTimeout(showWord, 800);
     }
 
-    // SPEECH SYNTHESIS
+    // SPEECH SYNTHESIS & AUDIO ENGINE
+    let availableVoices = [];
+    let slovakVoice = null;
+    let activeUtterance = null;
+    let fallbackAudio = null;
+    let audioPrimed = false;
+
+    function initSpeechEngine() {
+      if (!('speechSynthesis' in window)) return;
+
+      function loadVoices() {
+        try {
+          availableVoices = window.speechSynthesis.getVoices() || [];
+          if (availableVoices.length === 0) return;
+
+          // 1. Direct Slovak match
+          slovakVoice = availableVoices.find(v => {
+            let l = (v.lang || '').replace('_', '-').toLowerCase();
+            return l === 'sk-sk' || l === 'sk' || l.startsWith('sk-');
+          });
+
+          // 2. Name contains Slovak / Slovenčina
+          if (!slovakVoice) {
+            slovakVoice = availableVoices.find(v => {
+              let n = (v.name || '').toLowerCase();
+              return n.includes('slovak') || n.includes('slovenč') || n.includes('slovenc');
+            });
+          }
+
+          // 3. Czech fallback (closest phonetic match)
+          if (!slovakVoice) {
+            slovakVoice = availableVoices.find(v => {
+              let l = (v.lang || '').replace('_', '-').toLowerCase();
+              return l === 'cs-cz' || l === 'cs' || l.startsWith('cs-');
+            });
+          }
+        } catch (e) {
+          console.warn("Chyba pri načítaní hlasov:", e);
+        }
+      }
+
+      loadVoices();
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      }
+    }
+
+    // Initialize speech engine on startup
+    initSpeechEngine();
+
+    // Prime audio on first user touch/click to unblock mobile autoplay policy
+    function primeAudio() {
+      if (audioPrimed) return;
+      audioPrimed = true;
+      try {
+        if ('speechSynthesis' in window) {
+          let dummy = new SpeechSynthesisUtterance('');
+          dummy.volume = 0;
+          window.speechSynthesis.speak(dummy);
+        }
+      } catch (e) {}
+    }
+
+    ['pointerdown', 'touchstart', 'click'].forEach(evt => {
+      document.addEventListener(evt, primeAudio, { once: true, passive: true });
+    });
+
+    function setSpeakButtonState(isSpeaking) {
+      const btn = document.getElementById("speakBtn");
+      if (!btn) return;
+      if (isSpeaking) {
+        btn.innerHTML = "🔊 Hovorím...";
+        btn.style.opacity = "0.75";
+      } else {
+        btn.innerHTML = "🔊 Prehrať";
+        btn.style.opacity = "";
+      }
+    }
+
+    // Fallback: Online TTS via HTML5 Audio element if browser SpeechSynthesis fails or has no voices
+    function speakFallbackAudio(text) {
+      if (!text) {
+        setSpeakButtonState(false);
+        return;
+      }
+      try {
+        if (fallbackAudio) {
+          fallbackAudio.pause();
+          fallbackAudio = null;
+        }
+        setSpeakButtonState(true);
+        let clean = text.trim();
+        let url = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=sk&q=" + encodeURIComponent(clean);
+        fallbackAudio = new Audio(url);
+        fallbackAudio.onended = () => {
+          setSpeakButtonState(false);
+          fallbackAudio = null;
+        };
+        fallbackAudio.onerror = () => {
+          setSpeakButtonState(false);
+          fallbackAudio = null;
+        };
+        fallbackAudio.play().catch(e => {
+          console.warn("Online audio prehrávanie zlyhalo:", e);
+          setSpeakButtonState(false);
+        });
+      } catch (e) {
+        console.warn("Audio fallback error:", e);
+        setSpeakButtonState(false);
+      }
+    }
+
     function speakWord() {
       if (!currentWord) return;
-      let utterance = new SpeechSynthesisUtterance(currentWord);
-      utterance.lang = "sk-SK";
-      speechSynthesis.cancel();
-      speechSynthesis.speak(utterance);
+
+      const text = currentWord;
+      setSpeakButtonState(true);
+
+      // Check if Web Speech API is supported
+      if (!('speechSynthesis' in window)) {
+        speakFallbackAudio(text);
+        return;
+      }
+
+      try {
+        // iOS/Chrome bug: if paused, resume first
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+
+      // Short timeout to avoid WebKit cancelling the newly queued utterance
+      setTimeout(() => {
+        try {
+          if (!slovakVoice) {
+            initSpeechEngine();
+          }
+
+          let utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.85; // Slightly slower for clear dictation
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0;
+
+          if (slovakVoice) {
+            utterance.voice = slovakVoice;
+            utterance.lang = slovakVoice.lang;
+          } else {
+            utterance.lang = "sk-SK";
+          }
+
+          // Reference prevents Garbage Collection in Chromium/WebKit
+          activeUtterance = utterance;
+          let speechStarted = false;
+
+          utterance.onstart = () => {
+            speechStarted = true;
+          };
+
+          utterance.onend = () => {
+            activeUtterance = null;
+            setSpeakButtonState(false);
+          };
+
+          utterance.onerror = (event) => {
+            console.warn("SpeechSynthesis error:", event);
+            activeUtterance = null;
+            speakFallbackAudio(text);
+          };
+
+          window.speechSynthesis.speak(utterance);
+
+          // If speech does not start within 750ms and no native Slovak voice exists, fallback to online audio
+          setTimeout(() => {
+            if (!speechStarted && !slovakVoice) {
+              speakFallbackAudio(text);
+            }
+          }, 750);
+
+        } catch (err) {
+          console.warn("Chyba SpeechSynthesis:", err);
+          speakFallbackAudio(text);
+        }
+      }, 40);
     }
 
     // STATS UPDATE & VISUALIZATIONS
