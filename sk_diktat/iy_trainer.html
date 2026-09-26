@@ -984,6 +984,11 @@
       if (circle) circle.classList.add('unlocked');
       document.querySelectorAll('button.choice').forEach(b => b.classList.remove('locked'));
       resetInactivityTimer();
+
+      // Speak word immediately when user activates the round if not already spoken
+      if (!currentWordSpoken && currentWord && document.getElementById("autoAudioCheckbox")?.checked) {
+        speakWord();
+      }
     }
 
     const centerCircleEl = document.getElementById('centerCircle');
@@ -1401,6 +1406,7 @@
     let slowModeCounter = 0;
     let slowModeForced = false;
     let isPaused = false;
+    let currentWordSpoken = false;
 
     // INACTIVITY & PAUSE (Auto-pause after 20s of inactivity, matching Math Trainer)
     let inactivityTimer = null;
@@ -1584,6 +1590,7 @@
     function pauseTrainer() {
       if (isPaused) return;
       isPaused = true;
+      stopSpeech();
       clearInactivityTimer();
       pauseStart = performance.now();
 
@@ -1865,10 +1872,15 @@
       recentWords.push(currentWord);
       if (recentWords.length > 15) recentWords.shift();
 
+      // Ensure any previous speech is halted before the new word appears
+      stopSpeech();
+      currentWordSpoken = false;
+
       let wordDiv = document.getElementById("word");
       wordDiv.classList.remove("correctWord");
       wordDiv.textContent = createGaps(currentWord);
 
+      // Speak word IMMEDIATELY as it appears on screen (before user types)
       if (document.getElementById("autoAudioCheckbox")?.checked) {
         speakWord();
       }
@@ -1981,6 +1993,7 @@
       setTimeout(() => {
         gapIndex++;
         if (gapIndex >= gapPositions.length) {
+          stopSpeech();
           let wordDiv = document.getElementById("word");
           if (wordDiv) {
             wordDiv.textContent = currentWord;
@@ -2108,6 +2121,9 @@
       saveProgress();
       saveDailyHistory();
 
+      // Immediately stop speech when the word is solved so it never plays afterwards
+      stopSpeech();
+
       let wordDiv = document.getElementById("word");
       wordDiv.textContent = currentWord;
       wordDiv.classList.add("correctWord");
@@ -2119,43 +2135,47 @@
     let availableVoices = [];
     let slovakVoice = null;
     let activeUtterance = null;
-    let fallbackAudio = null;
     let audioPrimed = false;
+
+    // Single persistent audio element unlocked during user gesture for seamless autoplay across rounds
+    const persistentTtsAudio = new Audio();
+    persistentTtsAudio.preload = 'auto';
+
+    function getGenuineSlovakVoice() {
+      if (!('speechSynthesis' in window)) return null;
+      let voices = window.speechSynthesis.getVoices() || [];
+      if (!voices || voices.length === 0) return null;
+
+      // 1. Direct Slovak language code (sk, sk-SK, sk_SK)
+      let voice = voices.find(v => {
+        let l = (v.lang || '').replace('_', '-').toLowerCase();
+        return l === 'sk-sk' || l === 'sk' || l.startsWith('sk-');
+      });
+
+      // 2. Name explicitly contains Slovak or Slovenčina (explicitly EXCLUDING Czech)
+      if (!voice) {
+        voice = voices.find(v => {
+          let n = (v.name || '').toLowerCase();
+          let l = (v.lang || '').toLowerCase();
+          return (n.includes('slovak') || n.includes('slovenč') || n.includes('slovenc')) && !l.startsWith('cs');
+        });
+      }
+
+      return voice || null;
+    }
+
+    function loadVoices() {
+      if (!('speechSynthesis' in window)) return;
+      try {
+        availableVoices = window.speechSynthesis.getVoices() || [];
+        slovakVoice = getGenuineSlovakVoice();
+      } catch (e) {
+        console.warn("Chyba pri načítaní hlasov:", e);
+      }
+    }
 
     function initSpeechEngine() {
       if (!('speechSynthesis' in window)) return;
-
-      function loadVoices() {
-        try {
-          availableVoices = window.speechSynthesis.getVoices() || [];
-          if (availableVoices.length === 0) return;
-
-          // 1. Direct Slovak match
-          slovakVoice = availableVoices.find(v => {
-            let l = (v.lang || '').replace('_', '-').toLowerCase();
-            return l === 'sk-sk' || l === 'sk' || l.startsWith('sk-');
-          });
-
-          // 2. Name contains Slovak / Slovenčina
-          if (!slovakVoice) {
-            slovakVoice = availableVoices.find(v => {
-              let n = (v.name || '').toLowerCase();
-              return n.includes('slovak') || n.includes('slovenč') || n.includes('slovenc');
-            });
-          }
-
-          // 3. Czech fallback (closest phonetic match)
-          if (!slovakVoice) {
-            slovakVoice = availableVoices.find(v => {
-              let l = (v.lang || '').replace('_', '-').toLowerCase();
-              return l === 'cs-cz' || l === 'cs' || l.startsWith('cs-');
-            });
-          }
-        } catch (e) {
-          console.warn("Chyba pri načítaní hlasov:", e);
-        }
-      }
-
       loadVoices();
       if (window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = loadVoices;
@@ -2165,10 +2185,28 @@
     // Initialize speech engine on startup
     initSpeechEngine();
 
-    // Prime audio on first user touch/click to unblock mobile autoplay policy
+    function stopSpeech() {
+      try {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+      } catch (e) {}
+      if (persistentTtsAudio) {
+        try {
+          persistentTtsAudio.pause();
+          persistentTtsAudio.currentTime = 0;
+        } catch (e) {}
+      }
+      activeUtterance = null;
+      setSpeakButtonState(false);
+    }
+
+    // Prime/unlock audio on user touch or click so all subsequent words autoplay before clicking
     function primeAudio() {
       if (audioPrimed) return;
       audioPrimed = true;
+
+      // 1. Unlock Web Speech API
       try {
         if ('speechSynthesis' in window) {
           let dummy = new SpeechSynthesisUtterance('');
@@ -2176,10 +2214,24 @@
           window.speechSynthesis.speak(dummy);
         }
       } catch (e) {}
+
+      // 2. Unlock persistent HTML5 Audio element for iOS/iPadOS Safari & Chrome
+      try {
+        persistentTtsAudio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+        let playP = persistentTtsAudio.play();
+        if (playP !== undefined) {
+          playP.then(() => {
+            // If current word is on screen and wasn't spoken yet due to initial autoplay restriction, speak it now!
+            if (!currentWordSpoken && currentWord && document.getElementById("autoAudioCheckbox")?.checked) {
+              speakWord();
+            }
+          }).catch(() => {});
+        }
+      } catch (e) {}
     }
 
-    ['pointerdown', 'touchstart', 'click'].forEach(evt => {
-      document.addEventListener(evt, primeAudio, { once: true, passive: true });
+    ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
+      document.addEventListener(evt, primeAudio, { passive: true });
     });
 
     function setSpeakButtonState(isSpeaking) {
@@ -2194,111 +2246,90 @@
       }
     }
 
-    // Fallback: Online TTS via HTML5 Audio element if browser SpeechSynthesis fails or has no voices
-    function speakFallbackAudio(text) {
+    // Authentic Slovak online audio TTS (guarantees native Slovak pronunciation on ANY locale)
+    function playSlovakAudio(text) {
       if (!text) {
         setSpeakButtonState(false);
         return;
       }
       try {
-        if (fallbackAudio) {
-          fallbackAudio.pause();
-          fallbackAudio = null;
-        }
+        stopSpeech();
         setSpeakButtonState(true);
+
         let clean = text.trim();
         let url = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=sk&q=" + encodeURIComponent(clean);
-        fallbackAudio = new Audio(url);
-        fallbackAudio.onended = () => {
+
+        persistentTtsAudio.src = url;
+
+        persistentTtsAudio.onended = () => {
           setSpeakButtonState(false);
-          fallbackAudio = null;
         };
-        fallbackAudio.onerror = () => {
+        persistentTtsAudio.onerror = (e) => {
+          console.warn("Slovak audio error:", e);
           setSpeakButtonState(false);
-          fallbackAudio = null;
         };
-        fallbackAudio.play().catch(e => {
-          console.warn("Online audio prehrávanie zlyhalo:", e);
-          setSpeakButtonState(false);
-        });
+
+        let playPromise = persistentTtsAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            currentWordSpoken = true;
+          }).catch(e => {
+            console.warn("Autoplay deferred:", e);
+            setSpeakButtonState(false);
+            currentWordSpoken = false;
+          });
+        }
       } catch (e) {
-        console.warn("Audio fallback error:", e);
+        console.warn("Audio error:", e);
         setSpeakButtonState(false);
       }
     }
 
     function speakWord() {
       if (!currentWord) return;
-
       const text = currentWord;
+
+      stopSpeech();
       setSpeakButtonState(true);
 
-      // Check if Web Speech API is supported
-      if (!('speechSynthesis' in window)) {
-        speakFallbackAudio(text);
-        return;
-      }
-
-      try {
-        // iOS/Chrome bug: if paused, resume first
-        if (window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-        }
-        window.speechSynthesis.cancel();
-      } catch (e) {}
-
-      // Short timeout to avoid WebKit cancelling the newly queued utterance
-      setTimeout(() => {
+      // 1. Only use local SpeechSynthesis if a GENUINE native Slovak voice is installed
+      let voice = getGenuineSlovakVoice();
+      if (voice && 'speechSynthesis' in window) {
         try {
-          if (!slovakVoice) {
-            initSpeechEngine();
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
           }
-
           let utterance = new SpeechSynthesisUtterance(text);
-          utterance.rate = 0.85; // Slightly slower for clear dictation
+          utterance.rate = 0.85; // Natural dictation rate
           utterance.pitch = 1.0;
           utterance.volume = 1.0;
-
-          if (slovakVoice) {
-            utterance.voice = slovakVoice;
-            utterance.lang = slovakVoice.lang;
-          } else {
-            utterance.lang = "sk-SK";
-          }
-
-          // Reference prevents Garbage Collection in Chromium/WebKit
+          utterance.voice = voice;
+          utterance.lang = voice.lang;
           activeUtterance = utterance;
-          let speechStarted = false;
 
           utterance.onstart = () => {
-            speechStarted = true;
+            currentWordSpoken = true;
           };
-
           utterance.onend = () => {
             activeUtterance = null;
             setSpeakButtonState(false);
           };
-
           utterance.onerror = (event) => {
             console.warn("SpeechSynthesis error:", event);
             activeUtterance = null;
-            speakFallbackAudio(text);
+            playSlovakAudio(text);
           };
 
           window.speechSynthesis.speak(utterance);
-
-          // If speech does not start within 750ms and no native Slovak voice exists, fallback to online audio
-          setTimeout(() => {
-            if (!speechStarted && !slovakVoice) {
-              speakFallbackAudio(text);
-            }
-          }, 750);
-
-        } catch (err) {
-          console.warn("Chyba SpeechSynthesis:", err);
-          speakFallbackAudio(text);
+          return;
+        } catch (e) {
+          console.warn("SpeechSynthesis failed:", e);
         }
-      }, 40);
+      }
+
+      // 2. On other locales (English, Czech, German, etc.) without genuine Slovak voice:
+      // ALWAYS use authentic Slovak TTS (tl=sk) so Slovak is pronounced correctly!
+      playSlovakAudio(text);
     }
 
     // STATS UPDATE & VISUALIZATIONS
@@ -2552,6 +2583,8 @@
         // Click to practice this word directly
         cell.addEventListener("click", () => {
           if (!isPaused) {
+            stopSpeech();
+            currentWordSpoken = false;
             currentWord = w;
             lastWord = currentWord;
             let wordDiv = document.getElementById("word");
@@ -2683,6 +2716,17 @@
       loadProgress();
       updateStats();
       displayDailyHistory();
+
+      // Tap on the displayed word to replay pronunciation anytime
+      const wordEl = document.getElementById("word");
+      if (wordEl) {
+        wordEl.style.cursor = "pointer";
+        wordEl.title = "Klikni pre zopakovanie výslovnosti (alebo stlač Medzerník)";
+        wordEl.addEventListener("click", () => {
+          speakWord();
+        });
+      }
+
       showWord();
     };
   </script>
