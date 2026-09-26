@@ -683,7 +683,22 @@
   <header class="kubi-top-bar">
     <nav class="kubi-nav-tabs" aria-label="Navigation Tabs">
       <a href="../index.html" class="kubi-tab-link">← Prehľad aktivít</a>
-      <a href="iy_trainer.html" class="kubi-tab-link active">📘 I / Y Trenažér</a>
+      <a href="iy_trainer.html" class="kubi-tab-link active">
+        <svg class="slovak-flag-icon" width="22" height="15" viewBox="0 0 300 200" style="vertical-align:-2px; border-radius:3px; margin-right:6px; box-shadow:0 0 2px rgba(0,0,0,0.3); display:inline-block;">
+          <rect width="300" height="66.67" fill="#ffffff"/>
+          <rect y="66.67" width="300" height="66.67" fill="#0b4ea2"/>
+          <rect y="133.34" width="300" height="66.67" fill="#ee1c25"/>
+          <g transform="translate(45, 25)">
+            <path d="M 0,0 L 70,0 C 70,70 50,115 35,125 C 20,115 0,70 0,0 Z" fill="#ee1c25" stroke="#ffffff" stroke-width="5"/>
+            <path d="M 12,85 C 12,70 23,70 23,85 C 23,65 47,65 47,85 C 47,70 58,70 58,85 L 58,110 C 50,118 42,122 35,123 C 28,122 20,118 12,110 Z" fill="#0b4ea2"/>
+            <rect x="32" y="20" width="6" height="65" fill="#ffffff"/>
+            <rect x="23" y="32" width="24" height="6" fill="#ffffff"/>
+            <rect x="20" y="48" width="30" height="6" fill="#ffffff"/>
+          </g>
+        </svg>
+        I / Y Trenažér
+        <span class="slovak-badge" style="font-size:0.75rem; background:rgba(11,78,162,0.12); color:var(--primary); border:1px solid rgba(11,78,162,0.25); padding:2px 7px; border-radius:10px; margin-left:6px; font-weight:600;">Slovenský jazyk</span>
+      </a>
     </nav>
     <div class="nav-actions">
       <button class="theme-toggle-btn" aria-label="Prepnúť tému"></button>
@@ -829,9 +844,9 @@
 
         <!-- Auto audio -->
         <div class="toolbar-setting-item">
-          <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="Automaticky prehrať výslovnosť slova pri zobrazení">
+          <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Automaticky prehrať výslovnosť slova v slovenskom jazyku pri zobrazení">
             <input type="checkbox" id="autoAudioCheckbox" checked onchange="saveProgress()" style="accent-color:var(--primary); cursor:pointer;">
-            <span>🔊 Automaticky prehrať slovo</span>
+            <span>🔊 Automaticky prehrať (🇸🇰 slovenčina)</span>
           </label>
         </div>
       </div>
@@ -920,7 +935,21 @@
         </div>
 
         <div class="controls-row">
-          <button class="btn btn-secondary btn-sm" id="speakBtn" onclick="speakWord()" title="Prehrať slovo (alebo stlač Medzerník)">🔊 Prehrať</button>
+          <button class="btn btn-secondary btn-sm" id="speakBtn" onclick="speakWord()" title="Prehrať slovo v slovenskom jazyku (alebo stlač Medzerník)">
+            <svg class="slovak-flag-icon" width="16" height="11" viewBox="0 0 300 200" style="vertical-align:-1px; border-radius:2px; margin-right:4px; display:inline-block;">
+              <rect width="300" height="66.67" fill="#ffffff"/>
+              <rect y="66.67" width="300" height="66.67" fill="#0b4ea2"/>
+              <rect y="133.34" width="300" height="66.67" fill="#ee1c25"/>
+              <g transform="translate(45, 25)">
+                <path d="M 0,0 L 70,0 C 70,70 50,115 35,125 C 20,115 0,70 0,0 Z" fill="#ee1c25" stroke="#ffffff" stroke-width="5"/>
+                <path d="M 12,85 C 12,70 23,70 23,85 C 23,65 47,65 47,85 C 47,70 58,70 58,85 L 58,110 C 50,118 42,122 35,123 C 28,122 20,118 12,110 Z" fill="#0b4ea2"/>
+                <rect x="32" y="20" width="6" height="65" fill="#ffffff"/>
+                <rect x="23" y="32" width="24" height="6" fill="#ffffff"/>
+                <rect x="20" y="48" width="30" height="6" fill="#ffffff"/>
+              </g>
+            </svg>
+            🔊 Prehrať
+          </button>
           <button class="btn btn-secondary btn-sm" id="pauseBtn" onclick="togglePause()">⏸ Pauza</button>
         </div>
 
@@ -2234,14 +2263,16 @@
       document.addEventListener(evt, primeAudio, { passive: true });
     });
 
+    const FLAG_SVG_ICON = `<svg class="slovak-flag-icon" width="16" height="11" viewBox="0 0 300 200" style="vertical-align:-1px; border-radius:2px; margin-right:4px; display:inline-block;"><rect width="300" height="66.67" fill="#ffffff"/><rect y="66.67" width="300" height="66.67" fill="#0b4ea2"/><rect y="133.34" width="300" height="66.67" fill="#ee1c25"/><g transform="translate(45, 25)"><path d="M 0,0 L 70,0 C 70,70 50,115 35,125 C 20,115 0,70 0,0 Z" fill="#ee1c25" stroke="#ffffff" stroke-width="5"/><path d="M 12,85 C 12,70 23,70 23,85 C 23,65 47,65 47,85 C 47,70 58,70 58,85 L 58,110 C 50,118 42,122 35,123 C 28,122 20,118 12,110 Z" fill="#0b4ea2"/><rect x="32" y="20" width="6" height="65" fill="#ffffff"/><rect x="23" y="32" width="24" height="6" fill="#ffffff"/><rect x="20" y="48" width="30" height="6" fill="#ffffff"/></g></svg>`;
+
     function setSpeakButtonState(isSpeaking) {
       const btn = document.getElementById("speakBtn");
       if (!btn) return;
       if (isSpeaking) {
-        btn.innerHTML = "🔊 Hovorím...";
+        btn.innerHTML = `${FLAG_SVG_ICON} 🔊 Hovorím...`;
         btn.style.opacity = "0.75";
       } else {
-        btn.innerHTML = "🔊 Prehrať";
+        btn.innerHTML = `${FLAG_SVG_ICON} 🔊 Prehrať`;
         btn.style.opacity = "";
       }
     }
