@@ -41,16 +41,29 @@
     /* Compact Toolbar */
     .trainer-toolbar {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 6px 12px;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 12px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-sm);
       margin-bottom: 10px;
+    }
+
+    .toolbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .group-label {
+      font-weight: 700;
+      min-width: 62px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
     }
 
     .toolbar-group {
@@ -674,28 +687,65 @@
 
     <!-- Slim Toolbar: Letter Group Selector + Sub-filter + Settings -->
     <section class="trainer-toolbar">
-      <!-- Letter Groups -->
-      <div class="toolbar-group">
-        <span style="font-weight: 700; margin-right: 2px;">Písmeno:</span>
-        <button type="button" class="preset-btn letter-btn active" data-group="all" onclick="setLetterGroup('all')">Všetky</button>
-        <button type="button" class="preset-btn letter-btn" data-group="B" onclick="setLetterGroup('B')">B</button>
-        <button type="button" class="preset-btn letter-btn" data-group="M" onclick="setLetterGroup('M')">M</button>
-        <button type="button" class="preset-btn letter-btn" data-group="P" onclick="setLetterGroup('P')">P</button>
-        <button type="button" class="preset-btn letter-btn" data-group="R" onclick="setLetterGroup('R')">R</button>
-        <button type="button" class="preset-btn letter-btn" data-group="S" onclick="setLetterGroup('S')">S</button>
-        <button type="button" class="preset-btn letter-btn" data-group="V" onclick="setLetterGroup('V')">V</button>
-        <button type="button" class="preset-btn letter-btn" data-group="Z" onclick="setLetterGroup('Z')">Z</button>
-        <button type="button" class="preset-btn letter-btn" data-group="L" onclick="setLetterGroup('L')">L</button>
-        <button type="button" class="preset-btn letter-btn" data-group="C" onclick="setLetterGroup('C')">C</button>
-        <button type="button" class="preset-btn letter-btn" data-group="F" onclick="setLetterGroup('F')">F</button>
+      <!-- Row 1: Vybrané slová -->
+      <div class="toolbar-row">
+        <div class="toolbar-group">
+          <span class="group-label">Vybrané:</span>
+          <button type="button" class="preset-btn letter-btn active" data-group="vybrane_all" onclick="setLetterGroup('vybrane_all')">Všetky</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_B" onclick="setLetterGroup('vybrane_B')">B</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_M" onclick="setLetterGroup('vybrane_M')">M</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_P" onclick="setLetterGroup('vybrane_P')">P</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_R" onclick="setLetterGroup('vybrane_R')">R</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_S" onclick="setLetterGroup('vybrane_S')">S</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_V" onclick="setLetterGroup('vybrane_V')">V</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_Z" onclick="setLetterGroup('vybrane_Z')">Z</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_L" onclick="setLetterGroup('vybrane_L')">L</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_C" onclick="setLetterGroup('vybrane_C')">C</button>
+          <button type="button" class="preset-btn letter-btn" data-group="vybrane_F" onclick="setLetterGroup('vybrane_F')">F</button>
+        </div>
+
+        <!-- Sub-filter & Settings Toggle -->
+        <div class="toolbar-group">
+          <button type="button" class="preset-btn active" data-sub="all" onclick="setSubFilter('all')" id="subFilterAll">Všetky slová</button>
+          <button type="button" class="preset-btn" data-sub="vybrane" onclick="setSubFilter('vybrane')" id="subFilterVybrane">Vybrané (y/ý)</button>
+          <button type="button" class="preset-btn" data-sub="makke" onclick="setSubFilter('makke')" id="subFilterMakke">Mäkké (i/í)</button>
+          <button type="button" class="preset-btn" id="settingsToggleBtn" onclick="toggleSettingsDrawer()">⚙️ Nastavenia</button>
+        </div>
       </div>
 
-      <!-- Sub-filter & Settings Toggle -->
-      <div class="toolbar-group">
-        <button type="button" class="preset-btn active" data-sub="all" onclick="setSubFilter('all')" id="subFilterAll">Všetky slová</button>
-        <button type="button" class="preset-btn" data-sub="vybrane" onclick="setSubFilter('vybrane')" id="subFilterVybrane">Vybrané (y/ý)</button>
-        <button type="button" class="preset-btn" data-sub="makke" onclick="setSubFilter('makke')" id="subFilterMakke">Mäkké (i/í)</button>
-        <button type="button" class="preset-btn" id="settingsToggleBtn" onclick="toggleSettingsDrawer()">⚙️ Nastavenia</button>
+      <!-- Row 2: Tvrdé spoluhlásky -->
+      <div class="toolbar-row">
+        <div class="toolbar-group">
+          <span class="group-label">Tvrdé:</span>
+          <button type="button" class="preset-btn letter-btn" data-group="tvrde_all" onclick="setLetterGroup('tvrde_all')">Všetky</button>
+          <button type="button" class="preset-btn letter-btn" data-group="tvrde_H" onclick="setLetterGroup('tvrde_H')">H</button>
+          <button type="button" class="preset-btn letter-btn" data-group="tvrde_CH" onclick="setLetterGroup('tvrde_CH')">CH</button>
+          <button type="button" class="preset-btn letter-btn" data-group="tvrde_K" onclick="setLetterGroup('tvrde_K')">K</button>
+          <button type="button" class="preset-btn letter-btn" data-group="tvrde_G" onclick="setLetterGroup('tvrde_G')">G</button>
+          <button type="button" class="preset-btn letter-btn" data-group="tvrde_D" onclick="setLetterGroup('tvrde_D')">D</button>
+          <button type="button" class="preset-btn letter-btn" data-group="tvrde_T" onclick="setLetterGroup('tvrde_T')">T</button>
+          <button type="button" class="preset-btn letter-btn" data-group="tvrde_N" onclick="setLetterGroup('tvrde_N')">N</button>
+          <button type="button" class="preset-btn letter-btn" data-group="tvrde_L" onclick="setLetterGroup('tvrde_L')">L</button>
+        </div>
+      </div>
+
+      <!-- Row 3: Mäkké spoluhlásky -->
+      <div class="toolbar-row">
+        <div class="toolbar-group">
+          <span class="group-label">Mäkké:</span>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_all" onclick="setLetterGroup('makke_all')">Všetky</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_Č" onclick="setLetterGroup('makke_Č')">Č</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_DŽ" onclick="setLetterGroup('makke_DŽ')">DŽ</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_Š" onclick="setLetterGroup('makke_Š')">Š</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_Ž" onclick="setLetterGroup('makke_Ž')">Ž</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_C" onclick="setLetterGroup('makke_C')">C</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_DZ" onclick="setLetterGroup('makke_DZ')">DZ</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_J" onclick="setLetterGroup('makke_J')">J</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_Ď" onclick="setLetterGroup('makke_Ď')">Ď</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_Ť" onclick="setLetterGroup('makke_Ť')">Ť</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_Ň" onclick="setLetterGroup('makke_Ň')">Ň</button>
+          <button type="button" class="preset-btn letter-btn" data-group="makke_Ľ" onclick="setLetterGroup('makke_Ľ')">Ľ</button>
+        </div>
       </div>
     </section>
 
@@ -706,17 +756,44 @@
         <div class="toolbar-setting-item">
           <label for="letterGroupSelect"><b>Skupina:</b></label>
           <select id="letterGroupSelect" class="toolbar-select" onchange="setLetterGroup(this.value)">
-            <option value="all">Všetky skupiny (B, M, P, R, S, V, Z, L, C, F)</option>
-            <option value="B">B — by, bylina, bystrý, Bystrík, bývať, Bytča, kobyla...</option>
-            <option value="M">M — my, mykať, mýliť sa, myslieť, Milan, Myjava, myš...</option>
-            <option value="P">P — pýcha, pýtať sa, pytliak, kopyto, pysk...</option>
-            <option value="R">R — ryba, rýchly, Cyril, Richard, Torysa, Korytnica, ryža...</option>
-            <option value="S">S — syn, sypať, syr, Silvia, Sybila, sýty, sychravý...</option>
-            <option value="V">V — vy, vysoký, Viktor, zvyk, vydra, výr...</option>
-            <option value="Z">Z — jazyk, ozývať sa, Zita, pozývať, vyzývať...</option>
-            <option value="L">L — lyko, lýtko, Lýdia, lyžica, lyže, Linda, plyn...</option>
-            <option value="C">C — cyklista, bicykel, cyklus, Cyril, Cyrila, Cyprián...</option>
-            <option value="F">F — fyzika, fyzik, fyzický, Filip, film, finta...</option>
+            <optgroup label="Vybrané slová">
+              <option value="vybrane_all">Všetky vybrané slová (B, M, P, R, S, V, Z, L, C, F)</option>
+              <option value="vybrane_B">B — by, bylina, bystrý, Bystrík, bývať, Bytča, kobyla...</option>
+              <option value="vybrane_M">M — my, mykať, mýliť sa, myslieť, Milan, Myjava, myš...</option>
+              <option value="vybrane_P">P — pýcha, pýtať sa, pytliak, kopyto, pysk...</option>
+              <option value="vybrane_R">R — ryba, rýchly, Cyril, Richard, Torysa, Korytnica, ryža...</option>
+              <option value="vybrane_S">S — syn, sypať, syr, Silvia, Sybila, sýty, sychravý...</option>
+              <option value="vybrane_V">V — vy, vysoký, Viktor, zvyk, vydra, výr...</option>
+              <option value="vybrane_Z">Z — jazyk, ozývať sa, Zita, pozývať, vyzývať...</option>
+              <option value="vybrane_L">L — lyko, lýtko, Lýdia, lyžica, lyže, Linda, plyn...</option>
+              <option value="vybrane_C">C — cyklista, bicykel, cyklus, Cyril, Cyrila, Cyprián...</option>
+              <option value="vybrane_F">F — fyzika, fyzik, fyzický, Filip, film, finta...</option>
+            </optgroup>
+            <optgroup label="Tvrdé spoluhlásky">
+              <option value="tvrde_all">Všetky tvrdé spoluhlásky (H, CH, K, G, D, T, N, L)</option>
+              <option value="tvrde_H">H — nohy, váhy, kruhy, história, hit...</option>
+              <option value="tvrde_CH">CH — chyba, chýbať, orechy, chirurg...</option>
+              <option value="tvrde_K">K — kyslý, kyvadlo, lúky, kino, kilo...</option>
+              <option value="tvrde_G">G — gýč, gymnastika, gitara, gigant...</option>
+              <option value="tvrde_D">D — dym, dýchať, vody, divadlo, rodina...</option>
+              <option value="tvrde_T">T — ty, týždeň, šaty, ticho, tisíc...</option>
+              <option value="tvrde_N">N — noviny, hodiny, niť, nízko, zvoniť...</option>
+              <option value="tvrde_L">L — lyko, lýtko, plyn, list, lipa, líška...</option>
+            </optgroup>
+            <optgroup label="Mäkké spoluhlásky">
+              <option value="makke_all">Všetky mäkké spoluhlásky (Č, DŽ, Š, Ž, C, DZ, J, Ď, Ť, Ň, Ľ)</option>
+              <option value="makke_Č">Č — čistý, čižma, čítať, číslo, oči...</option>
+              <option value="makke_DŽ">DŽ — džínsy, džíp, džin...</option>
+              <option value="makke_Š">Š — šiť, šikovný, široký, šípka, zošit...</option>
+              <option value="makke_Ž">Ž — žiť, život, živý, žito, žihadlo...</option>
+              <option value="makke_C">C — cyklista, bicykel, cibuľa, citrón, cirkus...</option>
+              <option value="makke_DZ">DZ — cudzí, cudzinec, medzi, rýdzi...</option>
+              <option value="makke_J">J — dvojica, krajina, dojiť, spojiť...</option>
+              <option value="makke_Ď">Ď — chodiť, radiť, súdiť, divadlo, rodina...</option>
+              <option value="makke_Ť">Ť — vrátiť, platiť, svietiť, ticho, tisíc...</option>
+              <option value="makke_Ň">Ň — zvoniť, brániť, chrániť, niť, nízko...</option>
+              <option value="makke_Ľ">Ľ — chváliť, páliť, deliť, modliť sa, list...</option>
+            </optgroup>
           </select>
         </div>
 
@@ -1050,41 +1127,190 @@
       }
     };
 
+    const TVRDE_DATA = {
+      H: {
+        y: ["nohy", "váhy", "kruhy", "brehy", "pruhy", "stohy", "rohy", "hybký", "hýbať sa", "pohyb", "vyhýbať sa", "hymna", "hýľ", "zahýbať"],
+        i: ["história", "historický", "hit", "híkať", "Himaláje"]
+      },
+      CH: {
+        y: ["chyba", "chybný", "bezchybný", "chýbať", "orechy", "vrchy", "chýr", "chýrečný", "chyža", "chytiť", "chytať", "chytro", "chytľavý", "suchý", "plachý"],
+        i: ["chichotať sa", "chichot", "chirurg", "chirurgia", "chili", "orchidea", "architekt"]
+      },
+      K: {
+        y: ["kyslý", "kysnúť", "kyselina", "kyvadlo", "kývať", "pokývať", "kývnuť", "kyjak", "kytica", "kytička", "kypieť", "kyprý", "kýbel", "ruky", "lúky", "rieky", "oblaky", "vtáky", "vlaky", "žiaky", "topánky", "potoky", "kroky", "skoky", "boky", "mraky"],
+        i: ["kino", "kilogram", "kilo", "kilometer", "kikiríkať", "kikirík", "kimono", "kivi", "kiosk"]
+      },
+      G: {
+        y: ["gýč", "gýčový", "gymnastika", "gymnasta", "gymnázium", "gympel", "drogy", "figy", "kolegyňa"],
+        i: ["gitara", "gitarista", "gigant", "gigantický", "gilotína", "girlanda", "logika"]
+      },
+      D: {
+        y: ["dym", "dymiť", "zadymiť", "dymový", "dymnica", "dych", "dýchať", "vydýchnuť", "nádych", "dýka", "dyňa", "dynastia", "dynamit", "vody", "záhrady", "jahody", "triedy", "schody", "hrady", "brady"],
+        i: ["divadlo", "divák", "divadelný", "divý", "diviak", "divo", "diktát", "diktovať", "dinosaurus", "diplom", "disk", "diskotéka", "hodina", "rodina", "dedina", "chodiť", "radiť", "súdiť"]
+      },
+      T: {
+        y: ["ty", "tyč", "tyčka", "tykadlo", "motyka", "motyčka", "týždeň", "týždenník", "týždenne", "šaty", "kvety", "ploty", "prsty", "tyran", "týrať", "dotyk", "dotýkať sa", "vety", "noty"],
+        i: ["ticho", "tichý", "tichočko", "tisíc", "tisícka", "titul", "tiger", "tigrí", "tím", "tip", "tipovať", "tiket", "tikot", "vrátiť", "platiť", "svietiť", "chytiť"]
+      },
+      N: {
+        y: ["noviny", "prázdniny", "hodiny", "dediny", "kvetiny", "rastliny", "periny", "doliny", "pukliny", "bubliny", "modriny", "slaniny", "maliny", "nylón", "nymfa"],
+        i: ["niť", "nitka", "nízko", "nízky", "nížina", "nikto", "nikam", "nič", "nikel", "niva", "zvoniť", "brániť", "chrániť", "plniť", "voniť"]
+      },
+      L: {
+        y: ["lyko", "lýtko", "lyžica", "lyže", "lyžovať", "lyžiar", "lysý", "lysina", "plyn", "plynový", "plytký", "plytčina", "plytvať", "mlyn", "mlynár", "blýskať sa", "vzlykať", "lýra", "zlyhať", "plyš", "pomaly"],
+        i: ["list", "lístok", "lipa", "lipový", "lízať", "lízanka", "líška", "líce", "ulica", "polica", "králik", "malina", "slina", "hlina", "blikať", "blízko", "kalina", "klinec", "balík", "liter", "slimák", "slivka"]
+      }
+    };
+
+    const MAKKE_DATA = {
+      Č: {
+        y: [],
+        i: ["čistý", "čistota", "čistiť", "vyčistiť", "čižma", "čižmička", "čin", "čipka", "čítať", "prečítať", "čitateľ", "čítanka", "číhať", "číslo", "číslica", "číry", "mačička", "oči", "lúčina", "kľúčik"]
+      },
+      DŽ: {
+        y: [],
+        i: ["džínsy", "džíp", "džin"]
+      },
+      Š: {
+        y: [],
+        i: ["šiť", "ušiť", "prišiť", "zašiť", "šitie", "šijací", "šikovný", "šikovnosť", "šikmý", "široký", "šírka", "šíp", "šípka", "šípkový", "šibal", "šibať", "šibačka", "zošit", "košík", "mašinka", "šiška"]
+      },
+      Ž: {
+        y: [],
+        i: ["žiť", "dožiť", "prežiť", "zažiť", "život", "životný", "živý", "nažive", "oživiť", "žito", "žitný", "žihadlo", "žila", "žilka", "žičiť", "žičlivý", "žirafa", "živel", "kalužina", "družina", "pružina", "dužina"]
+      },
+      C: {
+        y: ["cyklista", "cyklistka", "bicykel", "cyklus", "cylinder", "cynik", "cynický", "cypruštek", "encyklopédia", "motocykel", "cyklotrasa", "cyklón", "cysta"],
+        i: ["cibuľa", "cibuľka", "citrón", "citrónový", "cirkus", "cítiť", "pocit", "cit", "citlivý", "cicať", "ciciak", "cín", "cínový", "ciferník", "cifra", "cícer", "cikať", "chlapci", "vtáci", "vlci"]
+      },
+      DZ: {
+        y: [],
+        i: ["cudzí", "cudzinec", "medzi", "rýdzi"]
+      },
+      J: {
+        y: [],
+        i: ["dvojica", "trojica", "krajina", "bojisko", "dojiť", "spojiť", "hnojiť", "pripojiť", "pokrojiť"]
+      },
+      Ď: {
+        y: [],
+        i: ["chodiť", "hodiť", "brodiť", "radiť", "súdiť", "hladiť", "sladiť", "budiť", "vadiť", "lodička", "dedičstvo", "divadlo", "divák", "hodina", "rodina", "dedina"]
+      },
+      Ť: {
+        y: [],
+        i: ["vrátiť", "platiť", "svietiť", "chytiť", "ticho", "tisíc", "svietidlo", "letisko", "šatičky", "chutiť", "stratiť", "vyčistiť"]
+      },
+      Ň: {
+        y: [],
+        i: ["zvoniť", "brániť", "chrániť", "plniť", "voniť", "tieniť", "nitka", "nízko", "nízky", "nížina"]
+      },
+      Ľ: {
+        y: [],
+        i: ["chváliť", "páliť", "deliť", "veliť", "mýliť sa", "modliť sa", "holiť", "mydliť", "baliť", "stolička", "lipa", "list"]
+      }
+    };
+
     // ACTIVE SELECTION STATE
-    let currentLetterGroup = "all"; // "all" or "B", "M", "P", "R", "S", "V", "Z", "L", "C", "F"
+    let currentLetterGroup = "vybrane_all";
     let currentSubFilter = "all";   // "all", "vybrane", "makke"
     let words = [];
+
+    // Helper: extracts preceding consonant or digraph (ch, dz, dž) before index
+    function getPrecedingConsonant(word, idx) {
+      if (idx <= 0) return "";
+      let low = word.toLowerCase();
+      if (idx >= 2) {
+        let two = low.slice(idx - 2, idx);
+        if (two === "ch" || two === "dz" || two === "dž") return two;
+      }
+      return low[idx - 1];
+    }
+
+    // Helper: checks if preceding consonant matches the active filter group
+    function matchConsonant(cons, group) {
+      if (!cons) return false;
+      if (group === "all" || group === "vybrane_all") {
+        return "bmprsvzlcf".includes(cons);
+      }
+      if (group === "tvrde_all") {
+        return ["h", "ch", "k", "g", "d", "t", "n", "l"].includes(cons);
+      }
+      if (group === "makke_all") {
+        return ["č", "dž", "š", "ž", "c", "dz", "j", "ď", "ť", "ň", "ľ", "d", "t", "n", "l"].includes(cons);
+      }
+      if (group.startsWith("vybrane_")) {
+        let letter = group.replace("vybrane_", "").toLowerCase();
+        return cons === letter;
+      }
+      if (group.startsWith("tvrde_")) {
+        let letter = group.replace("tvrde_", "").toLowerCase();
+        return cons === letter;
+      }
+      if (group.startsWith("makke_")) {
+        let letter = group.replace("makke_", "").toLowerCase();
+        if (letter === "ď") return cons === "ď" || cons === "d";
+        if (letter === "ť") return cons === "ť" || cons === "t";
+        if (letter === "ň") return cons === "ň" || cons === "n";
+        if (letter === "ľ") return cons === "ľ" || cons === "l";
+        return cons === letter;
+      }
+      return cons === group.toLowerCase();
+    }
 
     // Helper: checks if word has at least one valid gap for the active group
     // (Diphthongs ia, ie, iu are NEVER gapped, written as is)
     function hasValidGap(word, group) {
-      let allowed = (group === 'all') ? "bmprsvzlcf" : group.toLowerCase();
       for (let i = 0; i < word.length; i++) {
-        if (i > 0 && allowed.includes(word[i - 1].toLowerCase()) && "iyíý".includes(word[i])) {
+        if (i > 0 && "iyíý".includes(word[i])) {
           let nextChar = (i + 1 < word.length) ? word[i + 1].toLowerCase() : '';
           if (nextChar && "aeuáéú".includes(nextChar)) {
             continue; // Diphthong (ia, ie, iu) - written as is, not gapped
           }
-          return true;
+          let cons = getPrecedingConsonant(word, i);
+          if (matchConsonant(cons, group)) {
+            return true;
+          }
         }
       }
       return false;
     }
 
     function computeWordPool(group, sub) {
-      let pool = [];
-      let letters = (group === "all") ? ["B", "M", "P", "R", "S", "V", "Z", "L", "C", "F"] : [group];
+      // Normalize legacy group IDs
+      if (group === "all") group = "vybrane_all";
+      if ("BMPRSVZLFC".includes(group) && group.length === 1) {
+        group = "vybrane_" + group;
+      }
 
-      letters.forEach(letter => {
-        let entry = VYBRANE_DATA[letter];
-        if (!entry) return;
-        if (sub === "all" || sub === "vybrane") {
-          pool.push(...entry.vybrane);
-        }
-        if (sub === "all" || sub === "makke") {
-          pool.push(...entry.makke);
-        }
-      });
+      let pool = [];
+
+      if (group.startsWith("vybrane_")) {
+        let target = group.replace("vybrane_", "");
+        let letters = (target === "all") ? ["B", "M", "P", "R", "S", "V", "Z", "L", "C", "F"] : [target];
+        letters.forEach(letter => {
+          let entry = VYBRANE_DATA[letter];
+          if (!entry) return;
+          if (sub === "all" || sub === "vybrane") pool.push(...entry.vybrane);
+          if (sub === "all" || sub === "makke") pool.push(...entry.makke);
+        });
+      } else if (group.startsWith("tvrde_")) {
+        let target = group.replace("tvrde_", "");
+        let letters = (target === "all") ? ["H", "CH", "K", "G", "D", "T", "N", "L"] : [target];
+        letters.forEach(letter => {
+          let entry = TVRDE_DATA[letter];
+          if (!entry) return;
+          if (sub === "all" || sub === "vybrane") pool.push(...entry.y);
+          if (sub === "all" || sub === "makke") pool.push(...entry.i);
+        });
+      } else if (group.startsWith("makke_")) {
+        let target = group.replace("makke_", "");
+        let letters = (target === "all") ? ["Č", "DŽ", "Š", "Ž", "C", "DZ", "J", "Ď", "Ť", "Ň", "Ľ"] : [target];
+        letters.forEach(letter => {
+          let entry = MAKKE_DATA[letter];
+          if (!entry) return;
+          if (sub === "all" || sub === "vybrane") pool.push(...entry.y);
+          if (sub === "all" || sub === "makke") pool.push(...entry.i);
+        });
+      }
 
       // Filter: only keep words that have at least one valid gap for the active group
       // (Diphthongs ia, ie, iu are never gapped and are written as is)
@@ -1216,6 +1442,12 @@
     }
 
     function applyFilterState(doSave = true) {
+      // Normalize legacy group IDs
+      if (currentLetterGroup === "all") currentLetterGroup = "vybrane_all";
+      if ("BMPRSVZLFC".includes(currentLetterGroup) && currentLetterGroup.length === 1) {
+        currentLetterGroup = "vybrane_" + currentLetterGroup;
+      }
+
       // Sync toolbar group buttons
       document.querySelectorAll(".letter-btn").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.group === currentLetterGroup);
@@ -1241,7 +1473,22 @@
       // Update matrix title
       const titleEl = document.getElementById("matrixTitle");
       if (titleEl) {
-        let label = (currentLetterGroup === "all") ? "Všetky vybrané slová" : `Vybrané slová po ${currentLetterGroup}`;
+        let label = "";
+        if (currentLetterGroup === "vybrane_all") {
+          label = "Všetky vybrané slová";
+        } else if (currentLetterGroup.startsWith("vybrane_")) {
+          label = `Vybrané slová po ${currentLetterGroup.replace("vybrane_", "")}`;
+        } else if (currentLetterGroup === "tvrde_all") {
+          label = "Všetky tvrdé spoluhlásky";
+        } else if (currentLetterGroup.startsWith("tvrde_")) {
+          label = `Tvrdá spoluhláska ${currentLetterGroup.replace("tvrde_", "")}`;
+        } else if (currentLetterGroup === "makke_all") {
+          label = "Všetky mäkké spoluhlásky";
+        } else if (currentLetterGroup.startsWith("makke_")) {
+          label = `Mäkká spoluhláska ${currentLetterGroup.replace("makke_", "")}`;
+        } else {
+          label = `Skupina ${currentLetterGroup}`;
+        }
         titleEl.textContent = `📊 Pokrok: ${label} (${words.length})`;
       }
 
@@ -1459,18 +1706,18 @@
     // NEVER gap diphthongs (ia, ie, iu) - they remain written as is (e.g. "myšlienka" -> "m_šlienka")
     function createGaps(word) {
       gapPositions = [];
-      let allowedPreceding = (currentLetterGroup === 'all')
-        ? "bmprsvzlcf"
-        : currentLetterGroup.toLowerCase();
 
       for (let i = 0; i < word.length; i++) {
-        if (i > 0 && allowedPreceding.includes(word[i - 1].toLowerCase()) && "iyíý".includes(word[i])) {
+        if (i > 0 && "iyíý".includes(word[i])) {
           // If 'i' or 'í' is immediately followed by a, e, u -> it is part of a diphthong (ia, ie, iu), do NOT gap it
           let nextChar = (i + 1 < word.length) ? word[i + 1].toLowerCase() : '';
           if (nextChar && "aeuáéú".includes(nextChar)) {
             continue;
           }
-          gapPositions.push(i);
+          let cons = getPrecedingConsonant(word, i);
+          if (matchConsonant(cons, currentLetterGroup)) {
+            gapPositions.push(i);
+          }
         }
       }
 
