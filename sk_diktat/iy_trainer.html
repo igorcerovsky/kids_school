@@ -796,7 +796,7 @@
       <div class="toolbar-row" style="background: rgba(11, 78, 162, 0.05); border: 1px dashed rgba(11, 78, 162, 0.25); border-radius: var(--radius-sm); padding: 4px 8px; margin-top: 2px;">
         <div class="toolbar-group" style="align-items: center; gap: 8px;">
           <span class="group-label" style="color: var(--primary); font-weight: 700;">🔁 Špeciálne:</span>
-          <button type="button" class="preset-btn letter-btn recap-btn" data-group="opakovanie" onclick="setLetterGroup('opakovanie')" id="recapBtn" title="Špeciálne opakovanie 88 zadaných slov">🔁 Opakovanie (88 zadaných slov)</button>
+          <button type="button" class="preset-btn letter-btn recap-btn" data-group="opakovanie" onclick="setLetterGroup('opakovanie')" id="recapBtn" title="Špeciálne opakovanie 105 zadaných slov">🔁 Opakovanie (105 zadaných slov)</button>
         </div>
       </div>
     </section>
@@ -847,7 +847,7 @@
               <option value="makke_Ľ">Ľ — chváliť, páliť, deliť, modliť sa, list...</option>
             </optgroup>
             <optgroup label="🔁 Špeciálne opakovanie">
-              <option value="opakovanie">🔁 Špeciálne opakovanie (88 zadaných slov)</option>
+              <option value="opakovanie">🔁 Špeciálne opakovanie (105 zadaných slov)</option>
             </optgroup>
           </select>
         </div>
@@ -1257,8 +1257,8 @@
       L: {
         y: [
           "lyko", "lýtko", "lyžica", "lyže", "lyžovať", "lyžiar", "lysý", "lysina", "plyn", "plynový",
-          "plytký", "plytčina", "plytvať", "mlyn", "mlynár", "blýskať sa", "vzlykať", "lýra", "zlyhať",
-          "plyš", "pomaly", "uplynuli"
+          "plytký", "plytčina", "plytvať", "mlyn", "mlynár", "blýskať sa", "blyšťať sa", "vzlykať", "lýra", "zlyhať",
+          "plyš", "pomaly", "uplynuli", "slýchať", "vplyv", "splývať", "plynúť"
         ],
         i: [
           "list", "lístok", "lístie", "lišta", "lipa", "lipový", "lízať", "lízanka", "líška", "líce",
@@ -1371,7 +1371,7 @@
       return cons === group.toLowerCase();
     }
 
-    // SPECIAL RECAP LIST (Exactly the 88 words entered by user)
+    // SPECIAL RECAP LIST (Opakovanie - 105 zadaných slov)
     const OPAKOVANIE_WORDS = [
       "hit", "kivi", "dikobraz", "Gitka", "chichotať sa", "Monika", "liter", "tím", "kilogram", "lišta",
       "hymna", "hýľ", "hygiena", "hydina", "hýbať sa", "hydrant", "hyacint", "ohýbať", "mohyla", "pohyb",
@@ -1381,7 +1381,9 @@
       "dýchať", "oddychovať", "dychovka", "Londýn", "dotyk", "tykať niekomu", "týrať", "tyč", "tyčinky",
       "motýľ", "týždeň", "tyrkysový", "kostým", "začína", "lístie", "chystať", "pršiplášť", "dáždniky", "prázdniny",
       "oddych", "skončili", "uplynuli", "čítať", "počítať", "tešíte sa", "ticho", "šírka", "kýchať", "kniha",
-      "činka", "štyri", "divák", "nylon", "slimák", "lykožrút", "cudzinec", "krajina"
+      "činka", "štyri", "divák", "nylon", "slimák", "lykožrút", "cudzinec", "krajina",
+      "lyko", "lysý", "lýtko", "lyžica", "blýskať sa", "blyšťať sa", "mlyn", "plyn", "plyš", "plytký",
+      "slýchať", "vzlykať", "lyže", "pomaly", "vplyv", "splývať", "zlyhať", "plynúť"
     ];
 
     // Helper: checks if word has at least one valid gap for the active group
