@@ -19,6 +19,7 @@ An interactive educational portal with web applications and practice tools desig
 | **Division with Remainder** (Delenie so zvyškom) | Mathematics | [Open Remainder Trainer](https://igorcerovsky.github.io/kids_school/multiply/remainder.html) |
 | **Zahlenpyramide** (Číselné pyramídy) | Mathematics | [Open Zahlenpyramide](https://igorcerovsky.github.io/kids_school/multiply/pyramide.html) |
 | **I / Y Trenažér** (Vybrané slová B, M, P, R, S, V, Z, L) | Slovak Language | [Open I/Y Trenažér](https://igorcerovsky.github.io/kids_school/sk_diktat/iy_trainer.html) |
+| **Slovné druhy** (Všetkých 10 slovných druhov) | Slovak Language | [Open Slovné druhy](https://igorcerovsky.github.io/kids_school/slovne_druhy/) |
 | **Wortarten Lernspiel** (Nomen, Verben, Adjektive) | German Language | [Open Wortarten](https://igorcerovsky.github.io/kids_school/noun_verb_adjektiv/) |
 | **Tasteninstrumente Quiz** (Klávesové nástroje) | Music Education | [Open Quiz 1](https://igorcerovsky.github.io/kids_school/musik/instrumente_1.html) |
 | **Saiteninstrumente Quiz 1** (Strunové nástroje) | Music Education | [Open Quiz 2](https://igorcerovsky.github.io/kids_school/musik/instrumente_2.html) |
@@ -43,9 +44,9 @@ Dedicated trainer for integer division with remainders:
 - **Remainder Matrix (Matica delenia so zvyškom)**: Visual 2D matrix displaying mastery and speed across dividend and divisor dimensions, perfectly scaled to fit the side pane.
 - **Quick Presets**: Fast switching between `[2–10]` and `[3–9]` divisor ranges.
 
-### 🇸🇰 Slovak Orthography (`/sk_diktat/`)
-- Adaptive reinforcement for Slovak *vybrané slová* (i/y after B, M, P, R, S, V, Z, L).
-- Speech synthesis for full sentence dictation with word-by-word correctness verification.
+### 🇸🇰 Slovak Language Trainers (`/sk_diktat/` & `/slovne_druhy/`)
+- **I / Y Trenažér**: Adaptive reinforcement for Slovak *vybrané slová* (i/y after B, M, P, R, S, V, Z, L) with matrix progress and speech dictation.
+- **Slovné druhy**: Comprehensive training of all 10 Slovak parts of speech (*podstatné mená, prídavné mená, zámená, číslovky, slovesá, príslovky, predložky, spojky, častice, citoslovcia*) with keyboard shortcuts, response time tracking, and customizable learning modes (Všetky, Základné, Ohybné, Neohybné).
 
 ### 🇩🇪 German Grammar (`/noun_verb_adjektiv/`)
 - Interactive classification game teaching German parts of speech (*Nomen, Verben, Adjektive*).

@@ -179,16 +179,16 @@ Trainer data must be partitioned under clear, consistent local storage keys:
 
 ## 6. Implementation Sync Matrix
 
-| Feature | Math Trainer (`multiply/`) | Wortarten Trainer (`noun_verb_adjektiv/`) | I/Y Trainer (`sk_diktat/`) |
-| :--- | :---: | :---: | :---: |
-| **3-Column Grid** | ✅ | ✅ | ✅ |
-| **Interactive Matrix** | ✅ 2D (Fact × Fact) | ✅ 1D Grid (81 Sentences) | ✅ Grid (Words) |
-| **P80 Speed Sparkline** | ✅ | ✅ | ✅ |
-| **20s Auto-Pause** | ✅ | ✅ | ✅ |
-| **Paused Time Deduction** | ✅ | ✅ | ✅ |
-| **Daily History Log** | ✅ Right pane details | ✅ Right pane details | ✅ Right pane details |
-| **Reset Placement** | ✅ Inside details drawer | ✅ Inside details drawer | ✅ Inside details drawer |
-| **Auto-Advance Flow** | ✅ 400ms | ✅ 500ms | ✅ 800ms |
-| **Timer Guard** | ✅ | ✅ | ✅ |
-| **Keyboard Shortcuts** | Enter, Numpad | 1, 2, 3, N, V, A, P, R | i, y, í, ý, H, Space |
-| **Theme System** | `../css/theme.css` | `../css/theme.css` | `../css/theme.css` |
+| Feature | Math Trainer (`multiply/`) | Wortarten Trainer (`noun_verb_adjektiv/`) | I/Y Trainer (`sk_diktat/`) | Slovné druhy (`slovne_druhy/`) |
+| :--- | :---: | :---: | :---: | :---: |
+| **3-Column Grid** | ✅ | ✅ | ✅ | ✅ |
+| **Interactive Matrix** | ✅ 2D (Fact × Fact) | ✅ 1D Grid (81 Sentences) | ✅ Grid (Words) | ✅ 1D Grid (80 Sentences) |
+| **P80 Speed Sparkline** | ✅ | ✅ | ✅ | ✅ |
+| **20s Auto-Pause** | ✅ | ✅ | ✅ | ✅ |
+| **Paused Time Deduction** | ✅ | ✅ | ✅ | ✅ |
+| **Daily History Log** | ✅ Right pane details | ✅ Right pane details | ✅ Right pane details | ✅ Right pane details |
+| **Reset Placement** | ✅ Inside details drawer | ✅ Inside details drawer | ✅ Inside details drawer | ✅ Inside details drawer |
+| **Auto-Advance Flow** | ✅ 400ms | ✅ 500ms | ✅ 800ms | ✅ 500ms |
+| **Timer Guard** | ✅ | ✅ | ✅ | ✅ |
+| **Keyboard Shortcuts** | Enter, Numpad | 1, 2, 3, N, V, A, P, R | i, y, í, ý, H, Space | 1–9, 0, P, M, R |
+| **Theme System** | `../css/theme.css` | `../css/theme.css` | `../css/theme.css` | `../css/theme.css` |

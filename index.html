@@ -419,6 +419,27 @@
         </div>
       </a>
 
+      <!-- Slovné druhy -->
+      <a href="slovne_druhy/index.html" class="app-card" data-category="slovak">
+        <div>
+          <div class="card-top">
+            <div class="card-icon">🇸🇰</div>
+            <span class="badge badge-success badge-cat-slovak">Slovak</span>
+          </div>
+          <h3 class="card-title" id="cardTitleSlovneDruhy">Parts of Speech (Slovné druhy)</h3>
+          <p class="card-desc" id="cardDescSlovneDruhy">Slovak grammar trainer: master all 10 parts of speech (nouns, adjectives, verbs, adverbs, prepositions, etc.).</p>
+          <div class="card-pills">
+            <span class="card-pill">10 slovných druhov</span>
+            <span class="card-pill">Ohybné & Neohybné</span>
+            <span class="card-pill">Speed & Matrix</span>
+          </div>
+        </div>
+        <div class="card-action">
+          <span class="card-action-text">Launch app</span>
+          <span>→</span>
+        </div>
+      </a>
+
       <!-- Noun Verb Adjektiv -->
       <a href="noun_verb_adjektiv/index.html" class="app-card" data-category="german">
         <div>
@@ -518,6 +539,7 @@
           remainder: { title: "Division with Remainder", desc: "Practice division with remainders, dual quotient-remainder input, and visual remainder matrix." },
           pyramid: { title: "Number Pyramid", desc: "Number pyramids for addition and multiplication. Fun logical math challenge for kids." },
           iyTrainer: { title: "I / Y Trainer (Vybrané slová)", desc: "Comprehensive practice of Slovak spelling and vybrané slová (B, M, P, R, S, V, Z, L) with an adaptive cycle." },
+          slovneDruhy: { title: "Parts of Speech (Slovné druhy)", desc: "Slovak grammar trainer: master all 10 parts of speech with speed analytics and matrix progress." },
           wortarten: { title: "Parts of Speech Game (Wortarten)", desc: "Playful German grammar: classifying parts of speech (Nouns, Verbs, Adjectives)." },
           mus1: { title: "Keyboard Instruments Quiz", desc: "Learn about keyboard musical instruments with an interactive quiz." },
           mus2: { title: "String Instruments Quiz 1", desc: "Quiz on string musical instruments for children (Part 1)." },
@@ -545,6 +567,7 @@
           remainder: { title: "Delenie so zvyškom", desc: "Precvičovanie delenia so zvyškom, zadávanie podielu a zvyšku a vizuálna matica zvyškov." },
           pyramid: { title: "Zahlenpyramide", desc: "Číselné pyramídy pre sčítanie a násobenie. Zábavná logicko-matematická výzva pre deti." },
           iyTrainer: { title: "I / Y Trenažér (Vybrané slová)", desc: "Kompletné precvičovanie vybraných slov po B, M, P, R, S, V, Z, L s adaptívnym algoritmom a okamžitou spätnou väzbou." },
+          slovneDruhy: { title: "Slovné druhy", desc: "Slovenská gramatika: určovanie všetkých 10 slovných druhov s meraním rýchlosti a maticou viet." },
           wortarten: { title: "Wortarten Lernspiel", desc: "Nemecká gramatika hrou: určovanie a triedenie slovných druhov (Nomen, Verben, Adjektive)." },
           mus1: { title: "Tasteninstrumente Quiz", desc: "Poznávanie klávesových hudobných nástrojov a kvíz z hudobnej výchovy." },
           mus2: { title: "Saiteninstrumente Quiz 1", desc: "Kvíz o strunových hudobných nástrojoch pre deti (1. časť)." },
@@ -572,6 +595,7 @@
           remainder: { title: "Division mit Rest", desc: "Üben von Division mit Rest, zweistufige Eingabe von Quotient und Rest und Rest-Divisionsmatrix." },
           pyramid: { title: "Zahlenpyramide", desc: "Zahlenpyramiden für Addition und Multiplikation. Spielerische Mathe-Herausforderung für Kinder." },
           iyTrainer: { title: "I / Y Trainer (Vybrané slová)", desc: "Umfassendes Training slowakischer Wörter (B, M, P, R, S, V, Z, L) mit adaptivem Wiederholungszyklus." },
+          slovneDruhy: { title: "Slowakische Wortarten", desc: "Slowakische Grammatik: Alle 10 Wortarten bestimmen mit Reaktionszeitmessung und Satz-Matrix." },
           wortarten: { title: "Wortarten Lernspiel", desc: "Deutsche Grammatik spielerisch lernen: Wortarten bestimmen (Nomen, Verben, Adjektive)." },
           mus1: { title: "Tasteninstrumente Quiz", desc: "Tasteninstrumente kennenlernen mit einem interaktiven Musikquiz." },
           mus2: { title: "Saiteninstrumente Quiz 1", desc: "Quiz über Saiteninstrumente für Kinder (Teil 1)." },
@@ -627,6 +651,10 @@
       document.getElementById("cardDescPyramid").innerText = t.cards.pyramid.desc;
       document.getElementById("cardTitleIyTrainer").innerText = t.cards.iyTrainer.title;
       document.getElementById("cardDescIyTrainer").innerText = t.cards.iyTrainer.desc;
+      if (document.getElementById("cardTitleSlovneDruhy")) {
+        document.getElementById("cardTitleSlovneDruhy").innerText = t.cards.slovneDruhy.title;
+        document.getElementById("cardDescSlovneDruhy").innerText = t.cards.slovneDruhy.desc;
+      }
       document.getElementById("cardTitleWortarten").innerText = t.cards.wortarten.title;
       document.getElementById("cardDescWortarten").innerText = t.cards.wortarten.desc;
       document.getElementById("cardTitleMus1").innerText = t.cards.mus1.title;
