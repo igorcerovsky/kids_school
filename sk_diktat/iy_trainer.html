@@ -796,7 +796,9 @@
       <div class="toolbar-row" style="background: rgba(11, 78, 162, 0.05); border: 1px dashed rgba(11, 78, 162, 0.25); border-radius: var(--radius-sm); padding: 4px 8px; margin-top: 2px;">
         <div class="toolbar-group" style="align-items: center; gap: 8px;">
           <span class="group-label" style="color: var(--primary); font-weight: 700;">🔁 Špeciálne:</span>
-          <button type="button" class="preset-btn letter-btn recap-btn" data-group="opakovanie" onclick="setLetterGroup('opakovanie')" id="recapBtn" title="Špeciálne opakovanie 105 zadaných slov">🔁 Opakovanie (105 zadaných slov)</button>
+          <button type="button" class="preset-btn letter-btn recap-btn" data-group="opakovanie" onclick="setLetterGroup('opakovanie')" id="recapBtn" title="Špeciálne opakovanie 1 (105 zadaných slov)">🔁 Opakovanie 1 (105 slov)</button>
+          <button type="button" class="preset-btn letter-btn recap-btn" data-group="opakovanie_2" onclick="setLetterGroup('opakovanie_2')" id="recapBtn2" title="Špeciálne opakovanie 2 (40 zadaných slov)">🔁 Opakovanie 2 (40 slov)</button>
+          <button type="button" class="preset-btn letter-btn recap-btn" data-group="opakovanie_3" onclick="setLetterGroup('opakovanie_3')" id="recapBtn3" title="Špeciálne opakovanie 3 (40 zadaných slov)">🔁 Opakovanie 3 (40 slov)</button>
         </div>
       </div>
     </section>
@@ -847,7 +849,9 @@
               <option value="makke_Ľ">Ľ — chváliť, páliť, deliť, modliť sa, list...</option>
             </optgroup>
             <optgroup label="🔁 Špeciálne opakovanie">
-              <option value="opakovanie">🔁 Špeciálne opakovanie (105 zadaných slov)</option>
+              <option value="opakovanie">🔁 Špeciálne opakovanie 1 (105 zadaných slov)</option>
+              <option value="opakovanie_2">🔁 Špeciálne opakovanie 2 (40 zadaných slov)</option>
+              <option value="opakovanie_3">🔁 Špeciálne opakovanie 3 (40 zadaných slov)</option>
             </optgroup>
           </select>
         </div>
@@ -1367,11 +1371,11 @@
         if (letter === "ľ") return cons === "ľ" || cons === "l";
         return cons === letter;
       }
-      if (group === "opakovanie") return true;
+      if (group.startsWith("opakovanie")) return true;
       return cons === group.toLowerCase();
     }
 
-    // SPECIAL RECAP LIST (Opakovanie - 105 zadaných slov)
+    // SPECIAL RECAP LIST (Opakovanie 1 - 105 zadaných slov)
     const OPAKOVANIE_WORDS = [
       "hit", "kivi", "dikobraz", "Gitka", "chichotať sa", "Monika", "liter", "tím", "kilogram", "lišta",
       "hymna", "hýľ", "hygiena", "hydina", "hýbať sa", "hydrant", "hyacint", "ohýbať", "mohyla", "pohyb",
@@ -1384,6 +1388,30 @@
       "činka", "štyri", "divák", "nylon", "slimák", "lykožrút", "cudzinec", "krajina",
       "lyko", "lysý", "lýtko", "lyžica", "blýskať sa", "blyšťať sa", "mlyn", "plyn", "plyš", "plytký",
       "slýchať", "vzlykať", "lyže", "pomaly", "vplyv", "splývať", "zlyhať", "plynúť"
+    ];
+
+    // SPECIAL RECAP LIST 2 (Opakovanie 2 - 40 zadaných slov)
+    const OPAKOVANIE_2_WORDS = [
+      "chrobáčiky", "háčik", "hydina", "kytica", "pníček",
+      "básnička", "posotil", "chybička", "pochutíme", "autíčko",
+      "plyn", "opustili", "kývadlo", "vodička", "gymnastka",
+      "nekričme", "slanina", "vyčítanka", "slovníček", "sedíme",
+      "čistučko", "tyčinka", "stačil", "chodil", "všímať",
+      "plytčina", "nespustil", "prehluším", "všetkým", "vrátil",
+      "klinček", "pohľadnica", "mlčíš", "kýbeľ", "vyložila",
+      "nakloníme", "kaderníčka", "mlynárka", "lyžovačka", "stavebnica"
+    ];
+
+    // SPECIAL RECAP LIST 3 (Opakovanie 3 - 40 zadaných slov)
+    const OPAKOVANIE_3_WORDS = [
+      "kyslík", "určite", "lúčime sa", "navštívila", "pečivo",
+      "suchých", "dymovnica", "tlačených", "žartík", "držíme",
+      "nočným", "sfúknime", "upečeným", "vidím", "trojica",
+      "hodinky", "nikdy", "vytlačiť", "chytro", "zložíme",
+      "tykadlo", "prezradil", "riešime", "okamžite", "klebetnica",
+      "lyže", "listoval", "zaútočil", "hnedých", "súťažiť",
+      "strašiť", "chyba", "dužina", "ženích", "studnička",
+      "lýtko", "potešil", "zakrúžil", "motýlik", "pesnička"
     ];
 
     // Helper: checks if word has at least one valid gap for the active group
@@ -1442,15 +1470,19 @@
           if (sub === "all" || sub === "vybrane") pool.push(...entry.y);
           if (sub === "all" || sub === "makke") pool.push(...entry.i);
         });
-      } else if (group === "opakovanie") {
-        OPAKOVANIE_WORDS.forEach(w => {
+      } else if (group.startsWith("opakovanie")) {
+        let baseList = OPAKOVANIE_WORDS;
+        if (group === "opakovanie_2") baseList = OPAKOVANIE_2_WORDS;
+        else if (group === "opakovanie_3") baseList = OPAKOVANIE_3_WORDS;
+
+        baseList.forEach(w => {
           let hasY = /[yý]/i.test(w);
           let hasI = /[ií]/i.test(w);
           if (sub === "all") pool.push(w);
           else if (sub === "vybrane" && hasY) pool.push(w);
           else if (sub === "makke" && hasI) pool.push(w);
         });
-        if (pool.length === 0) pool = [...OPAKOVANIE_WORDS];
+        if (pool.length === 0) pool = [...baseList];
       }
 
       // Filter: only keep words that have at least one valid gap for the active group
@@ -1575,7 +1607,7 @@
     // LETTER GROUP & SUB-FILTER SWITCHING
     function setLetterGroup(group, doSave = true) {
       currentLetterGroup = group;
-      if (group === "opakovanie") {
+      if (group.startsWith("opakovanie")) {
         currentSubFilter = "all";
       }
       applyFilterState(doSave);
@@ -1623,7 +1655,11 @@
       if (titleEl) {
         let label = "";
         if (currentLetterGroup === "opakovanie") {
-          label = "Špeciálne opakovanie (zadané slová)";
+          label = "Špeciálne opakovanie 1 (zadané slová)";
+        } else if (currentLetterGroup === "opakovanie_2") {
+          label = "Špeciálne opakovanie 2 (zadané slová)";
+        } else if (currentLetterGroup === "opakovanie_3") {
+          label = "Špeciálne opakovanie 3 (zadané slová)";
         } else if (currentLetterGroup === "vybrane_all") {
           label = "Všetky vybrané slová";
         } else if (currentLetterGroup.startsWith("vybrane_")) {
