@@ -332,6 +332,7 @@
       <button class="filter-btn" data-filter="slovak" id="filterSlovak">Slovak</button>
       <button class="filter-btn" data-filter="german" id="filterGerman">German</button>
       <button class="filter-btn" data-filter="music" id="filterMusic">Music</button>
+      <button class="filter-btn" data-filter="geography" id="filterGeography">Geography</button>
     </nav>
 
     <!-- Apps Grid -->
@@ -507,6 +508,25 @@
           <span class="card-action-text">Launch app</span>
           <span>→</span>
         </div>
+      <!-- Latitude & Longitude Trainer -->
+      <a href="map/index.html" class="app-card" data-category="geography">
+        <div>
+          <div class="card-top">
+            <div class="card-icon">🌍</div>
+            <span class="badge badge-cat-geo" style="background: rgba(14, 165, 233, 0.12); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.28);">Geography</span>
+          </div>
+          <h3 class="card-title" id="cardTitleMap">Latitude & Longitude Trainer</h3>
+          <p class="card-desc" id="cardDescMap">World geography practice: locate coordinates (lat/lon), click the world map, and identify continents, oceans, countries, and major cities.</p>
+          <div class="card-pills">
+            <span class="card-pill">🧭 Lat & Lon</span>
+            <span class="card-pill">🗺️ Interactive Map</span>
+            <span class="card-pill">52 World Locations</span>
+          </div>
+        </div>
+        <div class="card-action">
+          <span class="card-action-text">Launch app</span>
+          <span>→</span>
+        </div>
       </a>
 
     </main>
@@ -530,8 +550,8 @@
         heroTags: ["⏱️ Speed measurement", "📊 Mistake frequency stats", "⚙️ Custom ranges & operators", "📱 Mobile & desktop optimized"],
         heroBtn: "Launch Math Trainer →",
         heroBtnIy: "📘 Launch I / Y Trainer →",
-        filters: { all: "All Activities", math: "Mathematics", slovak: "Slovak", german: "German", music: "Music" },
-        catBadges: { math: "Mathematics", slovak: "Slovak", german: "German", music: "Music" },
+        filters: { all: "All Activities", math: "Mathematics", slovak: "Slovak", german: "German", music: "Music", geography: "Geography" },
+        catBadges: { math: "Mathematics", slovak: "Slovak", german: "German", music: "Music", geography: "Geography" },
         actionText: "Launch app",
         footer: "Kubi Kids School • Educational Software",
         cards: {
@@ -543,7 +563,8 @@
           wortarten: { title: "Parts of Speech Game (Wortarten)", desc: "Playful German grammar: classifying parts of speech (Nouns, Verbs, Adjectives)." },
           mus1: { title: "Keyboard Instruments Quiz", desc: "Learn about keyboard musical instruments with an interactive quiz." },
           mus2: { title: "String Instruments Quiz 1", desc: "Quiz on string musical instruments for children (Part 1)." },
-          mus3: { title: "String Instruments Quiz 2", desc: "Continuation quiz on string musical instruments (Part 2)." }
+          mus3: { title: "String Instruments Quiz 2", desc: "Continuation quiz on string musical instruments (Part 2)." },
+          map: { title: "Latitude & Longitude Trainer", desc: "World geography practice: locate coordinates (lat/lon), click the world map, and identify continents, oceans, countries, and major cities." }
         }
       },
       sk: {
@@ -558,8 +579,8 @@
         heroTags: ["⏱️ Meranie rýchlosti", "📊 Štatistika problematických príkladov", "⚙️ Vlastné rozsahy & operátory", "📱 Optimalizované pre mobil aj PC"],
         heroBtn: "Spustiť Math Trainer →",
         heroBtnIy: "📘 Spustiť I / Y Trenažér →",
-        filters: { all: "Všetky aktivity", math: "Matematika", slovak: "Slovenčina", german: "Nemčina", music: "Hudobná výchova" },
-        catBadges: { math: "Matematika", slovak: "Slovenčina", german: "Nemčina", music: "Hudba" },
+        filters: { all: "Všetky aktivity", math: "Matematika", slovak: "Slovenčina", german: "Nemčina", music: "Hudobná výchova", geography: "Zemepis" },
+        catBadges: { math: "Matematika", slovak: "Slovenčina", german: "Nemčina", music: "Hudba", geography: "Zemepis" },
         actionText: "Spustiť aplikáciu",
         footer: "Kubi Kids School • Vzdelávací softvér",
         cards: {
@@ -571,7 +592,8 @@
           wortarten: { title: "Wortarten Lernspiel", desc: "Nemecká gramatika hrou: určovanie a triedenie slovných druhov (Nomen, Verben, Adjektive)." },
           mus1: { title: "Tasteninstrumente Quiz", desc: "Poznávanie klávesových hudobných nástrojov a kvíz z hudobnej výchovy." },
           mus2: { title: "Saiteninstrumente Quiz 1", desc: "Kvíz o strunových hudobných nástrojoch pre deti (1. časť)." },
-          mus3: { title: "Saiteninstrumente Quiz 2", desc: "Pokračovanie kvízu o strunových hudobných nástrojoch (2. časť)." }
+          mus3: { title: "Saiteninstrumente Quiz 2", desc: "Pokračovanie kvízu o strunových hudobných nástrojoch (2. časť)." },
+          map: { title: "Zemepisná šírka a dĺžka", desc: "Precvičovanie zemepisu: vyhľadávanie súradníc (lat/lon), klikanie na mapu sveta a spoznávanie kontinentov, oceánov a miest." }
         }
       },
       de: {
@@ -586,8 +608,8 @@
         heroTags: ["⏱️ Reaktionszeitmessung", "📊 Fehlerschwerpunkt-Statistik", "⚙️ Eigene Bereiche & Operatoren", "📱 Optimiert für Smartphone & PC"],
         heroBtn: "Mathe-Trainer starten →",
         heroBtnIy: "📘 I / Y Trainer starten →",
-        filters: { all: "Alle Aktivitäten", math: "Mathematik", slovak: "Slowakisch", german: "Deutsch", music: "Musiklehre" },
-        catBadges: { math: "Mathematik", slovak: "Slowakisch", german: "Deutsch", music: "Musik" },
+        filters: { all: "Alle Aktivitäten", math: "Mathematik", slovak: "Slowakisch", german: "Deutsch", music: "Musiklehre", geography: "Geografie" },
+        catBadges: { math: "Mathematik", slovak: "Slowakisch", german: "Deutsch", music: "Musik", geography: "Geografie" },
         actionText: "App starten",
         footer: "Kubi Kids School • Lernsoftware",
         cards: {
@@ -599,7 +621,8 @@
           wortarten: { title: "Wortarten Lernspiel", desc: "Deutsche Grammatik spielerisch lernen: Wortarten bestimmen (Nomen, Verben, Adjektive)." },
           mus1: { title: "Tasteninstrumente Quiz", desc: "Tasteninstrumente kennenlernen mit einem interaktiven Musikquiz." },
           mus2: { title: "Saiteninstrumente Quiz 1", desc: "Quiz über Saiteninstrumente für Kinder (Teil 1)." },
-          mus3: { title: "Saiteninstrumente Quiz 2", desc: "Fortsetzung des Quiz über Saiteninstrumente (Teil 2)." }
+          mus3: { title: "Saiteninstrumente Quiz 2", desc: "Fortsetzung des Quiz über Saiteninstrumente (Teil 2)." },
+          map: { title: "Breitengrad & Längengrad", desc: "Geografie-Training: Koordinaten (Lat/Lon) finden, auf die Weltkarte klicken und Kontinente, Ozeane, Länder und Städte benennen." }
         }
       }
     };
@@ -636,11 +659,15 @@
       document.getElementById("filterSlovak").innerText = t.filters.slovak;
       document.getElementById("filterGerman").innerText = t.filters.german;
       document.getElementById("filterMusic").innerText = t.filters.music;
+      if (document.getElementById("filterGeography")) {
+        document.getElementById("filterGeography").innerText = t.filters.geography;
+      }
 
       document.querySelectorAll(".badge-cat-math").forEach(el => el.innerText = t.catBadges.math);
       document.querySelectorAll(".badge-cat-slovak").forEach(el => el.innerText = t.catBadges.slovak);
       document.querySelectorAll(".badge-cat-german").forEach(el => el.innerText = t.catBadges.german);
       document.querySelectorAll(".badge-cat-music").forEach(el => el.innerText = t.catBadges.music);
+      document.querySelectorAll(".badge-cat-geo").forEach(el => el.innerText = t.catBadges.geography);
       document.querySelectorAll(".card-action-text").forEach(el => el.innerText = t.actionText);
 
       document.getElementById("cardTitleMath").innerText = t.cards.math.title;
@@ -663,6 +690,10 @@
       document.getElementById("cardDescMus2").innerText = t.cards.mus2.desc;
       document.getElementById("cardTitleMus3").innerText = t.cards.mus3.title;
       document.getElementById("cardDescMus3").innerText = t.cards.mus3.desc;
+      if (document.getElementById("cardTitleMap")) {
+        document.getElementById("cardTitleMap").innerText = t.cards.map.title;
+        document.getElementById("cardDescMap").innerText = t.cards.map.desc;
+      }
 
       document.getElementById("portalFooter").innerText = t.footer;
     }

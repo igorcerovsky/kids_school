@@ -1,0 +1,3152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Latitude & Longitude Trainer | Kubi Kids School</title>
+  <meta name="description" content="Interactive world geography trainer for kids: practice longitude and latitude, drop map pins, and discover continents, oceans, countries, and major cities.">
+
+  <!-- Shared Theme & Components -->
+  <link rel="stylesheet" href="../css/theme.css">
+  <script src="../css/theme.js"></script>
+
+  <style>
+    /* =========================================================================
+       COMPACT DASHBOARD & ZERO-SCROLL LAYOUT
+       ========================================================================= */
+    body {
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app-container-dashboard {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 8px 14px 20px;
+      box-sizing: border-box;
+    }
+
+    /* Top Navigation bar */
+    .kubi-top-bar {
+      padding: 6px 16px;
+      min-height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kubi-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Language Switcher */
+    .lang-selector {
+      display: flex;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      line-height: 1.2;
+    }
+
+    .lang-btn:hover {
+      color: var(--text);
+    }
+
+    .lang-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Standard Trainer Toolbar */
+    .trainer-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 10px;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+
+    .preset-btn {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .preset-btn:hover {
+      background: var(--surface-hover);
+      border-color: var(--primary);
+    }
+
+    .preset-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-strong);
+    }
+
+    .icon-btn.is-muted {
+      color: var(--text-muted);
+      opacity: 0.75;
+    }
+
+    /* =========================================================================
+       3-COLUMN DASHBOARD GRID
+       ========================================================================= */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 290px minmax(520px, 1fr) 300px;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 260px 1fr 280px;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Common Panel Card */
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panel-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: var(--primary-subtle);
+      color: var(--primary-text);
+      border: 1px solid var(--primary-border);
+    }
+
+    /* =========================================================================
+       LEFT COLUMN: MATRIX PANEL
+       ========================================================================= */
+    .matrix-panel {
+      overflow-y: auto;
+      max-height: calc(100vh - 125px);
+    }
+
+    .matrix-filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .filter-chip {
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-chip:hover {
+      color: var(--text);
+      border-color: var(--primary-border);
+    }
+
+    .filter-chip.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .locations-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .matrix-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+      position: relative;
+      text-align: center;
+      padding: 2px;
+    }
+
+    .matrix-cell:hover {
+      background: var(--surface-hover);
+      border-color: var(--primary);
+      color: var(--text);
+      transform: scale(1.05);
+      z-index: 2;
+    }
+
+    .matrix-cell.mastered {
+      background: var(--success-subtle);
+      border-color: var(--success-border);
+      color: var(--success-text);
+    }
+
+    .matrix-cell.mistake {
+      background: var(--danger-subtle);
+      border-color: var(--danger-border);
+      color: var(--danger-text);
+    }
+
+    .matrix-cell.active-target {
+      outline: 2px solid var(--primary);
+      outline-offset: 1px;
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+      font-weight: 800;
+      background: var(--primary-subtle);
+      color: var(--primary-text);
+      animation: pulseCell 1.5s infinite;
+    }
+
+    @keyframes pulseCell {
+      0%, 100% { outline-color: var(--primary); }
+      50% { outline-color: transparent; }
+    }
+
+    .matrix-cell .cell-cat {
+      font-size: 0.65rem;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .matrix-cell .cell-label {
+      font-size: 0.68rem;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* Micro-Legend */
+    .micro-legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      padding: 6px 0;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: auto;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+    }
+
+    .legend-swatch.unpracticed { background: var(--bg-subtle); }
+    .legend-swatch.mastered { background: var(--success-subtle); border-color: var(--success); }
+    .legend-swatch.mistake { background: var(--danger-subtle); border-color: var(--danger); }
+    .legend-swatch.active { background: var(--primary-subtle); border-color: var(--primary); }
+
+    /* Hover Preview */
+    .hover-info-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      font-size: 0.76rem;
+      color: var(--text);
+      margin-top: 6px;
+      min-height: 38px;
+      line-height: 1.35;
+    }
+
+    /* =========================================================================
+       CENTER COLUMN: STAGE PANEL
+       ========================================================================= */
+    .center-panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Target Coordinate Hero Box */
+    .coordinate-hero {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface-hover) 100%);
+      border: 2px solid var(--primary-border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .coord-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .coord-lead {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .coord-display-large {
+      font-size: clamp(1.15rem, 2.5vw, 1.7rem);
+      font-weight: 900;
+      color: var(--text);
+      font-family: var(--font-mono);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .coord-labeled-box {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      background: var(--bg-card);
+      padding: 3px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .coord-abbr-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.05em;
+      user-select: none;
+      font-family: var(--font-sans);
+    }
+
+    .coord-part {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .coord-hemisphere-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+    }
+
+    .coord-hemisphere-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .hemisphere-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      background: var(--primary-subtle);
+      border: 1px solid var(--primary-border);
+      color: var(--primary-text);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* =========================================================================
+       WORLD MAP SVG WRAPPER & CONTROLS
+       ========================================================================= */
+    .map-container {
+      position: relative;
+      width: 100%;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+      cursor: crosshair;
+      user-select: none;
+      touch-action: none; /* Crucial for iPad & touch pinch-to-zoom */
+    }
+
+    .map-container.is-panning {
+      cursor: grabbing !important;
+    }
+
+    .world-map-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+      pointer-events: all;
+    }
+
+    /* Map Graticule & Styles */
+    .map-ocean {
+      fill: #0c192c;
+      transition: fill 0.3s;
+    }
+    [data-theme="light"] .map-ocean {
+      fill: #e0f2fe;
+    }
+
+    .map-grid-line {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.12);
+      stroke-width: 0.6;
+      stroke-dasharray: 2, 2;
+    }
+    [data-theme="light"] .map-grid-line {
+      stroke: rgba(15, 23, 42, 0.15);
+    }
+
+    .map-equator-line {
+      fill: none;
+      stroke: #f59e0b;
+      stroke-width: 1.2;
+      opacity: 0.85;
+    }
+
+    .map-prime-meridian {
+      fill: none;
+      stroke: #38bdf8;
+      stroke-width: 1.2;
+      opacity: 0.85;
+    }
+
+    .map-special-latitude {
+      fill: none;
+      stroke: rgba(244, 63, 94, 0.55);
+      stroke-width: 0.8;
+      stroke-dasharray: 4, 3;
+    }
+
+    .map-degree-text {
+      font-size: 8px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      fill: rgba(255, 255, 255, 0.45);
+      pointer-events: none;
+      user-select: none;
+    }
+    [data-theme="light"] .map-degree-text {
+      fill: rgba(15, 23, 42, 0.55);
+    }
+
+    .country-polygon {
+      fill: #1e293b;
+      stroke: #334155;
+      stroke-width: 0.5;
+      cursor: crosshair;
+      transition: fill 0.15s;
+    }
+    [data-theme="light"] .country-polygon {
+      fill: #f8fafc;
+      stroke: #cbd5e1;
+    }
+
+    .country-polygon:hover {
+      fill: #334155;
+    }
+    [data-theme="light"] .country-polygon:hover {
+      fill: #e2e8f0;
+    }
+
+    .country-polygon.highlight-continent {
+      fill: rgba(56, 189, 248, 0.25);
+      stroke: var(--primary);
+    }
+
+    /* Cities Layer & Dynamic Scaling */
+    .cities-layer {
+      pointer-events: all;
+    }
+
+    .city-group {
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .city-group:hover .city-dot {
+      fill: #38bdf8 !important;
+      stroke: #ffffff !important;
+    }
+
+    .city-group:hover .city-label {
+      fill: #38bdf8 !important;
+      font-weight: 800 !important;
+    }
+
+    .city-dot {
+      stroke: #ffffff;
+      transition: fill 0.2s, r 0.2s;
+      cursor: pointer;
+    }
+
+    [data-theme="light"] .city-dot {
+      stroke: #0f172a;
+    }
+
+    .city-dot.tier-1 {
+      fill: #f59e0b;
+    }
+
+    .city-dot.tier-2 {
+      fill: #e2e8f0;
+    }
+
+    .city-dot.tier-3 {
+      fill: #94a3b8;
+    }
+
+    .city-label {
+      font-family: var(--font-sans);
+      font-weight: 600;
+      fill: #ffffff;
+      paint-order: stroke fill;
+      stroke: #0b1120;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+      user-select: none;
+      transition: fill 0.2s;
+    }
+
+    [data-theme="light"] .city-label {
+      fill: #0f172a;
+      stroke: #ffffff;
+    }
+
+    .city-label.tier-1 {
+      font-weight: 750;
+    }
+
+    .city-label.tier-2 {
+      font-weight: 600;
+    }
+
+    .city-label.tier-3 {
+      font-weight: 500;
+    }
+
+    .ocean-label-text {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      fill: rgba(255, 255, 255, 0.22);
+      text-transform: uppercase;
+      pointer-events: none;
+      font-family: var(--font-sans);
+    }
+    [data-theme="light"] .ocean-label-text {
+      fill: rgba(14, 116, 144, 0.35);
+    }
+
+    /* Map HUD Bar */
+    .map-hud {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .hud-chip {
+      background: rgba(15, 23, 42, 0.85);
+      color: #f8fafc;
+      backdrop-filter: blur(4px);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 0.73rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Map Controls (Zoom / Reset) */
+    .map-controls-floating {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 10;
+    }
+
+    .map-tool-btn {
+      width: 28px;
+      height: 28px;
+      background: rgba(15, 23, 42, 0.85);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .map-tool-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Interactive Map Marker Animations */
+    .user-pin {
+      transform-origin: center center;
+      animation: pinDrop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes pinDrop {
+      0% { transform: scale(0) translateY(-20px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .radar-pulse {
+      animation: radarExpand 1.8s infinite ease-out;
+    }
+
+    @keyframes radarExpand {
+      0% { r: 4; opacity: 0.9; stroke-width: 2; }
+      100% { r: 35; opacity: 0; stroke-width: 0.5; }
+    }
+
+    .target-pin {
+      transform-origin: center center;
+      animation: targetBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes targetBounce {
+      0% { transform: scale(0); opacity: 0; }
+      70% { transform: scale(1.3); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* =========================================================================
+       QUESTION FORM & ANSWERS
+       ========================================================================= */
+    .answer-form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .form-step-lead {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-label .optional-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-input {
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: var(--transition);
+      outline: none;
+      width: 100%;
+    }
+
+    .form-input:focus {
+      background: var(--surface);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-subtle);
+    }
+
+    .form-input.is-correct {
+      border-color: var(--success);
+      background: var(--success-subtle);
+      color: var(--success-text);
+    }
+
+    .form-input.is-wrong {
+      border-color: var(--danger);
+      background: var(--danger-subtle);
+      color: var(--danger-text);
+    }
+
+    /* Quick continent/ocean buttons */
+    .quick-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .quick-pill {
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .quick-pill:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+      border-color: var(--primary);
+    }
+
+    /* Feedback Banner */
+    .feedback-banner {
+      min-height: 40px;
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+
+    .feedback-banner.success {
+      background: var(--success-subtle);
+      border-color: var(--success-border);
+      color: var(--success-text);
+    }
+
+    .feedback-banner.partial {
+      background: var(--warning-subtle);
+      border-color: var(--warning-border);
+      color: var(--warning-text);
+    }
+
+    .feedback-banner.error {
+      background: var(--danger-subtle);
+      border-color: var(--danger-border);
+      color: var(--danger-text);
+      animation: gentleShake 0.4s ease-in-out;
+    }
+
+    @keyframes gentleShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+
+    /* Stage Navigation & Controls */
+    .stage-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn-main {
+      padding: 8px 18px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-submit {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-subtle);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-strong);
+    }
+
+    .nav-btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* =========================================================================
+       RIGHT COLUMN: ANALYTICS PANEL
+       ========================================================================= */
+    .right-analytics-panel {
+      overflow-y: auto;
+      max-height: calc(100vh - 125px);
+    }
+
+    .sparkline-container {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px;
+      margin-bottom: 10px;
+    }
+
+    #speedChart {
+      width: 100%;
+      height: 75px;
+      display: block;
+    }
+
+    .stats-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .stat-mini-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 6px;
+      text-align: center;
+    }
+
+    .stat-mini-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+      font-family: var(--font-mono);
+    }
+
+    .stat-mini-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Accuracy Meter Box */
+    .geo-meter-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .geo-meter-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .geo-meter-val {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--primary);
+      font-family: var(--font-mono);
+    }
+
+    /* Tricky Items List */
+    .tricky-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .tricky-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 8px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+      border-left: 3px solid var(--danger);
+    }
+
+    /* Collapsible Daily History */
+    .history-drawer {
+      margin-top: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
+      overflow: hidden;
+    }
+
+    .history-drawer summary {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text);
+    }
+
+    .history-drawer-content {
+      padding: 8px 10px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+      max-height: 120px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .reset-box {
+      display: flex;
+      justify-content: flex-end;
+      padding: 6px 10px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .reset-btn {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      color: var(--danger-text);
+      background: var(--danger-subtle);
+      border-color: var(--danger-border);
+    }
+
+    .reset-btn:hover {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    /* =========================================================================
+       PAUSE OVERLAY
+       ========================================================================= */
+    #pauseOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(11, 15, 25, 0.78);
+      backdrop-filter: blur(8px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      z-index: 100;
+      border-radius: var(--radius-md);
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #pauseOverlay.active {
+      display: flex;
+    }
+
+    .pause-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+
+    .pause-desc {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 320px;
+    }
+
+    .pause-btn {
+      padding: 8px 20px;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Bar -->
+  <header class="kubi-top-bar">
+    <div class="kubi-nav-left">
+      <a href="../index.html" class="kubi-back-link" id="backLink">← All Activities</a>
+      <span class="kubi-page-title" id="topPageTitle">🌍 Latitude & Longitude Trainer</span>
+    </div>
+
+    <div class="nav-actions">
+      <!-- Language Switcher -->
+      <div class="lang-selector">
+        <button type="button" class="lang-btn" data-lang="sk" onclick="setAppLanguage('sk')">SK</button>
+        <button type="button" class="lang-btn active" data-lang="en" onclick="setAppLanguage('en')">EN</button>
+        <button type="button" class="lang-btn" data-lang="de" onclick="setAppLanguage('de')">DE</button>
+      </div>
+
+      <!-- Theme Switcher -->
+      <button class="theme-toggle-btn" aria-label="Toggle theme"></button>
+    </div>
+  </header>
+
+  <div class="app-container-dashboard">
+
+    <!-- Trainer Toolbar -->
+    <div class="trainer-toolbar">
+      <div class="toolbar-group">
+        <span style="font-weight:700;">Filter:</span>
+        <button type="button" class="preset-btn active" data-filter="all" onclick="setFilter('all')">All (52)</button>
+        <button type="button" class="preset-btn" data-filter="city" onclick="setFilter('city')">Cities (40)</button>
+        <button type="button" class="preset-btn" data-filter="ocean" onclick="setFilter('ocean')">Oceans (6)</button>
+        <button type="button" class="preset-btn" data-filter="polar" onclick="setFilter('polar')">Polar (6)</button>
+      </div>
+
+      <div class="toolbar-group">
+        <span id="autoPauseLabel" style="font-size:0.78rem; color:var(--text-muted);">⏳ Auto-Pause:</span>
+        <input type="number" id="pauseTimeoutInput" min="5" max="60" value="20" style="width:48px; padding:2px 4px; font-size:0.78rem; border-radius:4px; border:1px solid var(--border); background:var(--bg-subtle); color:var(--text);" onchange="updatePauseTimeout(this.value)">
+        <span style="font-size:0.75rem; color:var(--text-muted);">s</span>
+
+        <button type="button" class="icon-btn" id="muteBtn" onclick="toggleMute()" title="Toggle Sound">
+          <span id="muteIcon">🔊</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 3-Column Dashboard Grid -->
+    <div class="dashboard-grid">
+
+      <!-- ===================================================================
+           LEFT COLUMN: MATRIX PANEL
+           =================================================================== -->
+      <aside class="panel-card matrix-panel">
+        <div class="panel-header">
+          <span class="panel-title" id="matrixTitle">📊 Locations Matrix</span>
+          <span class="panel-badge" id="masteryCountBadge">0 / 52</span>
+        </div>
+
+        <div class="matrix-filter-chips">
+          <button type="button" class="filter-chip active" data-region="all" onclick="setRegionFilter('all')">All</button>
+          <button type="button" class="filter-chip" data-region="Europe" onclick="setRegionFilter('Europe')">Europe</button>
+          <button type="button" class="filter-chip" data-region="North America" onclick="setRegionFilter('North America')">N. America</button>
+          <button type="button" class="filter-chip" data-region="South America" onclick="setRegionFilter('South America')">S. America</button>
+          <button type="button" class="filter-chip" data-region="Asia" onclick="setRegionFilter('Asia')">Asia</button>
+          <button type="button" class="filter-chip" data-region="Africa" onclick="setRegionFilter('Africa')">Africa</button>
+          <button type="button" class="filter-chip" data-region="Oceania" onclick="setRegionFilter('Oceania')">Oceania</button>
+          <button type="button" class="filter-chip" data-region="Polar" onclick="setRegionFilter('Polar')">Polar</button>
+          <button type="button" class="filter-chip" data-region="Oceans" onclick="setRegionFilter('Oceans')">Oceans</button>
+        </div>
+
+        <div class="locations-grid" id="locationsMatrixGrid">
+          <!-- Dynamically populated 52 items -->
+        </div>
+
+        <div class="hover-info-box" id="hoveredLocationInfo">
+          Hover over any tile or map location to preview details.
+        </div>
+
+        <div class="micro-legend">
+          <div class="legend-item"><div class="legend-swatch unpracticed"></div> New</div>
+          <div class="legend-item"><div class="legend-swatch mastered"></div> Solved</div>
+          <div class="legend-item"><div class="legend-swatch mistake"></div> Review</div>
+          <div class="legend-item"><div class="legend-swatch active"></div> Target</div>
+        </div>
+      </aside>
+
+      <!-- ===================================================================
+           CENTER COLUMN: PROBLEM STAGE
+           =================================================================== -->
+      <main class="panel-card center-panel">
+
+        <!-- Pause Overlay -->
+        <div id="pauseOverlay">
+          <div style="font-size:2.8rem;">⏸️</div>
+          <div class="pause-title" id="pauseOverlayTitle">Session Paused</div>
+          <div class="pause-desc" id="pauseOverlayDesc">Take a breath! Click below or press any key to resume your geography practice.</div>
+          <button type="button" class="pause-btn" onclick="resumeTrainer()" id="resumeBtn">▶️ Resume Practice</button>
+        </div>
+
+        <!-- Target Coordinates Banner -->
+        <div class="coordinate-hero">
+          <div class="coord-title-group">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:2px;">
+              <span class="coord-lead" id="coordPromptLead">Find Coordinates on Earth:</span>
+              <span id="coordLocationCounter" style="font-size:0.75rem; font-weight:700; color:var(--text-muted); font-family:var(--font-mono);">Location 1 / 52</span>
+            </div>
+            <div class="coord-display-large">
+              <span class="coord-labeled-box" title="Latitude (North/South)">
+                <span class="coord-abbr-label">LAT:</span>
+                <span class="coord-part" id="displayLat">48° 09' N</span>
+              </span>
+              <span style="color:var(--text-muted); font-size:1.2rem;">,</span>
+              <span class="coord-labeled-box" title="Longitude (East/West)">
+                <span class="coord-abbr-label">LON:</span>
+                <span class="coord-part" id="displayLon">17° 07' E</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="coord-hemisphere-badges" id="hemisphereBadges">
+            <span class="hemisphere-pill" id="badgeLatHem">🌐 Northern Hemisphere</span>
+            <span class="hemisphere-pill" id="badgeLonHem">🧭 Eastern Hemisphere</span>
+            <span class="hemisphere-pill" id="badgeCategory" style="background:var(--bg-subtle); border-color:var(--border); color:var(--text-secondary);">🏙️ City</span>
+          </div>
+        </div>
+
+        <!-- Interactive Map Container -->
+        <div class="map-container" id="mapWrapper">
+
+          <!-- Zoom & Controls -->
+          <div class="map-controls-floating">
+            <button type="button" class="map-tool-btn" onclick="zoomMap(1.3)" title="Zoom In">+</button>
+            <button type="button" class="map-tool-btn" onclick="zoomMap(0.77)" title="Zoom Out">−</button>
+            <button type="button" class="map-tool-btn" id="zoomLevelIndicator" onclick="resetMapZoom()" title="Current Zoom (Click to Reset)" style="font-size:0.68rem; font-weight:800; min-width:34px;">1.0x</button>
+            <button type="button" class="map-tool-btn" onclick="resetMapZoom()" title="Reset Map View">⟲</button>
+            <button type="button" class="map-tool-btn active" id="btnToggleCities" onclick="toggleCitiesLayer()" title="Toggle City Labels (On/Off)" style="font-size:0.85rem;">🏙️</button>
+          </div>
+
+          <!-- Bottom HUD -->
+          <div class="map-hud">
+            <div class="hud-chip" id="hudCursorCoords">📍 Cursor: 0.0° N, 0.0° E</div>
+            <div class="hud-chip" id="hudZoomTip" style="font-size:0.7rem; color:var(--text-muted); opacity:0.9;">🔍 Ctrl+Wheel / Pinch to zoom</div>
+            <div class="hud-chip" id="hudClickDistance">🎯 Click anywhere on the map</div>
+          </div>
+
+          <!-- Equirectangular SVG Map (viewBox 0 0 1000 500) -->
+          <svg id="worldMapSvg" class="world-map-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <filter id="pinGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            <!-- Ocean Base -->
+            <rect x="0" y="0" width="1000" height="500" class="map-ocean" />
+
+            <!-- Ocean Labels -->
+            <text x="120" y="240" class="ocean-label-text">PACIFIC OCEAN</text>
+            <text x="880" y="240" class="ocean-label-text">PACIFIC OCEAN</text>
+            <text x="410" y="220" class="ocean-label-text">ATLANTIC OCEAN</text>
+            <text x="700" y="320" class="ocean-label-text">INDIAN OCEAN</text>
+            <text x="470" y="38" class="ocean-label-text" style="font-size:10px;">ARCTIC OCEAN</text>
+            <text x="470" y="475" class="ocean-label-text" style="font-size:10px;">SOUTHERN OCEAN</text>
+
+            <!-- Graticule: Meridians (Longitude) -->
+            <g id="graticuleMeridians"></g>
+
+            <!-- Graticule: Parallels (Latitude) -->
+            <g id="graticuleParallels"></g>
+
+            <!-- Prime Meridian & Equator Highlight lines -->
+            <line x1="500" y1="0" x2="500" y2="500" class="map-prime-meridian" />
+            <line x1="0" y1="250" x2="1000" y2="250" class="map-equator-line" />
+
+            <!-- Tropics & Polar Circles -->
+            <line x1="0" y1="184.7" x2="1000" y2="184.7" class="map-special-latitude" title="Tropic of Cancer (23.5° N)" />
+            <line x1="0" y1="315.3" x2="1000" y2="315.3" class="map-special-latitude" title="Tropic of Capricorn (23.5° S)" />
+            <line x1="0" y1="65.3" x2="1000" y2="65.3" class="map-special-latitude" title="Arctic Circle (66.5° N)" />
+            <line x1="0" y1="434.7" x2="1000" y2="434.7" class="map-special-latitude" title="Antarctic Circle (66.5° S)" />
+
+            <!-- Countries Layer -->
+            <g id="countriesLayer"></g>
+
+            <!-- Cities Layer (Dynamic Level-of-Detail & Density Scaling) -->
+            <g id="citiesLayer" class="cities-layer"></g>
+
+            <!-- Connecting Line between User Pin and Target Pin -->
+            <line id="accuracyLine" x1="0" y1="0" x2="0" y2="0" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3,3" style="display:none;" />
+
+            <!-- Target Area Tolerance Circle -->
+            <circle id="targetToleranceCircle" cx="0" cy="0" r="10" fill="rgba(34, 197, 94, 0.12)" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4,3" style="display:none;" />
+
+            <!-- Target Revealed Pin (Golden Star / Circle) -->
+            <g id="targetPinGroup" style="display:none;" class="target-pin">
+              <circle cx="0" cy="0" r="9" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+              <text x="0" y="3.5" font-size="10" text-anchor="middle" fill="#ffffff" font-weight="900">★</text>
+            </g>
+
+            <!-- User Click Marker -->
+            <g id="userPinGroup" style="display:none;" class="user-pin">
+              <circle cx="0" cy="0" r="18" fill="none" stroke="#38bdf8" class="radar-pulse" />
+              <circle cx="0" cy="0" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" filter="url(#pinGlow)" />
+            </g>
+          </svg>
+        </div>
+
+        <!-- Answer Input Form -->
+        <div class="answer-form-card">
+          <div class="form-step-lead" id="formStepTitle">
+            <span>✍️</span> Name this location (Continent/Ocean, Country, City):
+          </div>
+
+          <div class="form-grid">
+            <!-- Continent / Ocean -->
+            <div class="form-group">
+              <label class="form-label" for="inputContinent">
+                <span id="labelContinent">Continent / Ocean</span>
+                <span style="color:var(--primary); font-size:0.7rem;">* Required</span>
+              </label>
+              <input type="text" id="inputContinent" class="form-input" placeholder="e.g. Europe / Atlantic Ocean" autocomplete="off" list="continentsList">
+              <datalist id="continentsList">
+                <option value="Europe">
+                <option value="North America">
+                <option value="South America">
+                <option value="Asia">
+                <option value="Africa">
+                <option value="Australia">
+                <option value="Oceania">
+                <option value="Antarctica">
+                <option value="Atlantic Ocean">
+                <option value="Pacific Ocean">
+                <option value="Indian Ocean">
+                <option value="Arctic Ocean">
+                <option value="Southern Ocean">
+              </datalist>
+
+              <div class="quick-pill-row" id="quickContinentPills">
+                <span class="quick-pill" onclick="selectQuickContinent('Europe')">Europe</span>
+                <span class="quick-pill" onclick="selectQuickContinent('North America')">N. America</span>
+                <span class="quick-pill" onclick="selectQuickContinent('South America')">S. America</span>
+                <span class="quick-pill" onclick="selectQuickContinent('Asia')">Asia</span>
+                <span class="quick-pill" onclick="selectQuickContinent('Africa')">Africa</span>
+                <span class="quick-pill" onclick="selectQuickContinent('Australia')">Australia</span>
+                <span class="quick-pill" onclick="selectQuickContinent('Antarctica')">Antarctica</span>
+                <span class="quick-pill" onclick="selectQuickContinent('Atlantic Ocean')">Atlantic</span>
+                <span class="quick-pill" onclick="selectQuickContinent('Pacific Ocean')">Pacific</span>
+              </div>
+            </div>
+
+            <!-- Country -->
+            <div class="form-group">
+              <label class="form-label" for="inputCountry">
+                <span id="labelCountry">Country</span>
+                <span class="optional-tag" id="tagCountryReq">(optional if Ocean/Antarctica)</span>
+              </label>
+              <input type="text" id="inputCountry" class="form-input" placeholder="e.g. Slovakia, United States" autocomplete="off">
+            </div>
+
+            <!-- State / Region (Optional) -->
+            <div class="form-group">
+              <label class="form-label" for="inputState">
+                <span id="labelState">State / Province</span>
+                <span class="optional-tag" id="tagStateReq">(Optional)</span>
+              </label>
+              <input type="text" id="inputState" class="form-input" placeholder="e.g. California, Ontario (optional)" autocomplete="off">
+            </div>
+
+            <!-- Nearby City / Landmark -->
+            <div class="form-group">
+              <label class="form-label" for="inputCity">
+                <span id="labelCity">Nearby City / Station</span>
+                <span class="optional-tag" id="tagCityReq">(if applicable)</span>
+              </label>
+              <input type="text" id="inputCity" class="form-input" placeholder="e.g. Bratislava, London, Tokyo" autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Feedback Banner -->
+          <div class="feedback-banner" id="feedbackBanner">
+            <span id="feedbackText">📍 Click the world map to place your pin, fill in the fields, and hit Check!</span>
+            <span id="distanceScoreTag" style="font-family:var(--font-mono); font-size:0.75rem;"></span>
+          </div>
+
+          <!-- Stage Actions Row -->
+          <div class="stage-actions-row">
+            <button type="button" class="action-btn-main btn-submit" id="btnCheckAnswer" onclick="checkAnswer()">
+              <span>🎯</span> <span id="btnCheckText">Check Answer (Enter)</span>
+            </button>
+
+            <button type="button" class="action-btn-main btn-secondary" id="btnHint" onclick="giveHint()">
+              <span>💡</span> <span id="btnHintText">Hint</span>
+            </button>
+
+            <button type="button" class="action-btn-main btn-secondary" id="btnReveal" onclick="revealAnswer()">
+              <span>👁️</span> <span id="btnRevealText">Show Answer</span>
+            </button>
+
+            <div class="nav-btn-group">
+              <button type="button" class="action-btn-main btn-secondary" onclick="prevLocation()" id="btnPrev">
+                <span>⬅️</span> <span id="btnPrevText">Prev</span>
+              </button>
+              <button type="button" class="action-btn-main btn-secondary" id="pauseBtn" onclick="togglePause()">
+                <span id="pauseBtnIcon">⏸</span> <span id="pauseBtnText">Pause (20s)</span>
+              </button>
+              <button type="button" class="action-btn-main btn-secondary" onclick="nextLocation()" id="btnNext">
+                <span id="btnNextText">Next</span> <span>➡️</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+      <!-- ===================================================================
+           RIGHT COLUMN: ANALYTICS PANEL
+           =================================================================== -->
+      <aside class="panel-card right-analytics-panel">
+        <div class="panel-header">
+          <span class="panel-title" id="speedTitle">📈 Response Time (s)</span>
+          <span class="panel-badge" id="p80Badge">P80: --s</span>
+        </div>
+
+        <div class="sparkline-container">
+          <canvas id="speedChart" width="260" height="75"></canvas>
+        </div>
+
+        <!-- 3-Card Metric Summary -->
+        <div class="stats-card-grid">
+          <div class="stat-mini-card">
+            <div class="stat-mini-val" id="statTotalSolved">0</div>
+            <div class="stat-mini-label" id="labelStatSolved">Solved</div>
+          </div>
+          <div class="stat-mini-card">
+            <div class="stat-mini-val" id="statAccuracy">100%</div>
+            <div class="stat-mini-label" id="labelStatAccuracy">Accuracy</div>
+          </div>
+          <div class="stat-mini-card">
+            <div class="stat-mini-val" id="statAvgTime">0.0s</div>
+            <div class="stat-mini-label" id="labelStatAvg">Avg Time</div>
+          </div>
+        </div>
+
+        <!-- Map Pin Accuracy -->
+        <div class="geo-meter-box">
+          <span class="geo-meter-title" id="labelAvgDistance">Avg Map Distance Error:</span>
+          <span class="geo-meter-val" id="statAvgDistance">-- km</span>
+        </div>
+
+        <!-- Tricky Locations list -->
+        <div class="panel-header" style="margin-top:6px; margin-bottom:6px;">
+          <span class="panel-title" style="font-size:0.82rem;" id="trickyTitle">⚠️ Tricky Coordinates</span>
+        </div>
+        <div class="tricky-list" id="trickyList">
+          <div style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">No tricky coordinates yet. Great job!</div>
+        </div>
+
+        <!-- Collapsible Daily History -->
+        <details class="history-drawer">
+          <summary id="summaryDailyHistory">📅 Daily History</summary>
+          <div class="history-drawer-content" id="historyDrawerContent">
+            <!-- Daily logs -->
+          </div>
+          <div class="reset-box">
+            <button type="button" class="preset-btn reset-btn" onclick="resetAllProgress()">
+              🧹 Reset All
+            </button>
+          </div>
+        </details>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="world_map_data.js"></script>
+  <script src="world_cities_data.js"></script>
+  <script src="locations.js"></script>
+
+  <script>
+    /* =========================================================================
+       I18N DICTIONARY (EN, SK, DE)
+       ========================================================================= */
+    const I18N = {
+      en: {
+        pageTitle: "🌍 Latitude & Longitude Trainer | Kubi Kids School",
+        topTitle: "🌍 Latitude & Longitude Trainer",
+        backLink: "← All Activities",
+        matrixTitle: "📊 Locations Matrix",
+        coordLead: "Find Coordinates on Earth:",
+        northHem: "🌐 Northern Hemisphere",
+        southHem: "🌐 Southern Hemisphere",
+        eastHem: "🧭 Eastern Hemisphere",
+        westHem: "🧭 Western Hemisphere",
+        formStepTitle: "✍️ Name this location (Continent/Ocean, Country, City):",
+        labelContinent: "Continent / Ocean",
+        labelCountry: "Country",
+        labelState: "State / Province",
+        labelCity: "Nearby City / Station",
+        tagCountryReq: "(optional if Ocean/Antarctica)",
+        tagStateReq: "(Optional)",
+        tagCityReq: "(if applicable)",
+        btnCheckText: "Check Answer (Enter)",
+        btnHintText: "Hint",
+        btnRevealText: "Show Answer",
+        btnPrevText: "Prev",
+        btnNextText: "Next",
+        pauseTitle: "Session Paused",
+        pauseDesc: "Take a breath! Click below or press any key to resume your geography practice.",
+        resumeBtn: "▶️ Resume Practice",
+        speedTitle: "📈 Response Time (s)",
+        labelStatSolved: "Solved",
+        labelStatAccuracy: "Accuracy",
+        labelStatAvg: "Avg Time",
+        labelAvgDistance: "Avg Map Error:",
+        trickyTitle: "⚠️ Tricky Coordinates",
+        summaryDailyHistory: "📅 Daily History",
+        hudCursorDefault: "📍 Cursor: ",
+        hudZoomTip: "🔍 Ctrl+Wheel / Pinch to zoom • Drag to pan",
+        hudClickDefault: "🎯 Click anywhere on the map",
+        initialFeedback: "📍 Click the world map to place your pin, fill in the fields, and hit Check!",
+        msgCorrect: "Spot on! 🎉 Amazing geographic precision!",
+        msgPartial: "Good try! ⚠️ Check the missing or highlighted fields.",
+        msgWrong: "Not quite yet! Look at the hemisphere clues and try again.",
+        pausedTimeNotice: "(Paused: time not recorded ⏱️)"
+      },
+      sk: {
+        pageTitle: "🌍 Zemepisná šírka a dĺžka | Kubi Kids School",
+        topTitle: "🌍 Zemepisná šírka a dĺžka",
+        backLink: "← Prehľad aktivít",
+        matrixTitle: "📊 Matica lokalít",
+        coordLead: "Nájdi súradnice na Zemi:",
+        northHem: "🌐 Severná pologuľa",
+        southHem: "🌐 Južná pologuľa",
+        eastHem: "🧭 Východná pologuľa",
+        westHem: "🧭 Západná pologuľa",
+        formStepTitle: "✍️ Pomenuj túto lokalitu (Kontinent/Oceán, Štát, Mesto):",
+        labelContinent: "Kontinent / Oceán",
+        labelCountry: "Štát / Krajina",
+        labelState: "Kraj / Štát",
+        labelCity: "Blízke mesto / stanica",
+        tagCountryReq: "(voliteľné pri oceáne/Antarktíde)",
+        tagStateReq: "(voliteľné)",
+        tagCityReq: "(ak existuje)",
+        btnCheckText: "Skontrolovať (Enter)",
+        btnHintText: "Nápoveda",
+        btnRevealText: "Ukáž odpoveď",
+        btnPrevText: "Späť",
+        btnNextText: "Ďalšie",
+        pauseTitle: "Tréning pozastavený",
+        pauseDesc: "Oddýchni si! Klikni nižšie alebo stlač ľubovoľnú klávesu pre pokračovanie.",
+        resumeBtn: "▶️ Pokračovať v tréningu",
+        speedTitle: "📈 Čas odozvy (s)",
+        labelStatSolved: "Vyriešené",
+        labelStatAccuracy: "Úspešnosť",
+        labelStatAvg: "Priem. čas",
+        labelAvgDistance: "Priem. odchýlka:",
+        trickyTitle: "⚠️ Náročné súradnice",
+        summaryDailyHistory: "📅 Denná história",
+        hudCursorDefault: "📍 Kurzor: ",
+        hudZoomTip: "🔍 Ctrl+Koliesko / Priblíž prstami • Posúvaj ťahaním",
+        hudClickDefault: "🎯 Klikni kamkoľvek na mapu",
+        initialFeedback: "📍 Klikni na mapu, umiestni špendlík, vyplň políčka a klikni Skontrolovať!",
+        msgCorrect: "Výborne! 🎉 Skvelá zemepisná presnosť!",
+        msgPartial: "Dobrý pokus! ⚠️ Skontroluj vyznačené políčka.",
+        msgWrong: "Ešte to nie je celkom ono. Pozri nápovedu a skús znova.",
+        pausedTimeNotice: "(Pauza: čas sa nezapočítal ⏱️)"
+      },
+      de: {
+        pageTitle: "🌍 Breitengrad & Längengrad Trainer | Kubi Kids School",
+        topTitle: "🌍 Breitengrad & Längengrad",
+        backLink: "← Zur Übersicht",
+        matrixTitle: "📊 Standort-Matrix",
+        coordLead: "Finde Koordinaten auf der Erde:",
+        northHem: "🌐 Nördliche Halbkugel",
+        southHem: "🌐 Südliche Halbkugel",
+        eastHem: "🧭 Östliche Halbkugel",
+        westHem: "🧭 Westliche Halbkugel",
+        formStepTitle: "✍️ Benenne diesen Ort (Kontinent/Ozean, Land, Stadt):",
+        labelContinent: "Kontinent / Ozean",
+        labelCountry: "Land",
+        labelState: "Bundesland / Region",
+        labelCity: "Naheliegende Stadt / Station",
+        tagCountryReq: "(optional bei Ozean/Antarktis)",
+        tagStateReq: "(optional)",
+        tagCityReq: "(falls zutreffend)",
+        btnCheckText: "Prüfen (Enter)",
+        btnHintText: "Hinweis",
+        btnRevealText: "Lösung anzeigen",
+        btnPrevText: "Zurück",
+        btnNextText: "Weiter",
+        pauseTitle: "Training pausiert",
+        pauseDesc: "Atme kurz durch! Klicke unten oder drücke eine Taste zum Weitermachen.",
+        resumeBtn: "▶️ Training fortsetzen",
+        speedTitle: "📈 Antwortzeit (s)",
+        labelStatSolved: "Gelöst",
+        labelStatAccuracy: "Genauigkeit",
+        labelStatAvg: "Ø Zeit",
+        labelAvgDistance: "Ø Kartenfehler:",
+        trickyTitle: "⚠️ Knifflige Koordinaten",
+        summaryDailyHistory: "📅 Tägliche Historie",
+        hudCursorDefault: "📍 Zeiger: ",
+        hudZoomTip: "🔍 Strg+Mausrad / Mit Fingern zoomen • Ziehen zum Verschieben",
+        hudClickDefault: "🎯 Klicke auf die Weltkarte",
+        initialFeedback: "📍 Klicke auf die Karte, fülle die Felder aus und drücke Prüfen!",
+        msgCorrect: "Hervorragend! 🎉 Fantastische geografische Genauigkeit!",
+        msgPartial: "Guter Versuch! ⚠️ Überprüfe die markierten Felder.",
+        msgWrong: "Noch nicht ganz richtig! Nutze die Halbkugel-Hinweise.",
+        pausedTimeNotice: "(Pause: Zeit nicht gewertet ⏱️)"
+      }
+    };
+
+    let currentLang = localStorage.getItem("kubi_lang") || "en";
+
+    function setAppLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem("kubi_lang", lang);
+      document.querySelectorAll(".lang-btn").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
+      applyLanguage();
+      renderMatrix();
+      updateHemisphereBadges();
+      if (window.KubiTheme && window.KubiTheme.update) window.KubiTheme.update();
+    }
+
+    function applyLanguage() {
+      const t = I18N[currentLang] || I18N.en;
+      document.title = t.pageTitle;
+      document.getElementById("topPageTitle").textContent = t.topTitle;
+      document.getElementById("backLink").textContent = t.backLink;
+      document.getElementById("matrixTitle").textContent = t.matrixTitle;
+      document.getElementById("coordPromptLead").textContent = t.coordLead;
+      document.getElementById("formStepTitle").innerHTML = `<span>✍️</span> ${t.formStepTitle}`;
+      document.getElementById("labelContinent").textContent = t.labelContinent;
+      document.getElementById("labelCountry").textContent = t.labelCountry;
+      document.getElementById("labelState").textContent = t.labelState;
+      document.getElementById("labelCity").textContent = t.labelCity;
+      document.getElementById("tagCountryReq").textContent = t.tagCountryReq;
+      document.getElementById("tagStateReq").textContent = t.tagStateReq;
+      document.getElementById("tagCityReq").textContent = t.tagCityReq;
+      document.getElementById("btnCheckText").textContent = t.btnCheckText;
+      document.getElementById("btnHintText").textContent = t.btnHintText;
+      document.getElementById("btnRevealText").textContent = t.btnRevealText;
+      document.getElementById("btnPrevText").textContent = t.btnPrevText;
+      document.getElementById("btnNextText").textContent = t.btnNextText;
+      document.getElementById("pauseOverlayTitle").textContent = t.pauseTitle;
+      document.getElementById("pauseOverlayDesc").textContent = t.pauseDesc;
+      document.getElementById("resumeBtn").textContent = t.resumeBtn;
+      document.getElementById("speedTitle").textContent = t.speedTitle;
+      document.getElementById("labelStatSolved").textContent = t.labelStatSolved;
+      document.getElementById("labelStatAccuracy").textContent = t.labelStatAccuracy;
+      document.getElementById("labelStatAvg").textContent = t.labelStatAvg;
+      document.getElementById("labelAvgDistance").textContent = t.labelAvgDistance;
+      document.getElementById("trickyTitle").textContent = t.trickyTitle;
+      document.getElementById("summaryDailyHistory").textContent = t.summaryDailyHistory;
+      const zoomTipEl = document.getElementById("hudZoomTip");
+      if (zoomTipEl && t.hudZoomTip) zoomTipEl.textContent = t.hudZoomTip;
+    }
+
+    /* =========================================================================
+       TRAINER STATE & LOCALSTORAGE
+       ========================================================================= */
+    const locations = window.MAP_PRACTICE_LOCATIONS || [];
+    let currentIndex = 0;
+    let filteredIndices = [];
+    let activeFilter = "all";
+    let activeRegionFilter = "all";
+
+    let matrixData = {}; // { [id]: { completed: 1, mistakes: 0 } }
+    let recentTimes = [];
+    let distanceErrorsKm = [];
+    let trickyMistakes = {}; // { [id]: count }
+    let dailyHistory = {};
+
+    let userClickedLat = null;
+    let userClickedLon = null;
+    let hasCheckedCurrent = false;
+
+    // Timing & Auto-Pause
+    let startTime = performance.now();
+    let pauseTimeoutSec = 20;
+    let inactivityRemainingSec = 20;
+    let countdownInterval = null;
+    let isPaused = false;
+    let pauseStart = 0;
+    let totalPausedTime = 0;
+    let wasCurrentWordPaused = false;
+    let autoAdvanceTimer = null;
+    let isMuted = false;
+
+    /* =========================================================================
+       PERSISTENCE LOAD / SAVE
+       ========================================================================= */
+    function loadSavedData() {
+      try {
+        const savedProg = JSON.parse(localStorage.getItem("map_trainer_progress") || "{}");
+        if (typeof savedProg.index === "number") currentIndex = savedProg.index;
+        matrixData = JSON.parse(localStorage.getItem("map_trainer_matrix") || "{}");
+        recentTimes = JSON.parse(localStorage.getItem("map_trainer_recent_times") || "[]");
+        distanceErrorsKm = JSON.parse(localStorage.getItem("map_trainer_distance_errors") || "[]");
+        dailyHistory = JSON.parse(localStorage.getItem("map_trainer_daily_history") || "{}");
+        isMuted = localStorage.getItem("map_trainer_muted") === "true";
+        pauseTimeoutSec = parseInt(localStorage.getItem("map_trainer_pause_timeout") || "20", 10);
+      } catch (e) {
+        console.warn("Storage init warning:", e);
+      }
+
+      document.getElementById("pauseTimeoutInput").value = pauseTimeoutSec;
+      inactivityRemainingSec = pauseTimeoutSec;
+      updateMuteButtonUI();
+    }
+
+    function saveAllData() {
+      try {
+        localStorage.setItem("map_trainer_progress", JSON.stringify({ index: currentIndex }));
+        localStorage.setItem("map_trainer_matrix", JSON.stringify(matrixData));
+        localStorage.setItem("map_trainer_recent_times", JSON.stringify(recentTimes));
+        localStorage.setItem("map_trainer_distance_errors", JSON.stringify(distanceErrorsKm));
+        localStorage.setItem("map_trainer_daily_history", JSON.stringify(dailyHistory));
+      } catch (e) {
+        console.warn("Failed saving progress:", e);
+      }
+    }
+
+    function resetAllProgress() {
+      if (!confirm("Are you sure you want to reset all practice progress and history?")) return;
+      matrixData = {};
+      recentTimes = [];
+      distanceErrorsKm = [];
+      trickyMistakes = {};
+      dailyHistory = {};
+      saveAllData();
+      renderMatrix();
+      updateStatsUI();
+      drawSpeedChart();
+      renderDailyHistory();
+      renderTrickyList();
+      alert("Progress has been reset.");
+    }
+
+    /* =========================================================================
+       AUDIO SYNTHESIS (Web Audio API)
+       ========================================================================= */
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (isMuted) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === "correct") {
+          // Cheerful high double chime
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+          osc.start(now);
+          osc.stop(now + 0.32);
+        } else if (type === "click") {
+          // Soft radar pin drop
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(700, now);
+          osc.frequency.exponentialRampToValueAtTime(350, now + 0.08);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        } else {
+          // Gentle wooden thud
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(110, now + 0.16);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        }
+      } catch (e) {
+        // Audio error silent fallback
+      }
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      localStorage.setItem("map_trainer_muted", isMuted ? "true" : "false");
+      updateMuteButtonUI();
+    }
+
+    function updateMuteButtonUI() {
+      const btn = document.getElementById("muteBtn");
+      const icon = document.getElementById("muteIcon");
+      if (isMuted) {
+        btn.classList.add("is-muted");
+        icon.textContent = "🔇";
+      } else {
+        btn.classList.remove("is-muted");
+        icon.textContent = "🔊";
+      }
+    }
+
+    /* =========================================================================
+       TIMING, INACTIVITY & AUTO-PAUSE
+       ========================================================================= */
+    function resetInactivityTimer() {
+      inactivityRemainingSec = pauseTimeoutSec;
+      updatePauseButtonLabel();
+    }
+
+    function startInactivityCountdown() {
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        if (isPaused) return;
+        inactivityRemainingSec--;
+        updatePauseButtonLabel();
+
+        if (inactivityRemainingSec <= 0) {
+          pauseTrainer(true);
+        }
+      }, 1000);
+    }
+
+    function updatePauseButtonLabel() {
+      const btn = document.getElementById("pauseBtn") || document.getElementById("btnPause");
+      const text = document.getElementById("pauseBtnText");
+      if (!text) return;
+      if (isPaused) {
+        text.textContent = "Resume ▶️";
+        if (btn) btn.style.color = "var(--primary)";
+      } else {
+        text.textContent = `Pause (${inactivityRemainingSec}s)`;
+        if (btn) btn.style.color = inactivityRemainingSec <= 5 ? "var(--danger)" : "inherit";
+      }
+    }
+
+    function updatePauseTimeout(val) {
+      pauseTimeoutSec = Math.max(5, Math.min(60, parseInt(val, 10) || 20));
+      localStorage.setItem("map_trainer_pause_timeout", pauseTimeoutSec);
+      resetInactivityTimer();
+    }
+
+    function togglePause() {
+      if (isPaused) {
+        resumeTrainer();
+      } else {
+        pauseTrainer(false);
+      }
+    }
+
+    function pauseTrainer(isAutoTimeout = false) {
+      if (isPaused) return;
+      isPaused = true;
+      pauseStart = performance.now();
+      wasCurrentWordPaused = true;
+      document.getElementById("pauseOverlay").classList.add("active");
+      updatePauseButtonLabel();
+    }
+
+    function resumeTrainer() {
+      if (!isPaused) return;
+      isPaused = false;
+      const pausedDuration = performance.now() - pauseStart;
+      totalPausedTime += pausedDuration;
+      document.getElementById("pauseOverlay").classList.remove("active");
+      resetInactivityTimer();
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && !isPaused) {
+        pauseTrainer(false);
+      }
+    });
+
+    ["pointerdown", "keydown", "input"].forEach(evtName => {
+      window.addEventListener(evtName, () => {
+        if (!isPaused) resetInactivityTimer();
+      }, { passive: true });
+    });
+
+    /* =========================================================================
+       MAP PROJECTION & GEOMETRY
+       Plate Carrée (Equirectangular) Projection:
+       width: 1000, height: 500
+       x = (lon + 180) * (1000 / 360)
+       y = (90 - lat) * (500 / 180)
+       ========================================================================= */
+    function projectLonLatToSvg(lon, lat) {
+      const x = (lon + 180.0) * (1000.0 / 360.0);
+      const y = (90.0 - lat) * (500.0 / 180.0);
+      return { x, y };
+    }
+
+    function projectSvgToLonLat(x, y) {
+      const lon = (x / 1000.0) * 360.0 - 180.0;
+      const lat = 90.0 - (y / 500.0) * 180.0;
+      return {
+        lon: Math.max(-180, Math.min(180, Math.round(lon * 10) / 10)),
+        lat: Math.max(-90, Math.min(90, Math.round(lat * 10) / 10))
+      };
+    }
+
+    function haversineDistanceKm(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Earth radius in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Math.round(R * c);
+    }
+
+    /* =========================================================================
+       RENDER SVG MAP GRATICULE & COUNTRIES
+       ========================================================================= */
+    function buildMapLayers() {
+      const meridiansG = document.getElementById("graticuleMeridians");
+      const parallelsG = document.getElementById("graticuleParallels");
+      const countriesG = document.getElementById("countriesLayer");
+
+      // Meridians every 30 degrees (-180 to 180)
+      let mHtml = "";
+      for (let lon = -150; lon <= 150; lon += 30) {
+        if (lon === 0) continue; // Prime meridian is distinct
+        const { x } = projectLonLatToSvg(lon, 0);
+        const label = lon < 0 ? `${Math.abs(lon)}°W` : `${lon}°E`;
+        mHtml += `<line x1="${x}" y1="0" x2="${x}" y2="500" class="map-grid-line" />`;
+        mHtml += `<text x="${x + 2}" y="14" class="map-degree-text">${label}</text>`;
+        mHtml += `<text x="${x + 2}" y="492" class="map-degree-text">${label}</text>`;
+      }
+      mHtml += `<text x="502" y="14" class="map-degree-text" style="fill:#38bdf8; font-weight:700;">0° Prime</text>`;
+      meridiansG.innerHTML = mHtml;
+
+      // Parallels every 30 degrees (-60 to 60)
+      let pHtml = "";
+      for (let lat = -60; lat <= 60; lat += 30) {
+        if (lat === 0) continue; // Equator is distinct
+        const { y } = projectLonLatToSvg(0, lat);
+        const label = lat < 0 ? `${Math.abs(lat)}°S` : `${lat}°N`;
+        pHtml += `<line x1="0" y1="${y}" x2="1000" y2="${y}" class="map-grid-line" />`;
+        pHtml += `<text x="8" y="${y - 3}" class="map-degree-text">${label}</text>`;
+        pHtml += `<text x="965" y="${y - 3}" class="map-degree-text">${label}</text>`;
+      }
+      pHtml += `<text x="8" y="247" class="map-degree-text" style="fill:#f59e0b; font-weight:700;">0° Equator</text>`;
+      parallelsG.innerHTML = pHtml;
+
+      // Countries
+      const countryList = window.WORLD_MAP_COUNTRIES || [];
+      let cHtml = "";
+      countryList.forEach(c => {
+        cHtml += `<path class="country-polygon" data-country="${c.name}" data-continent="${c.continent}" d="${c.d}">
+          <title>${c.name} (${c.continent})</title>
+        </path>`;
+      });
+      countriesG.innerHTML = cHtml;
+
+      // Cities Layer (Tiered Level-of-Detail & Adaptive Scale)
+      renderCitiesLayer();
+
+      attachMapInteractions();
+    }
+
+    /* =========================================================================
+       CITIES LAYER & DYNAMIC DENSITY / SCALE
+       ========================================================================= */
+    let showCitiesLayer = true;
+
+    function renderCitiesLayer() {
+      const g = document.getElementById("citiesLayer");
+      if (!g) return;
+
+      const cities = window.WORLD_CITIES || [];
+      const currentZoom = BASE_SVG_W / viewBoxState.w;
+
+      let html = "";
+      cities.forEach((city, idx) => {
+        const { x, y } = projectLonLatToSvg(city.lon, city.lat);
+        const latStr = city.lat >= 0 ? `${city.lat.toFixed(1)}°N` : `${Math.abs(city.lat).toFixed(1)}°S`;
+        const lonStr = city.lon >= 0 ? `${city.lon.toFixed(1)}°E` : `${Math.abs(city.lon).toFixed(1)}°W`;
+        const titleText = `${city.name}, ${city.country} (${latStr}, ${lonStr})`;
+
+        html += `<g class="city-group" id="cityMarker_${idx}" data-idx="${idx}" data-tier="${city.tier}" data-x="${x.toFixed(2)}" data-y="${y.toFixed(2)}" data-align="${city.align || 'right'}" data-name="${city.name}" data-country="${city.country}" data-lat="${city.lat}" data-lon="${city.lon}">
+          <title>${titleText}</title>
+          <circle class="city-dot-hit" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="7" fill="transparent" />
+          <circle class="city-dot tier-${city.tier}" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="2.2" />
+          <text class="city-label tier-${city.tier}" x="${x.toFixed(2)}" y="${y.toFixed(2)}">${city.name}</text>
+        </g>`;
+      });
+
+      g.innerHTML = html;
+      updateCitiesScale(currentZoom);
+    }
+
+    function updateCitiesScale(zoom) {
+      const g = document.getElementById("citiesLayer");
+      if (!g) return;
+
+      if (!showCitiesLayer) {
+        g.style.display = "none";
+        return;
+      }
+      g.style.display = "block";
+
+      // Cartographic dampening curve: keep visual dot and text size crisp and readable across 1x to 8x zoom
+      const dotR = Math.max(0.65, Math.min(2.5, 2.2 / Math.sqrt(zoom)));
+      const dotTier1R = dotR * 1.15;
+      const fontSize = Math.max(2.4, Math.min(7.5, 7.2 / Math.sqrt(zoom)));
+      const strokeW = Math.max(0.6, Math.min(2.2, 1.8 / Math.sqrt(zoom)));
+      const offset = Math.max(1.8, Math.min(5.0, 4.2 / Math.sqrt(zoom)));
+
+      const groups = g.querySelectorAll(".city-group");
+      groups.forEach(group => {
+        const tier = parseInt(group.dataset.tier, 10);
+        let isVisible = true;
+
+        // Density Level-of-Detail rules:
+        // Tier 1 (global anchors): Visible at 1.0x+
+        // Tier 2 (regional metropolises): Visible at 1.55x+
+        // Tier 3 (dense capitals & polar stations): Visible at 2.5x+
+        if (tier === 1) {
+          isVisible = true;
+        } else if (tier === 2) {
+          isVisible = (zoom >= 1.55);
+        } else if (tier === 3) {
+          isVisible = (zoom >= 2.5);
+        }
+
+        group.style.display = isVisible ? "block" : "none";
+        if (!isVisible) return;
+
+        const x = parseFloat(group.dataset.x);
+        const y = parseFloat(group.dataset.y);
+        const align = group.dataset.align || "right";
+
+        const dot = group.querySelector(".city-dot");
+        if (dot) {
+          dot.setAttribute("r", (tier === 1 ? dotTier1R : dotR).toFixed(2));
+          dot.style.strokeWidth = `${(strokeW * 0.45).toFixed(2)}px`;
+        }
+
+        const label = group.querySelector(".city-label");
+        if (label) {
+          label.style.fontSize = `${fontSize.toFixed(2)}px`;
+          label.style.strokeWidth = `${strokeW.toFixed(2)}px`;
+
+          let textX = x;
+          let textY = y;
+          let textAnchor = "start";
+
+          if (align === "right") {
+            textX = x + offset;
+            textY = y + fontSize * 0.35;
+            textAnchor = "start";
+          } else if (align === "left") {
+            textX = x - offset;
+            textY = y + fontSize * 0.35;
+            textAnchor = "end";
+          } else if (align === "top") {
+            textX = x;
+            textY = y - offset;
+            textAnchor = "middle";
+          } else if (align === "bottom") {
+            textX = x;
+            textY = y + offset + fontSize * 0.7;
+            textAnchor = "middle";
+          }
+
+          label.setAttribute("x", textX.toFixed(2));
+          label.setAttribute("y", textY.toFixed(2));
+          label.setAttribute("text-anchor", textAnchor);
+        }
+      });
+    }
+
+    function toggleCitiesLayer() {
+      showCitiesLayer = !showCitiesLayer;
+      const btn = document.getElementById("btnToggleCities");
+      if (btn) {
+        btn.classList.toggle("active", showCitiesLayer);
+        btn.style.opacity = showCitiesLayer ? "1" : "0.5";
+      }
+      const currentZoom = BASE_SVG_W / viewBoxState.w;
+      updateCitiesScale(currentZoom);
+      playSound("click");
+    }
+
+    /* =========================================================================
+       MAP INTERACTIONS (INTELLIGENT ZOOM, PINCH-TO-ZOOM, PAN & PIN DROP)
+       ========================================================================= */
+    const BASE_SVG_W = 1000;
+    const BASE_SVG_H = 500;
+    const MIN_ZOOM = 1.0;
+    const MAX_ZOOM = 8.0;
+
+    let viewBoxState = {
+      x: 0,
+      y: 0,
+      w: BASE_SVG_W,
+      h: BASE_SVG_H
+    };
+
+    function updateZoomIndicatorUI(zoom) {
+      const badge = document.getElementById("zoomLevelIndicator");
+      if (badge) {
+        badge.textContent = `${zoom.toFixed(1)}x`;
+      }
+    }
+
+    function applyZoom(scaleMultiplier, centerSvgX, centerSvgY) {
+      const currentZoom = BASE_SVG_W / viewBoxState.w;
+      let newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentZoom * scaleMultiplier));
+
+      if (Math.abs(newZoom - currentZoom) < 0.001) return;
+
+      const newW = BASE_SVG_W / newZoom;
+      const newH = BASE_SVG_H / newZoom;
+
+      // If no focal center provided, zoom centered on the visible frame
+      if (centerSvgX === undefined || centerSvgY === undefined) {
+        centerSvgX = viewBoxState.x + viewBoxState.w / 2;
+        centerSvgY = viewBoxState.y + viewBoxState.h / 2;
+      }
+
+      // Preserve focal point under cursor / fingers
+      const fractionX = (centerSvgX - viewBoxState.x) / viewBoxState.w;
+      const fractionY = (centerSvgY - viewBoxState.y) / viewBoxState.h;
+
+      let newX = centerSvgX - fractionX * newW;
+      let newY = centerSvgY - fractionY * newH;
+
+      // Clamp within map bounds
+      newX = Math.max(0, Math.min(BASE_SVG_W - newW, newX));
+      newY = Math.max(0, Math.min(BASE_SVG_H - newH, newY));
+
+      viewBoxState.x = newX;
+      viewBoxState.y = newY;
+      viewBoxState.w = newW;
+      viewBoxState.h = newH;
+
+      const svg = document.getElementById("worldMapSvg");
+      svg.setAttribute("viewBox", `${newX} ${newY} ${newW} ${newH}`);
+      updateZoomIndicatorUI(newZoom);
+      updateCitiesScale(newZoom);
+    }
+
+    function panView(deltaSvgX, deltaSvgY) {
+      let newX = viewBoxState.x - deltaSvgX;
+      let newY = viewBoxState.y - deltaSvgY;
+
+      newX = Math.max(0, Math.min(BASE_SVG_W - viewBoxState.w, newX));
+      newY = Math.max(0, Math.min(BASE_SVG_H - viewBoxState.h, newY));
+
+      viewBoxState.x = newX;
+      viewBoxState.y = newY;
+
+      const svg = document.getElementById("worldMapSvg");
+      svg.setAttribute("viewBox", `${newX} ${newY} ${viewBoxState.w} ${viewBoxState.h}`);
+    }
+
+    function zoomMap(factor) {
+      applyZoom(factor);
+    }
+
+    function resetMapZoom() {
+      viewBoxState = { x: 0, y: 0, w: BASE_SVG_W, h: BASE_SVG_H };
+      const svg = document.getElementById("worldMapSvg");
+      svg.setAttribute("viewBox", `0 0 ${BASE_SVG_W} ${BASE_SVG_H}`);
+      updateZoomIndicatorUI(1.0);
+      updateCitiesScale(1.0);
+    }
+
+    function getSvgCoordinates(evt, svg) {
+      const ctm = svg.getScreenCTM();
+      if (!ctm) return { x: 0, y: 0 };
+      const pt = svg.createSVGPoint();
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+      const transformed = pt.matrixTransform(ctm.inverse());
+      return { x: transformed.x, y: transformed.y };
+    }
+
+    function getSvgCoordinatesFromClient(clientX, clientY, svg) {
+      const ctm = svg.getScreenCTM();
+      if (!ctm) return { x: 0, y: 0 };
+      const pt = svg.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      const transformed = pt.matrixTransform(ctm.inverse());
+      return { x: transformed.x, y: transformed.y };
+    }
+
+    function setUserPin(lat, lon, svgX, svgY) {
+      userClickedLat = lat;
+      userClickedLon = lon;
+
+      const userPinG = document.getElementById("userPinGroup");
+      userPinG.setAttribute("transform", `translate(${svgX}, ${svgY})`);
+      userPinG.style.display = "block";
+
+      const loc = locations[currentIndex];
+      if (loc) {
+        const distKm = haversineDistanceKm(lat, lon, loc.lat, loc.lon);
+        document.getElementById("hudClickDistance").textContent = `🎯 Pin dropped (~${distKm} km from target)`;
+      }
+    }
+
+    function attachMapInteractions() {
+      const svg = document.getElementById("worldMapSvg");
+      const mapContainer = document.getElementById("mapWrapper");
+      const cursorHud = document.getElementById("hudCursorCoords");
+
+      // ───────────────────────────────────────────────────────────────────────
+      // 1. LIVE CURSOR COORDINATE TRACKING
+      // ───────────────────────────────────────────────────────────────────────
+      svg.addEventListener("mousemove", (e) => {
+        const cityEl = e.target && e.target.closest(".city-group");
+        if (cityEl) {
+          const cName = cityEl.dataset.name;
+          const cCountry = cityEl.dataset.country;
+          const cLat = parseFloat(cityEl.dataset.lat);
+          const cLon = parseFloat(cityEl.dataset.lon);
+          const latStr = cLat >= 0 ? `${cLat.toFixed(2)}°N` : `${Math.abs(cLat).toFixed(2)}°S`;
+          const lonStr = cLon >= 0 ? `${cLon.toFixed(2)}°E` : `${Math.abs(cLon).toFixed(2)}°W`;
+          cursorHud.textContent = `🏙️ ${cName}, ${cCountry}: ${latStr}, ${lonStr}`;
+          return;
+        }
+        const pt = getSvgCoordinates(e, svg);
+        const coords = projectSvgToLonLat(pt.x, pt.y);
+        const latStr = coords.lat >= 0 ? `${coords.lat.toFixed(1)}°N` : `${Math.abs(coords.lat).toFixed(1)}°S`;
+        const lonStr = coords.lon >= 0 ? `${coords.lon.toFixed(1)}°E` : `${Math.abs(coords.lon).toFixed(1)}°W`;
+        cursorHud.textContent = `📍 Cursor: ${latStr}, ${lonStr}`;
+      });
+
+      // ───────────────────────────────────────────────────────────────────────
+      // 2. INTELLIGENT CTRL + MOUSE WHEEL ZOOM & TRACKPAD PINCH
+      // ───────────────────────────────────────────────────────────────────────
+      mapContainer.addEventListener("wheel", (e) => {
+        // Trackpad pinch-to-zoom on Mac/iPad sets e.ctrlKey = true automatically!
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault(); // Prevent full browser viewport zooming
+          const pt = getSvgCoordinates(e, svg);
+          const zoomFactor = e.deltaY < 0 ? 1.14 : 0.88;
+          applyZoom(zoomFactor, pt.x, pt.y);
+        } else if (viewBoxState.w < BASE_SVG_W) {
+          // If already zoomed into a region, smooth 2-finger wheel pans the view
+          e.preventDefault();
+          const rect = svg.getBoundingClientRect();
+          const deltaSvgX = -e.deltaX * (viewBoxState.w / rect.width);
+          const deltaSvgY = -e.deltaY * (viewBoxState.h / rect.height);
+          panView(deltaSvgX, deltaSvgY);
+        }
+      }, { passive: false });
+
+      // ───────────────────────────────────────────────────────────────────────
+      // 3. IPAD & TOUCHSCREEN MULTI-TOUCH PINCH-TO-ZOOM & DRAG
+      // ───────────────────────────────────────────────────────────────────────
+      let initialPinchDistance = 0;
+      let initialPinchCenterSvg = null;
+      let lastTouchPoint = null;
+      let touchTotalMove = 0;
+
+      mapContainer.addEventListener("touchstart", (e) => {
+        if (isPaused) return;
+        touchTotalMove = 0;
+
+        if (e.touches.length === 2) {
+          // 2-finger pinch gesture start
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          initialPinchDistance = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+
+          const midX = (t1.clientX + t2.clientX) / 2;
+          const midY = (t1.clientY + t2.clientY) / 2;
+          initialPinchCenterSvg = getSvgCoordinatesFromClient(midX, midY, svg);
+        } else if (e.touches.length === 1) {
+          lastTouchPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+      }, { passive: false });
+
+      mapContainer.addEventListener("touchmove", (e) => {
+        if (isPaused) return;
+        e.preventDefault(); // Crucial on iPad: prevent scrolling page when pinching map!
+
+        if (e.touches.length === 2 && initialPinchDistance > 5) {
+          // Multi-touch pinch-to-zoom
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          const currentDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+
+          const zoomMultiplier = currentDist / initialPinchDistance;
+          // Apply damped smooth zoom around the focal midpoint
+          const factor = 1 + (zoomMultiplier - 1) * 0.45;
+
+          const midX = (t1.clientX + t2.clientX) / 2;
+          const midY = (t1.clientY + t2.clientY) / 2;
+          const centerSvg = getSvgCoordinatesFromClient(midX, midY, svg);
+
+          applyZoom(factor, centerSvg.x, centerSvg.y);
+          initialPinchDistance = currentDist;
+          touchTotalMove += 50; // Prevent tap trigger
+        } else if (e.touches.length === 1 && lastTouchPoint) {
+          // 1-finger pan/drag when zoomed in
+          const touch = e.touches[0];
+          const dx = touch.clientX - lastTouchPoint.x;
+          const dy = touch.clientY - lastTouchPoint.y;
+          touchTotalMove += Math.hypot(dx, dy);
+
+          if (touchTotalMove > 6 && viewBoxState.w < BASE_SVG_W) {
+            const rect = svg.getBoundingClientRect();
+            const deltaSvgX = dx * (viewBoxState.w / rect.width);
+            const deltaSvgY = dy * (viewBoxState.h / rect.height);
+            panView(deltaSvgX, deltaSvgY);
+            mapContainer.classList.add("is-panning");
+          }
+          lastTouchPoint = { x: touch.clientX, y: touch.clientY };
+        }
+      }, { passive: false });
+
+      mapContainer.addEventListener("touchend", (e) => {
+        mapContainer.classList.remove("is-panning");
+
+        // If it was a clean single finger tap without dragging, drop the pin!
+        if (e.changedTouches.length === 1 && touchTotalMove < 10) {
+          const touch = e.changedTouches[0];
+          const elUnder = document.elementFromPoint(touch.clientX, touch.clientY);
+          const cityEl = elUnder && elUnder.closest(".city-group");
+          if (cityEl) {
+            const cLat = parseFloat(cityEl.dataset.lat);
+            const cLon = parseFloat(cityEl.dataset.lon);
+            const cX = parseFloat(cityEl.dataset.x);
+            const cY = parseFloat(cityEl.dataset.y);
+            const cName = cityEl.dataset.name;
+            const cCountry = cityEl.dataset.country;
+            setUserPin(cLat, cLon, cX, cY);
+            playSound("click");
+            const hudDist = document.getElementById("hudClickDistance");
+            if (hudDist) {
+              hudDist.textContent = `🎯 Selected ${cName}, ${cCountry}`;
+            }
+          } else {
+            const pt = getSvgCoordinatesFromClient(touch.clientX, touch.clientY, svg);
+            const coords = projectSvgToLonLat(pt.x, pt.y);
+            setUserPin(coords.lat, coords.lon, pt.x, pt.y);
+            playSound("click");
+          }
+        }
+
+        lastTouchPoint = null;
+        initialPinchDistance = 0;
+      });
+
+      // ───────────────────────────────────────────────────────────────────────
+      // 4. DESKTOP MOUSE DRAG-TO-PAN & CLICK-TO-PIN
+      // ───────────────────────────────────────────────────────────────────────
+      let isMouseDown = false;
+      let mouseStart = { x: 0, y: 0 };
+      let mouseMovedDist = 0;
+
+      mapContainer.addEventListener("mousedown", (e) => {
+        if (isPaused || e.button !== 0) return;
+        isMouseDown = true;
+        mouseStart = { x: e.clientX, y: e.clientY };
+        mouseMovedDist = 0;
+      });
+
+      window.addEventListener("mousemove", (e) => {
+        if (!isMouseDown) return;
+        const dx = e.clientX - mouseStart.x;
+        const dy = e.clientY - mouseStart.y;
+        mouseMovedDist += Math.hypot(dx, dy);
+
+        if (mouseMovedDist > 4 && viewBoxState.w < BASE_SVG_W) {
+          mapContainer.classList.add("is-panning");
+          const rect = svg.getBoundingClientRect();
+          const deltaSvgX = dx * (viewBoxState.w / rect.width);
+          const deltaSvgY = dy * (viewBoxState.h / rect.height);
+          panView(deltaSvgX, deltaSvgY);
+          mouseStart = { x: e.clientX, y: e.clientY };
+        }
+      });
+
+      window.addEventListener("mouseup", (e) => {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        mapContainer.classList.remove("is-panning");
+
+        // Click detection: if user clicked without dragging
+        if (mouseMovedDist <= 4) {
+          const cityEl = e.target && e.target.closest(".city-group");
+          if (cityEl) {
+            const cLat = parseFloat(cityEl.dataset.lat);
+            const cLon = parseFloat(cityEl.dataset.lon);
+            const cX = parseFloat(cityEl.dataset.x);
+            const cY = parseFloat(cityEl.dataset.y);
+            const cName = cityEl.dataset.name;
+            const cCountry = cityEl.dataset.country;
+            setUserPin(cLat, cLon, cX, cY);
+            playSound("click");
+            const hudDist = document.getElementById("hudClickDistance");
+            if (hudDist) {
+              hudDist.textContent = `🎯 Selected ${cName}, ${cCountry}`;
+            }
+          } else {
+            const targetIsMap = e.target && (e.target.closest("#worldMapSvg") || e.target.closest("#mapWrapper"));
+            if (targetIsMap) {
+              const pt = getSvgCoordinatesFromClient(e.clientX, e.clientY, svg);
+              const coords = projectSvgToLonLat(pt.x, pt.y);
+              setUserPin(coords.lat, coords.lon, pt.x, pt.y);
+              playSound("click");
+            }
+          }
+        }
+      });
+    }
+
+    /* =========================================================================
+       FILTER & MATRIX SETUP
+       ========================================================================= */
+    function filterLocations() {
+      filteredIndices = [];
+      locations.forEach((loc, idx) => {
+        let matchCategory = (activeFilter === "all" || loc.category === activeFilter);
+        let matchRegion = (activeRegionFilter === "all" || loc.region === activeRegionFilter);
+        if (matchCategory && matchRegion) {
+          filteredIndices.push(idx);
+        }
+      });
+
+      if (filteredIndices.length === 0) {
+        filteredIndices = locations.map((_, i) => i);
+      }
+
+      if (!filteredIndices.includes(currentIndex)) {
+        currentIndex = filteredIndices[0];
+      }
+    }
+
+    function setFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll(".trainer-toolbar .preset-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.filter === filter);
+      });
+      filterLocations();
+      renderMatrix();
+      loadCurrentLocation();
+    }
+
+    function setRegionFilter(region) {
+      activeRegionFilter = region;
+      document.querySelectorAll(".filter-chip").forEach(b => {
+        b.classList.toggle("active", b.dataset.region === region);
+      });
+      filterLocations();
+      renderMatrix();
+      loadCurrentLocation();
+    }
+
+    function renderMatrix() {
+      const grid = document.getElementById("locationsMatrixGrid");
+      let masteredCount = 0;
+
+      grid.innerHTML = "";
+      locations.forEach((loc, idx) => {
+        const state = matrixData[loc.id] || { completed: 0, mistakes: 0 };
+        if (state.completed > 0) masteredCount++;
+
+        // Only show if matches current category filter
+        let isVisible = (activeFilter === "all" || loc.category === activeFilter) &&
+                        (activeRegionFilter === "all" || loc.region === activeRegionFilter);
+        if (!isVisible) return;
+
+        const cell = document.createElement("div");
+        cell.className = "matrix-cell";
+        if (state.completed > 0 && state.mistakes === 0) cell.classList.add("mastered");
+        else if (state.mistakes > 0) cell.classList.add("mistake");
+        if (idx === currentIndex) cell.classList.add("active-target");
+
+        const catIcon = loc.category === "city" ? "🏙️" : (loc.category === "ocean" ? "🌊" : "❄️");
+        const shortName = loc.city || loc.continent;
+
+        cell.innerHTML = `
+          <div class="cell-cat">${catIcon}</div>
+          <div class="cell-label" title="${loc.city || loc.continent} (${loc.latFormatted}, ${loc.lonFormatted})">${shortName}</div>
+        `;
+
+        cell.addEventListener("mouseenter", () => previewLocationInfo(loc, state));
+        cell.addEventListener("mouseleave", () => resetPreviewLocationInfo());
+        cell.addEventListener("click", () => {
+          if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+          currentIndex = idx;
+          loadCurrentLocation();
+        });
+
+        grid.appendChild(cell);
+      });
+
+      document.getElementById("masteryCountBadge").textContent = `${masteredCount} / ${locations.length}`;
+    }
+
+    function previewLocationInfo(loc, state) {
+      const box = document.getElementById("hoveredLocationInfo");
+      const doneText = state.completed > 0 ? "✅ Solved" : "⏳ Unpracticed";
+      box.innerHTML = `<strong>${loc.city || loc.continent}</strong> (${loc.latFormatted}, ${loc.lonFormatted})<br>
+        <span style="color:var(--text-muted);">${loc.region} • ${doneText} • Mistakes: ${state.mistakes || 0}</span>`;
+    }
+
+    function resetPreviewLocationInfo() {
+      const loc = locations[currentIndex];
+      const box = document.getElementById("hoveredLocationInfo");
+      if (loc) {
+        box.textContent = `${loc.city || loc.continent} — ${loc.region}`;
+      } else {
+        box.textContent = "Hover over any tile or map location to preview details.";
+      }
+    }
+
+    /* =========================================================================
+       LOAD CURRENT LOCATION
+       ========================================================================= */
+    function loadCurrentLocation() {
+      const loc = locations[currentIndex];
+      if (!loc) return;
+
+      // 1. Immediately update Coordinate Display & Location Counter
+      const elLat = document.getElementById("displayLat");
+      const elLon = document.getElementById("displayLon");
+      if (elLat) elLat.textContent = loc.latFormatted;
+      if (elLon) elLon.textContent = loc.lonFormatted;
+
+      const counterEl = document.getElementById("coordLocationCounter");
+      if (counterEl) {
+        const total = filteredIndices.length || locations.length;
+        const currentFilteredPos = filteredIndices.indexOf(currentIndex);
+        const posText = currentFilteredPos >= 0 ? (currentFilteredPos + 1) : (currentIndex + 1);
+        counterEl.textContent = `Location ${posText} / ${total}`;
+      }
+
+      hasCheckedCurrent = false;
+      userClickedLat = null;
+      userClickedLon = null;
+      startTime = performance.now();
+      totalPausedTime = 0;
+      wasCurrentWordPaused = false;
+      resetInactivityTimer();
+
+      updateHemisphereBadges();
+
+      // Reset Map Pins and Overlays
+      const userPin = document.getElementById("userPinGroup");
+      if (userPin) userPin.style.display = "none";
+      const targetPin = document.getElementById("targetPinGroup");
+      if (targetPin) targetPin.style.display = "none";
+      const accLine = document.getElementById("accuracyLine");
+      if (accLine) accLine.style.display = "none";
+      const tolCircle = document.getElementById("targetToleranceCircle");
+      if (tolCircle) tolCircle.style.display = "none";
+      const hudDist = document.getElementById("hudClickDistance");
+      if (hudDist) hudDist.textContent = I18N[currentLang]?.hudClickDefault || "🎯 Click anywhere on the map";
+
+      // Clear Form Fields & Feedback
+      const t = I18N[currentLang] || I18N.en;
+      document.getElementById("inputContinent").value = "";
+      document.getElementById("inputCountry").value = "";
+      document.getElementById("inputState").value = "";
+      document.getElementById("inputCity").value = "";
+
+      ["inputContinent", "inputCountry", "inputState", "inputCity"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("is-correct", "is-wrong");
+      });
+
+      // Tailor optional tags
+      const countryReqTag = document.getElementById("tagCountryReq");
+      const stateReqTag = document.getElementById("tagStateReq");
+      const cityReqTag = document.getElementById("tagCityReq");
+
+      if (countryReqTag && stateReqTag && cityReqTag) {
+        if (loc.category === "ocean") {
+          countryReqTag.textContent = "(Not required — Ocean)";
+          stateReqTag.textContent = "(Not required — Ocean)";
+          cityReqTag.textContent = "(Not required — Ocean)";
+        } else if (loc.category === "polar" && loc.continent === "Antarctica") {
+          countryReqTag.textContent = "(Not required — Antarctica)";
+          stateReqTag.textContent = "(Optional / None)";
+          cityReqTag.textContent = "(Station / Landmark)";
+        } else {
+          countryReqTag.textContent = "* Required";
+          stateReqTag.textContent = t.tagStateReq || "(Optional)";
+          cityReqTag.textContent = "* Required";
+        }
+      }
+
+      const fb = document.getElementById("feedbackBanner");
+      if (fb) {
+        fb.className = "feedback-banner";
+        const fbText = document.getElementById("feedbackText");
+        if (fbText) fbText.textContent = t.initialFeedback;
+      }
+      const distTag = document.getElementById("distanceScoreTag");
+      if (distTag) distTag.textContent = "";
+
+      // Highlight active cell in matrix
+      renderMatrix();
+
+      // Smooth scroll active matrix tile into view if needed
+      const activeCell = document.querySelector(".matrix-cell.active-target");
+      if (activeCell) {
+        activeCell.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      saveAllData();
+    }
+
+    function updateHemisphereBadges() {
+      const loc = locations[currentIndex];
+      if (!loc) return;
+      const t = I18N[currentLang] || I18N.en;
+
+      const latHem = loc.lat >= 0 ? t.northHem : t.southHem;
+      const lonHem = loc.lon >= 0 ? t.eastHem : t.westHem;
+
+      const elLatHem = document.getElementById("badgeLatHem");
+      const elLonHem = document.getElementById("badgeLonHem");
+      if (elLatHem) elLatHem.textContent = latHem;
+      if (elLonHem) elLonHem.textContent = lonHem;
+
+      const catBadge = document.getElementById("badgeCategory");
+      if (catBadge) {
+        const catIcon = loc.category === "city" ? "🏙️" : (loc.category === "ocean" ? "🌊" : "❄️");
+        catBadge.textContent = `${catIcon} ${loc.region || loc.continent}`;
+      }
+    }
+
+    function selectQuickContinent(contName) {
+      document.getElementById("inputContinent").value = contName;
+      document.getElementById("inputContinent").focus();
+    }
+
+    /* =========================================================================
+       CHECK ANSWER & VERIFICATION
+       ========================================================================= */
+    function normalizeString(str) {
+      if (!str) return "";
+      return str.trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // strip accents
+        .replace(/[.,\-_/()]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function checkAnswer() {
+      if (hasCheckedCurrent) {
+        nextLocation();
+        return;
+      }
+
+      const loc = locations[currentIndex];
+      if (!loc) return;
+
+      const t = I18N[currentLang] || I18N.en;
+      const valContinent = normalizeString(document.getElementById("inputContinent").value);
+      const valCountry = normalizeString(document.getElementById("inputCountry").value);
+      const valState = normalizeString(document.getElementById("inputState").value);
+      const valCity = normalizeString(document.getElementById("inputCity").value);
+
+      // 1. Verify Map Pin Drop
+      let mapScore = 0;
+      let distKm = 99999;
+      if (userClickedLat !== null && userClickedLon !== null) {
+        distKm = haversineDistanceKm(userClickedLat, userClickedLon, loc.lat, loc.lon);
+        if (distKm <= loc.toleranceKm) {
+          mapScore = 1;
+        } else if (distKm <= loc.toleranceKm * 1.8) {
+          mapScore = 0.5;
+        }
+      }
+
+      // 2. Verify Continent / Ocean
+      let continentScore = 0;
+      const validContinents = [loc.continent, ...(loc.continentAliases || [])].map(normalizeString);
+      if (validContinents.some(alias => valContinent === alias || valContinent.includes(alias) || alias.includes(valContinent))) {
+        continentScore = 1;
+        document.getElementById("inputContinent").classList.add("is-correct");
+      } else {
+        document.getElementById("inputContinent").classList.add("is-wrong");
+      }
+
+      // 3. Verify Country
+      let countryScore = 0;
+      if (!loc.country || loc.country.toLowerCase() === "none" || loc.category === "ocean" || (loc.continent === "Antarctica" && loc.country === "Antarctica")) {
+        // Optional or none
+        countryScore = 1;
+        document.getElementById("inputCountry").classList.add("is-correct");
+      } else {
+        const validCountries = [loc.country, ...(loc.countryAliases || [])].map(normalizeString);
+        if (validCountries.some(alias => valCountry === alias || (alias.length > 3 && valCountry.includes(alias)))) {
+          countryScore = 1;
+          document.getElementById("inputCountry").classList.add("is-correct");
+        } else {
+          document.getElementById("inputCountry").classList.add("is-wrong");
+        }
+      }
+
+      // 4. Verify State (Always Optional - bonus recognition if entered)
+      let stateScore = 1;
+      if (valState && loc.state) {
+        const validStates = [loc.state, ...(loc.stateAliases || [])].map(normalizeString).filter(Boolean);
+        if (validStates.some(alias => valState === alias || (alias.length > 3 && valState.includes(alias)))) {
+          document.getElementById("inputState").classList.add("is-correct");
+        }
+      }
+
+      // 5. Verify City / Landmark
+      let cityScore = 0;
+      if (!loc.cityRequired || !loc.city) {
+        cityScore = 1;
+        if (valCity) document.getElementById("inputCity").classList.add("is-correct");
+      } else {
+        const validCities = [loc.city, ...(loc.cityAliases || [])].map(normalizeString);
+        if (validCities.some(alias => valCity === alias || (alias.length > 3 && valCity.includes(alias)))) {
+          cityScore = 1;
+          document.getElementById("inputCity").classList.add("is-correct");
+        } else {
+          document.getElementById("inputCity").classList.add("is-wrong");
+        }
+      }
+
+      // Reveal Target on Map
+      revealTargetOnMap(loc);
+
+      // Response Time Calculation
+      const elapsed = Math.max(0.5, Math.min(pauseTimeoutSec, (performance.now() - startTime - totalPausedTime) / 1000));
+      hasCheckedCurrent = true;
+
+      // Evaluation Total
+      const isTotalCorrect = (mapScore >= 0.8 && continentScore === 1 && countryScore === 1 && stateScore === 1 && cityScore === 1);
+      const isPartial = (continentScore === 1 || mapScore >= 0.5);
+
+      const fb = document.getElementById("feedbackBanner");
+      const distTag = document.getElementById("distanceScoreTag");
+
+      if (distKm < 90000) {
+        distTag.textContent = `🎯 Distance error: ${distKm} km`;
+        distanceErrorsKm.push(distKm);
+      } else {
+        distTag.textContent = `📍 Map pin not placed!`;
+      }
+
+      if (isTotalCorrect) {
+        fb.className = "feedback-banner success";
+        fb.querySelector("#feedbackText").textContent = `${t.msgCorrect} ${wasCurrentWordPaused ? t.pausedTimeNotice : ""}`;
+        playSound("correct");
+
+        if (!matrixData[loc.id]) matrixData[loc.id] = { completed: 1, mistakes: 0 };
+        else matrixData[loc.id].completed++;
+
+        if (!wasCurrentWordPaused) {
+          recentTimes.push(elapsed);
+          if (recentTimes.length > 35) recentTimes.shift();
+        }
+
+        recordDailyHistory(true, elapsed);
+        updateStatsUI();
+        drawSpeedChart();
+        renderMatrix();
+
+        if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = setTimeout(() => {
+          autoAdvanceTimer = null;
+          nextLocation();
+        }, 1200);
+
+      } else if (isPartial) {
+        fb.className = "feedback-banner partial";
+        fb.querySelector("#feedbackText").textContent = t.msgPartial;
+        playSound("mistake");
+
+        if (!matrixData[loc.id]) matrixData[loc.id] = { completed: 0, mistakes: 1 };
+        else matrixData[loc.id].mistakes++;
+        trickyMistakes[loc.id] = (trickyMistakes[loc.id] || 0) + 1;
+
+        recordDailyHistory(false, elapsed);
+        renderTrickyList();
+        renderMatrix();
+      } else {
+        fb.className = "feedback-banner error";
+        fb.querySelector("#feedbackText").textContent = t.msgWrong;
+        playSound("mistake");
+
+        if (!matrixData[loc.id]) matrixData[loc.id] = { completed: 0, mistakes: 1 };
+        else matrixData[loc.id].mistakes++;
+        trickyMistakes[loc.id] = (trickyMistakes[loc.id] || 0) + 1;
+
+        recordDailyHistory(false, elapsed);
+        renderTrickyList();
+        renderMatrix();
+      }
+
+      saveAllData();
+    }
+
+    function revealTargetOnMap(loc) {
+      const targetPt = projectLonLatToSvg(loc.lon, loc.lat);
+
+      // Target pin
+      const targetPinG = document.getElementById("targetPinGroup");
+      targetPinG.setAttribute("transform", `translate(${targetPt.x}, ${targetPt.y})`);
+      targetPinG.style.display = "block";
+
+      // Tolerance circle (convert km to svg degrees roughly)
+      const rSvg = Math.max(6, (loc.toleranceKm / 111.0) * (500.0 / 180.0));
+      const circle = document.getElementById("targetToleranceCircle");
+      circle.setAttribute("cx", targetPt.x);
+      circle.setAttribute("cy", targetPt.y);
+      circle.setAttribute("r", rSvg);
+      circle.style.display = "block";
+
+      // Connecting line if user placed pin
+      if (userClickedLat !== null && userClickedLon !== null) {
+        const userPt = projectLonLatToSvg(userClickedLon, userClickedLat);
+        const line = document.getElementById("accuracyLine");
+        line.setAttribute("x1", userPt.x);
+        line.setAttribute("y1", userPt.y);
+        line.setAttribute("x2", targetPt.x);
+        line.setAttribute("y2", targetPt.y);
+        line.style.display = "block";
+      }
+    }
+
+    function giveHint() {
+      const loc = locations[currentIndex];
+      if (!loc) return;
+      const fb = document.getElementById("feedbackBanner");
+      fb.className = "feedback-banner partial";
+      fb.querySelector("#feedbackText").textContent = `💡 Hint: ${loc.hint}`;
+      playSound("click");
+    }
+
+    function revealAnswer() {
+      const loc = locations[currentIndex];
+      if (!loc) return;
+
+      document.getElementById("inputContinent").value = loc.continent;
+      document.getElementById("inputCountry").value = loc.country || "None";
+      document.getElementById("inputState").value = loc.state || "";
+      document.getElementById("inputCity").value = loc.city || "";
+
+      revealTargetOnMap(loc);
+      const fb = document.getElementById("feedbackBanner");
+      fb.className = "feedback-banner";
+      fb.querySelector("#feedbackText").textContent = `👁️ Revealed: ${loc.city || loc.continent}, ${loc.country || ''} (${loc.latFormatted}, ${loc.lonFormatted})`;
+
+      playSound("click");
+    }
+
+    function nextLocation() {
+      if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+      if (filteredIndices.length === 0) {
+        filterLocations();
+      }
+      if (filteredIndices.length === 0) return;
+
+      const currentFilteredPos = filteredIndices.indexOf(currentIndex);
+      if (currentFilteredPos >= 0 && currentFilteredPos < filteredIndices.length - 1) {
+        currentIndex = filteredIndices[currentFilteredPos + 1];
+      } else {
+        currentIndex = filteredIndices[0];
+      }
+      playSound("click");
+      loadCurrentLocation();
+    }
+
+    function prevLocation() {
+      if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+      if (filteredIndices.length === 0) {
+        filterLocations();
+      }
+      if (filteredIndices.length === 0) return;
+
+      const currentFilteredPos = filteredIndices.indexOf(currentIndex);
+      if (currentFilteredPos > 0) {
+        currentIndex = filteredIndices[currentFilteredPos - 1];
+      } else {
+        currentIndex = filteredIndices[filteredIndices.length - 1];
+      }
+      playSound("click");
+      loadCurrentLocation();
+    }
+
+    /* =========================================================================
+       ANALYTICS, SPEED SPARKLINE & DAILY LOGS
+       ========================================================================= */
+    function recordDailyHistory(isCorrect, timeSec) {
+      const today = new Date().toISOString().slice(0, 10);
+      if (!dailyHistory[today]) {
+        dailyHistory[today] = { total: 0, correct: 0, times: [] };
+      }
+      dailyHistory[today].total++;
+      if (isCorrect) dailyHistory[today].correct++;
+      if (!wasCurrentWordPaused) dailyHistory[today].times.push(timeSec);
+
+      renderDailyHistory();
+    }
+
+    function renderDailyHistory() {
+      const drawer = document.getElementById("historyDrawerContent");
+      const days = Object.keys(dailyHistory).sort().reverse();
+      if (days.length === 0) {
+        drawer.innerHTML = `<div style="font-style:italic; color:var(--text-muted);">No history recorded yet today.</div>`;
+        return;
+      }
+
+      drawer.innerHTML = days.map(day => {
+        const rec = dailyHistory[day];
+        const acc = rec.total > 0 ? Math.round((rec.correct / rec.total) * 100) : 0;
+        const avg = rec.times.length > 0 ? (rec.times.reduce((a,b)=>a+b, 0) / rec.times.length).toFixed(1) : "--";
+        return `<div>📅 <strong>${day}</strong>: ${rec.correct}/${rec.total} solved (${acc}%) • Ø ${avg}s</div>`;
+      }).join("");
+    }
+
+    function renderTrickyList() {
+      const container = document.getElementById("trickyList");
+      const sortedTricky = Object.entries(trickyMistakes)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, 4);
+
+      if (sortedTricky.length === 0) {
+        container.innerHTML = `<div style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">No tricky coordinates yet. Great job!</div>`;
+        return;
+      }
+
+      container.innerHTML = sortedTricky.map(([id, count]) => {
+        const item = locations.find(l => l.id === id);
+        if (!item) return "";
+        return `<div class="tricky-item">
+          <span>${item.city || item.continent} (${item.latFormatted}, ${item.lonFormatted})</span>
+          <span style="color:var(--danger); font-weight:700;">${count} ❌</span>
+        </div>`;
+      }).join("");
+    }
+
+    function updateStatsUI() {
+      let totalSolved = 0;
+      let totalAttempts = 0;
+      let totalCorrect = 0;
+
+      Object.values(matrixData).forEach(st => {
+        if (st.completed > 0) totalSolved++;
+        totalAttempts += (st.completed + st.mistakes);
+        totalCorrect += st.completed;
+      });
+
+      document.getElementById("statTotalSolved").textContent = totalSolved;
+      const acc = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 100;
+      document.getElementById("statAccuracy").textContent = `${acc}%`;
+
+      const avgT = recentTimes.length > 0
+        ? (recentTimes.reduce((a, b) => a + b, 0) / recentTimes.length).toFixed(1) + "s"
+        : "0.0s";
+      document.getElementById("statAvgTime").textContent = avgT;
+
+      // Distance error
+      if (distanceErrorsKm.length > 0) {
+        const avgDist = Math.round(distanceErrorsKm.reduce((a, b) => a + b, 0) / distanceErrorsKm.length);
+        document.getElementById("statAvgDistance").textContent = `${avgDist} km`;
+      }
+    }
+
+    function drawSpeedChart() {
+      const canvas = document.getElementById("speedChart");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      if (recentTimes.length < 2) {
+        ctx.fillStyle = "rgba(100, 116, 139, 0.4)";
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Complete coordinates to see speed sparkline", w / 2, h / 2 + 4);
+        return;
+      }
+
+      const maxTime = Math.max(10, Math.max(...recentTimes) * 1.15);
+      const stepX = (w - 20) / (recentTimes.length - 1);
+
+      // P80 reference calculation
+      const sorted = [...recentTimes].sort((a,b) => a - b);
+      const p80Index = Math.floor(sorted.length * 0.8);
+      const p80Val = sorted[p80Index] || 0;
+      document.getElementById("p80Badge").textContent = `P80: ${p80Val.toFixed(1)}s`;
+
+      const p80Y = h - 10 - (p80Val / maxTime) * (h - 20);
+
+      // Draw dashed P80 line
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.6)";
+      ctx.lineWidth = 1;
+      ctx.moveTo(10, p80Y);
+      ctx.lineTo(w - 10, p80Y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw Sparkline
+      ctx.beginPath();
+      ctx.strokeStyle = "#38bdf8";
+      ctx.lineWidth = 2;
+      ctx.lineJoin = "round";
+
+      recentTimes.forEach((t, i) => {
+        const x = 10 + i * stepX;
+        const y = h - 10 - (t / maxTime) * (h - 20);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Draw data dots
+      recentTimes.forEach((t, i) => {
+        const x = 10 + i * stepX;
+        const y = h - 10 - (t / maxTime) * (h - 20);
+        ctx.beginPath();
+        ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = t > p80Val ? "#f87171" : "#38bdf8";
+        ctx.fill();
+      });
+    }
+
+    /* =========================================================================
+       KEYBOARD SHORTCUTS
+       ========================================================================= */
+    window.addEventListener("keydown", (e) => {
+      if (isPaused) {
+        resumeTrainer();
+        e.preventDefault();
+        return;
+      }
+
+      if (e.key === "Enter") {
+        checkAnswer();
+      } else if (e.key === "ArrowRight") {
+        nextLocation();
+      } else if (e.key === "ArrowLeft") {
+        prevLocation();
+      } else if (e.key.toLowerCase() === "p" && !["INPUT", "TEXTAREA"].includes(e.target.tagName)) {
+        togglePause();
+      }
+    });
+
+    /* =========================================================================
+       INITIALIZATION
+       ========================================================================= */
+    document.addEventListener("DOMContentLoaded", () => {
+      loadSavedData();
+      applyLanguage();
+      buildMapLayers();
+      filterLocations();
+      renderMatrix();
+      loadCurrentLocation();
+      updateStatsUI();
+      drawSpeedChart();
+      renderDailyHistory();
+      renderTrickyList();
+      startInactivityCountdown();
+    });
+  </script>
+</body>
+</html>
