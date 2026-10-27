@@ -519,47 +519,69 @@
       fill: #e0f2fe;
     }
 
-    .map-grid-line {
+    .map-grid-line-major {
       fill: none;
-      stroke: rgba(255, 255, 255, 0.12);
-      stroke-width: 0.6;
-      stroke-dasharray: 2, 2;
+      stroke: rgba(255, 255, 255, 0.32);
+      stroke-width: 0.9px;
+      vector-effect: non-scaling-stroke;
     }
-    [data-theme="light"] .map-grid-line {
-      stroke: rgba(15, 23, 42, 0.15);
+    [data-theme="light"] .map-grid-line-major {
+      stroke: rgba(15, 23, 42, 0.35);
+      stroke-width: 0.9px;
+    }
+
+    .map-grid-line-minor {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.16);
+      stroke-width: 0.5px;
+      stroke-dasharray: 2, 2;
+      vector-effect: non-scaling-stroke;
+    }
+    [data-theme="light"] .map-grid-line-minor {
+      stroke: rgba(15, 23, 42, 0.18);
+      stroke-width: 0.5px;
     }
 
     .map-equator-line {
       fill: none;
       stroke: #f59e0b;
-      stroke-width: 1.2;
-      opacity: 0.85;
+      stroke-width: 1.5px;
+      vector-effect: non-scaling-stroke;
+      opacity: 0.9;
     }
 
     .map-prime-meridian {
       fill: none;
       stroke: #38bdf8;
-      stroke-width: 1.2;
-      opacity: 0.85;
+      stroke-width: 1.5px;
+      vector-effect: non-scaling-stroke;
+      opacity: 0.9;
     }
 
     .map-special-latitude {
       fill: none;
-      stroke: rgba(244, 63, 94, 0.55);
-      stroke-width: 0.8;
+      stroke: rgba(244, 63, 94, 0.7);
+      stroke-width: 0.8px;
       stroke-dasharray: 4, 3;
+      vector-effect: non-scaling-stroke;
     }
 
     .map-degree-text {
-      font-size: 8px;
       font-family: var(--font-mono);
-      font-weight: 600;
-      fill: rgba(255, 255, 255, 0.45);
+      font-weight: 700;
+      fill: #f8fafc;
+      stroke: rgba(11, 17, 32, 0.95);
+      stroke-width: 2.5px;
+      paint-order: stroke fill;
+      stroke-linejoin: round;
+      stroke-linecap: round;
       pointer-events: none;
       user-select: none;
     }
     [data-theme="light"] .map-degree-text {
-      fill: rgba(15, 23, 42, 0.55);
+      fill: #0f172a;
+      stroke: rgba(255, 255, 255, 0.95);
+      stroke-width: 2.5px;
     }
 
     .country-polygon {
@@ -1326,24 +1348,11 @@
             <text x="470" y="38" class="ocean-label-text" style="font-size:10px;">ARCTIC OCEAN</text>
             <text x="470" y="475" class="ocean-label-text" style="font-size:10px;">SOUTHERN OCEAN</text>
 
-            <!-- Graticule: Meridians (Longitude) -->
-            <g id="graticuleMeridians"></g>
-
-            <!-- Graticule: Parallels (Latitude) -->
-            <g id="graticuleParallels"></g>
-
-            <!-- Prime Meridian & Equator Highlight lines -->
-            <line x1="500" y1="0" x2="500" y2="500" class="map-prime-meridian" />
-            <line x1="0" y1="250" x2="1000" y2="250" class="map-equator-line" />
-
-            <!-- Tropics & Polar Circles -->
-            <line x1="0" y1="184.7" x2="1000" y2="184.7" class="map-special-latitude" title="Tropic of Cancer (23.5° N)" />
-            <line x1="0" y1="315.3" x2="1000" y2="315.3" class="map-special-latitude" title="Tropic of Capricorn (23.5° S)" />
-            <line x1="0" y1="65.3" x2="1000" y2="65.3" class="map-special-latitude" title="Arctic Circle (66.5° N)" />
-            <line x1="0" y1="434.7" x2="1000" y2="434.7" class="map-special-latitude" title="Antarctic Circle (66.5° S)" />
-
             <!-- Countries Layer -->
             <g id="countriesLayer"></g>
+
+            <!-- Dynamic Graticule Lines (Crisp non-scaling lines over land and ocean) -->
+            <g id="graticuleLinesLayer" style="pointer-events:none;"></g>
 
             <!-- Cities Layer (Dynamic Level-of-Detail & Density Scaling) -->
             <g id="citiesLayer" class="cities-layer"></g>
@@ -1365,6 +1374,9 @@
               <circle cx="0" cy="0" r="18" fill="none" stroke="#38bdf8" class="radar-pulse" />
               <circle cx="0" cy="0" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" filter="url(#pinGlow)" />
             </g>
+
+            <!-- Dynamic Graticule Sticky Labels (Always pinned to visible viewport edges on zoom/pan) -->
+            <g id="graticuleLabelsLayer" style="pointer-events:none;"></g>
           </svg>
         </div>
 
@@ -1417,7 +1429,44 @@
                 <span id="labelCountry">Country</span>
                 <span class="optional-tag" id="tagCountryReq">(optional if Ocean/Antarctica)</span>
               </label>
-              <input type="text" id="inputCountry" class="form-input" placeholder="e.g. Slovakia, United States" autocomplete="off">
+              <input type="text" id="inputCountry" class="form-input" placeholder="e.g. Slovakia, United States" autocomplete="off" list="countriesList">
+              <datalist id="countriesList">
+                <option value="Argentina">
+                <option value="Australia">
+                <option value="Austria">
+                <option value="Brazil">
+                <option value="Canada">
+                <option value="Chile">
+                <option value="China">
+                <option value="Colombia">
+                <option value="Cuba">
+                <option value="Czech Republic">
+                <option value="Egypt">
+                <option value="France">
+                <option value="Germany">
+                <option value="Greece">
+                <option value="Iceland">
+                <option value="India">
+                <option value="Italy">
+                <option value="Japan">
+                <option value="Kenya">
+                <option value="Madagascar">
+                <option value="Mexico">
+                <option value="New Zealand">
+                <option value="Nigeria">
+                <option value="Norway">
+                <option value="Peru">
+                <option value="Senegal">
+                <option value="Singapore">
+                <option value="Slovakia">
+                <option value="South Africa">
+                <option value="South Korea">
+                <option value="Spain">
+                <option value="Thailand">
+                <option value="United Arab Emirates">
+                <option value="United Kingdom">
+                <option value="United States">
+              </datalist>
             </div>
 
             <!-- State / Region (Optional) -->
@@ -1636,10 +1685,10 @@
         backLink: "← Zur Übersicht",
         matrixTitle: "📊 Standort-Matrix",
         coordLead: "Finde Koordinaten auf der Erde:",
-        northHem: "🌐 Nördliche Halbkugel",
-        southHem: "🌐 Südliche Halbkugel",
-        eastHem: "🧭 Östliche Halbkugel",
-        westHem: "🧭 Westliche Halbkugel",
+        northHem: "🌐 Nördliche Halbkugel (N)",
+        southHem: "🌐 Südliche Halbkugel (S)",
+        eastHem: "🧭 Östliche Halbkugel (O)",
+        westHem: "🧭 Westliche Halbkugel (W)",
         formStepTitle: "✍️ Benenne diesen Ort (Kontinent/Ozean, Land, Stadt):",
         labelContinent: "Kontinent / Ozean",
         labelCountry: "Land",
@@ -1718,6 +1767,14 @@
       document.getElementById("summaryDailyHistory").textContent = t.summaryDailyHistory;
       const zoomTipEl = document.getElementById("hudZoomTip");
       if (zoomTipEl && t.hudZoomTip) zoomTipEl.textContent = t.hudZoomTip;
+
+      const loc = locations[currentIndex];
+      if (loc) {
+        const elLon = document.getElementById("displayLon");
+        if (elLon) elLon.textContent = currentLang === "de" ? loc.lonFormatted.replace(/\bE\b/g, "O") : loc.lonFormatted;
+      }
+      if (typeof updateGraticuleLayer === "function") updateGraticuleLayer();
+      if (typeof renderCitiesLayer === "function") renderCitiesLayer();
     }
 
     /* =========================================================================
@@ -1990,38 +2047,210 @@
     }
 
     /* =========================================================================
-       RENDER SVG MAP GRATICULE & COUNTRIES
+       DYNAMIC SCALED MAP GRATICULE (LONGITUDE & LATITUDE) & STICKY LABELS
        ========================================================================= */
-    function buildMapLayers() {
-      const meridiansG = document.getElementById("graticuleMeridians");
-      const parallelsG = document.getElementById("graticuleParallels");
-      const countriesG = document.getElementById("countriesLayer");
+    function formatGraticuleDegree(val, isLat, lang = currentLang) {
+      const rounded = Math.round(val * 1000) / 1000;
+      if (Math.abs(rounded) < 0.0001) {
+        if (isLat) {
+          if (lang === "de") return "0° Äquator";
+          if (lang === "sk") return "0° Rovníka";
+          return "0° Equator";
+        } else {
+          if (lang === "de") return "0° Nullmeridian";
+          if (lang === "sk") return "0° Nultý poludník";
+          return "0° Prime";
+        }
+      }
 
-      // Meridians every 30 degrees (-180 to 180)
-      let mHtml = "";
-      for (let lon = -150; lon <= 150; lon += 30) {
-        if (lon === 0) continue; // Prime meridian is distinct
+      let dir = "";
+      if (isLat) {
+        dir = rounded > 0 ? "N" : "S";
+      } else {
+        if (lang === "de") {
+          dir = rounded > 0 ? "O" : "W"; // German: Norden, Süden, Osten, Westen
+        } else {
+          dir = rounded > 0 ? "E" : "W";
+        }
+      }
+
+      const abs = Math.abs(rounded);
+      const deg = Math.floor(abs + 0.00001);
+      const frac = abs - deg;
+
+      if (frac < 0.001) {
+        return `${deg}° ${dir}`;
+      }
+
+      const min = Math.round(frac * 60);
+      if (min === 60) {
+        return `${deg + 1}° ${dir}`;
+      }
+      return `${deg}° ${min.toString().padStart(2, '0')}' ${dir}`;
+    }
+
+    function localizeCoordString(coordStr, lang = currentLang) {
+      if (!coordStr) return "";
+      if (lang === "de") {
+        return coordStr.replace(/\bE\b/g, "O");
+      }
+      return coordStr;
+    }
+
+    function updateGraticuleLayer() {
+      const linesG = document.getElementById("graticuleLinesLayer");
+      const labelsG = document.getElementById("graticuleLabelsLayer");
+      if (!linesG || !labelsG) return;
+
+      const currentZoom = BASE_SVG_W / viewBoxState.w;
+
+      // Visible geographic extent in equirectangular projection
+      const minLon = Math.max(-180, (viewBoxState.x / BASE_SVG_W) * 360.0 - 180.0);
+      const maxLon = Math.min(180, ((viewBoxState.x + viewBoxState.w) / BASE_SVG_W) * 360.0 - 180.0);
+      const maxLat = Math.min(85, 90.0 - (viewBoxState.y / BASE_SVG_H) * 180.0);
+      const minLat = Math.max(-85, 90.0 - ((viewBoxState.y + viewBoxState.h) / BASE_SVG_H) * 180.0);
+
+      const lonSpan = maxLon - minLon;
+
+      // Select adaptive step sizes based on zoom / span
+      let majorStep = 30;
+      let minorStep = 10;
+
+      if (lonSpan >= 160) {
+        majorStep = 30;
+        minorStep = 10;
+      } else if (lonSpan >= 70) {
+        majorStep = 15;
+        minorStep = 5;
+      } else if (lonSpan >= 30) {
+        majorStep = 10;
+        minorStep = 2;
+      } else if (lonSpan >= 14) {
+        majorStep = 5;
+        minorStep = 1;
+      } else if (lonSpan >= 6) {
+        majorStep = 2;
+        minorStep = 0.5;
+      } else if (lonSpan >= 2.5) {
+        majorStep = 1;
+        minorStep = 0.25;
+      } else {
+        majorStep = 0.5;
+        minorStep = 0.1;
+      }
+
+      let linesHtml = "";
+      let labelsHtml = "";
+
+      // Sticky screen offsets for viewport edges
+      const fontSizeSvg = Math.max(1.8, 9.6 / currentZoom);
+      const strokeWidthSvg = Math.max(0.4, 2.4 / currentZoom);
+      const topLabelY = viewBoxState.y + (13.5 / currentZoom);
+      const bottomLabelY = viewBoxState.y + viewBoxState.h - (5.0 / currentZoom);
+      const leftLabelX = viewBoxState.x + (6.0 / currentZoom);
+      const rightLabelX = viewBoxState.x + viewBoxState.w - (6.0 / currentZoom);
+
+      const edgeMarginX = 22.0 / currentZoom;
+      const edgeMarginY = 14.0 / currentZoom;
+
+      // ─────────────────────────────────────────────────────────────────
+      // 1. LONGITUDES / MERIDIANS (VERTICAL LINES)
+      // ─────────────────────────────────────────────────────────────────
+      const firstLon = Math.floor(minLon / minorStep) * minorStep;
+      const lastLon = Math.ceil(maxLon / minorStep) * minorStep;
+      const numLonSteps = Math.round((lastLon - firstLon) / minorStep);
+
+      for (let i = 0; i <= numLonSteps; i++) {
+        const lon = Math.round((firstLon + i * minorStep) * 1000) / 1000;
+        if (lon < -180 || lon > 180) continue;
+
         const { x } = projectLonLatToSvg(lon, 0);
-        const label = lon < 0 ? `${Math.abs(lon)}°W` : `${lon}°E`;
-        mHtml += `<line x1="${x}" y1="0" x2="${x}" y2="500" class="map-grid-line" />`;
-        mHtml += `<text x="${x + 2}" y="14" class="map-degree-text">${label}</text>`;
-        mHtml += `<text x="${x + 2}" y="492" class="map-degree-text">${label}</text>`;
-      }
-      mHtml += `<text x="502" y="14" class="map-degree-text" style="fill:#38bdf8; font-weight:700;">0° Prime</text>`;
-      meridiansG.innerHTML = mHtml;
+        const isPrime = Math.abs(lon) < 0.0001;
+        const isMajor = isPrime || (Math.abs(Math.round(lon / majorStep) * majorStep - lon) < 0.001);
 
-      // Parallels every 30 degrees (-60 to 60)
-      let pHtml = "";
-      for (let lat = -60; lat <= 60; lat += 30) {
-        if (lat === 0) continue; // Equator is distinct
-        const { y } = projectLonLatToSvg(0, lat);
-        const label = lat < 0 ? `${Math.abs(lat)}°S` : `${lat}°N`;
-        pHtml += `<line x1="0" y1="${y}" x2="1000" y2="${y}" class="map-grid-line" />`;
-        pHtml += `<text x="8" y="${y - 3}" class="map-degree-text">${label}</text>`;
-        pHtml += `<text x="965" y="${y - 3}" class="map-degree-text">${label}</text>`;
+        if (isPrime) {
+          linesHtml += `<line x1="${x.toFixed(2)}" y1="0" x2="${x.toFixed(2)}" y2="500" class="map-prime-meridian" vector-effect="non-scaling-stroke" />`;
+        } else if (isMajor) {
+          linesHtml += `<line x1="${x.toFixed(2)}" y1="0" x2="${x.toFixed(2)}" y2="500" class="map-grid-line-major" vector-effect="non-scaling-stroke" />`;
+        } else {
+          linesHtml += `<line x1="${x.toFixed(2)}" y1="0" x2="${x.toFixed(2)}" y2="500" class="map-grid-line-minor" vector-effect="non-scaling-stroke" />`;
+        }
+
+        // Degree labels (rendered on major lines if comfortably within visible horizontal bounds)
+        if (isMajor && x >= (viewBoxState.x + edgeMarginX) && x <= (viewBoxState.x + viewBoxState.w - edgeMarginX)) {
+          const labelText = formatGraticuleDegree(lon, false);
+          const primeStyle = isPrime ? "fill:#38bdf8;" : "";
+
+          // Top label
+          labelsHtml += `<text x="${x.toFixed(2)}" y="${topLabelY.toFixed(2)}" class="map-degree-text" text-anchor="middle" style="font-size:${fontSizeSvg.toFixed(2)}px; stroke-width:${strokeWidthSvg.toFixed(2)}px; ${primeStyle}">${labelText}</text>`;
+          // Bottom label
+          labelsHtml += `<text x="${x.toFixed(2)}" y="${bottomLabelY.toFixed(2)}" class="map-degree-text" text-anchor="middle" style="font-size:${fontSizeSvg.toFixed(2)}px; stroke-width:${strokeWidthSvg.toFixed(2)}px; ${primeStyle}">${labelText}</text>`;
+        }
       }
-      pHtml += `<text x="8" y="247" class="map-degree-text" style="fill:#f59e0b; font-weight:700;">0° Equator</text>`;
-      parallelsG.innerHTML = pHtml;
+
+      // ─────────────────────────────────────────────────────────────────
+      // 2. LATITUDES / PARALLELS (HORIZONTAL LINES)
+      // ─────────────────────────────────────────────────────────────────
+      const firstLat = Math.floor(minLat / minorStep) * minorStep;
+      const lastLat = Math.ceil(maxLat / minorStep) * minorStep;
+      const numLatSteps = Math.round((lastLat - firstLat) / minorStep);
+
+      for (let j = 0; j <= numLatSteps; j++) {
+        const lat = Math.round((firstLat + j * minorStep) * 1000) / 1000;
+        if (lat < -85 || lat > 85) continue;
+
+        const { y } = projectLonLatToSvg(0, lat);
+        const isEquator = Math.abs(lat) < 0.0001;
+        const isMajor = isEquator || (Math.abs(Math.round(lat / majorStep) * majorStep - lat) < 0.001);
+
+        if (isEquator) {
+          linesHtml += `<line x1="0" y1="${y.toFixed(2)}" x2="1000" y2="${y.toFixed(2)}" class="map-equator-line" vector-effect="non-scaling-stroke" />`;
+        } else if (isMajor) {
+          linesHtml += `<line x1="0" y1="${y.toFixed(2)}" x2="1000" y2="${y.toFixed(2)}" class="map-grid-line-major" vector-effect="non-scaling-stroke" />`;
+        } else {
+          linesHtml += `<line x1="0" y1="${y.toFixed(2)}" x2="1000" y2="${y.toFixed(2)}" class="map-grid-line-minor" vector-effect="non-scaling-stroke" />`;
+        }
+
+        // Degree labels (rendered on major lines if within visible vertical bounds)
+        if (isMajor && y >= (viewBoxState.y + edgeMarginY) && y <= (viewBoxState.y + viewBoxState.h - edgeMarginY)) {
+          const labelText = formatGraticuleDegree(lat, true);
+          const equatorStyle = isEquator ? "fill:#f59e0b;" : "";
+          const textY = y + (3.2 / currentZoom);
+
+          // Left label
+          labelsHtml += `<text x="${leftLabelX.toFixed(2)}" y="${textY.toFixed(2)}" class="map-degree-text" text-anchor="start" style="font-size:${fontSizeSvg.toFixed(2)}px; stroke-width:${strokeWidthSvg.toFixed(2)}px; ${equatorStyle}">${labelText}</text>`;
+          // Right label
+          labelsHtml += `<text x="${rightLabelX.toFixed(2)}" y="${textY.toFixed(2)}" class="map-degree-text" text-anchor="end" style="font-size:${fontSizeSvg.toFixed(2)}px; stroke-width:${strokeWidthSvg.toFixed(2)}px; ${equatorStyle}">${labelText}</text>`;
+        }
+      }
+
+      // ─────────────────────────────────────────────────────────────────
+      // 3. SPECIAL GEOGRAPHIC LATITUDES (TROPICS & POLAR CIRCLES)
+      // ─────────────────────────────────────────────────────────────────
+      const specialLats = [
+        { lat: 23.436, name: currentLang === "de" ? "23.5° N Wendekreis d. Krebses" : "23.5° N Tropic of Cancer" },
+        { lat: -23.436, name: currentLang === "de" ? "23.5° S Wendekreis d. Steinbocks" : "23.5° S Tropic of Capricorn" },
+        { lat: 66.564, name: currentLang === "de" ? "66.5° N Nördl. Polarkreis" : "66.5° N Arctic Circle" },
+        { lat: -66.564, name: currentLang === "de" ? "66.5° S Südl. Polarkreis" : "66.5° S Antarctic Circle" }
+      ];
+
+      specialLats.forEach(spec => {
+        if (spec.lat >= minLat && spec.lat <= maxLat) {
+          const { y } = projectLonLatToSvg(0, spec.lat);
+          linesHtml += `<line x1="0" y1="${y.toFixed(2)}" x2="1000" y2="${y.toFixed(2)}" class="map-special-latitude" vector-effect="non-scaling-stroke" />`;
+          if (y >= (viewBoxState.y + edgeMarginY) && y <= (viewBoxState.y + viewBoxState.h - edgeMarginY)) {
+            const textY = y - (2.5 / currentZoom);
+            labelsHtml += `<text x="${(leftLabelX + 10 / currentZoom).toFixed(2)}" y="${textY.toFixed(2)}" class="map-degree-text" text-anchor="start" style="fill:#f43f5e; font-size:${(fontSizeSvg * 0.88).toFixed(2)}px; stroke-width:${strokeWidthSvg.toFixed(2)}px;">${spec.name}</text>`;
+          }
+        }
+      });
+
+      linesG.innerHTML = linesHtml;
+      labelsG.innerHTML = labelsHtml;
+    }
+
+    function buildMapLayers() {
+      const countriesG = document.getElementById("countriesLayer");
 
       // Countries
       const countryList = window.WORLD_MAP_COUNTRIES || [];
@@ -2032,6 +2261,9 @@
         </path>`;
       });
       countriesG.innerHTML = cHtml;
+
+      // Dynamic Graticule Layer (Initial 1x render)
+      updateGraticuleLayer();
 
       // Cities Layer (Tiered Level-of-Detail & Adaptive Scale)
       renderCitiesLayer();
@@ -2054,8 +2286,10 @@
       let html = "";
       cities.forEach((city, idx) => {
         const { x, y } = projectLonLatToSvg(city.lon, city.lat);
-        const latStr = city.lat >= 0 ? `${city.lat.toFixed(1)}°N` : `${Math.abs(city.lat).toFixed(1)}°S`;
-        const lonStr = city.lon >= 0 ? `${city.lon.toFixed(1)}°E` : `${Math.abs(city.lon).toFixed(1)}°W`;
+        const latDir = city.lat >= 0 ? "N" : "S";
+        const lonDir = city.lon >= 0 ? (currentLang === "de" ? "O" : "E") : "W";
+        const latStr = `${Math.abs(city.lat).toFixed(1)}°${latDir}`;
+        const lonStr = `${Math.abs(city.lon).toFixed(1)}°${lonDir}`;
         const titleText = `${city.name}, ${city.country} (${latStr}, ${lonStr})`;
 
         html += `<g class="city-group" id="cityMarker_${idx}" data-idx="${idx}" data-tier="${city.tier}" data-x="${x.toFixed(2)}" data-y="${y.toFixed(2)}" data-align="${city.align || 'right'}" data-name="${city.name}" data-country="${city.country}" data-lat="${city.lat}" data-lon="${city.lon}">
@@ -2169,7 +2403,7 @@
     const BASE_SVG_W = 1000;
     const BASE_SVG_H = 500;
     const MIN_ZOOM = 1.0;
-    const MAX_ZOOM = 8.0;
+    const MAX_ZOOM = 24.0;
 
     let viewBoxState = {
       x: 0,
@@ -2220,6 +2454,7 @@
       svg.setAttribute("viewBox", `${newX} ${newY} ${newW} ${newH}`);
       updateZoomIndicatorUI(newZoom);
       updateCitiesScale(newZoom);
+      updateGraticuleLayer();
     }
 
     function panView(deltaSvgX, deltaSvgY) {
@@ -2234,6 +2469,7 @@
 
       const svg = document.getElementById("worldMapSvg");
       svg.setAttribute("viewBox", `${newX} ${newY} ${viewBoxState.w} ${viewBoxState.h}`);
+      updateGraticuleLayer();
     }
 
     function zoomMap(factor) {
@@ -2246,6 +2482,7 @@
       svg.setAttribute("viewBox", `0 0 ${BASE_SVG_W} ${BASE_SVG_H}`);
       updateZoomIndicatorUI(1.0);
       updateCitiesScale(1.0);
+      updateGraticuleLayer();
     }
 
     function getSvgCoordinates(evt, svg) {
@@ -2298,15 +2535,19 @@
           const cCountry = cityEl.dataset.country;
           const cLat = parseFloat(cityEl.dataset.lat);
           const cLon = parseFloat(cityEl.dataset.lon);
-          const latStr = cLat >= 0 ? `${cLat.toFixed(2)}°N` : `${Math.abs(cLat).toFixed(2)}°S`;
-          const lonStr = cLon >= 0 ? `${cLon.toFixed(2)}°E` : `${Math.abs(cLon).toFixed(2)}°W`;
+          const latDir = cLat >= 0 ? "N" : "S";
+          const lonDir = cLon >= 0 ? (currentLang === "de" ? "O" : "E") : "W";
+          const latStr = `${Math.abs(cLat).toFixed(2)}°${latDir}`;
+          const lonStr = `${Math.abs(cLon).toFixed(2)}°${lonDir}`;
           cursorHud.textContent = `🏙️ ${cName}, ${cCountry}: ${latStr}, ${lonStr}`;
           return;
         }
         const pt = getSvgCoordinates(e, svg);
         const coords = projectSvgToLonLat(pt.x, pt.y);
-        const latStr = coords.lat >= 0 ? `${coords.lat.toFixed(1)}°N` : `${Math.abs(coords.lat).toFixed(1)}°S`;
-        const lonStr = coords.lon >= 0 ? `${coords.lon.toFixed(1)}°E` : `${Math.abs(coords.lon).toFixed(1)}°W`;
+        const latDir = coords.lat >= 0 ? "N" : "S";
+        const lonDir = coords.lon >= 0 ? (currentLang === "de" ? "O" : "E") : "W";
+        const latStr = `${Math.abs(coords.lat).toFixed(1)}°${latDir}`;
+        const lonStr = `${Math.abs(coords.lon).toFixed(1)}°${lonDir}`;
         cursorHud.textContent = `📍 Cursor: ${latStr}, ${lonStr}`;
       });
 
@@ -2556,10 +2797,11 @@
 
         const catIcon = loc.category === "city" ? "🏙️" : (loc.category === "ocean" ? "🌊" : "❄️");
         const shortName = loc.city || loc.continent;
+        const localizedLon = localizeCoordString(loc.lonFormatted);
 
         cell.innerHTML = `
           <div class="cell-cat">${catIcon}</div>
-          <div class="cell-label" title="${loc.city || loc.continent} (${loc.latFormatted}, ${loc.lonFormatted})">${shortName}</div>
+          <div class="cell-label" title="${loc.city || loc.continent} (${loc.latFormatted}, ${localizedLon})">${shortName}</div>
         `;
 
         cell.addEventListener("mouseenter", () => previewLocationInfo(loc, state));
@@ -2579,7 +2821,8 @@
     function previewLocationInfo(loc, state) {
       const box = document.getElementById("hoveredLocationInfo");
       const doneText = state.completed > 0 ? "✅ Solved" : "⏳ Unpracticed";
-      box.innerHTML = `<strong>${loc.city || loc.continent}</strong> (${loc.latFormatted}, ${loc.lonFormatted})<br>
+      const localizedLon = localizeCoordString(loc.lonFormatted);
+      box.innerHTML = `<strong>${loc.city || loc.continent}</strong> (${loc.latFormatted}, ${localizedLon})<br>
         <span style="color:var(--text-muted);">${loc.region} • ${doneText} • Mistakes: ${state.mistakes || 0}</span>`;
     }
 
@@ -2604,7 +2847,7 @@
       const elLat = document.getElementById("displayLat");
       const elLon = document.getElementById("displayLon");
       if (elLat) elLat.textContent = loc.latFormatted;
-      if (elLon) elLon.textContent = loc.lonFormatted;
+      if (elLon) elLon.textContent = localizeCoordString(loc.lonFormatted);
 
       const counterEl = document.getElementById("coordLocationCounter");
       if (counterEl) {
@@ -2713,6 +2956,43 @@
     function selectQuickContinent(contName) {
       document.getElementById("inputContinent").value = contName;
       document.getElementById("inputContinent").focus();
+    }
+
+    function populateCountriesDatalist() {
+      const datalist = document.getElementById("countriesList");
+      if (!datalist) return;
+
+      const countries = new Set();
+
+      // Practice locations countries & aliases
+      if (window.MAP_PRACTICE_LOCATIONS) {
+        window.MAP_PRACTICE_LOCATIONS.forEach(loc => {
+          if (loc.country && loc.country !== "None") {
+            countries.add(loc.country);
+            if (loc.countryAliases && Array.isArray(loc.countryAliases)) {
+              loc.countryAliases.forEach(alias => {
+                if (alias && alias !== "None") countries.add(alias);
+              });
+            }
+          }
+        });
+      }
+
+      // World map sovereign nations
+      if (window.WORLD_MAP_COUNTRIES) {
+        window.WORLD_MAP_COUNTRIES.forEach(c => {
+          if (c.name && c.name !== "Antarctica" && c.name !== "Fr. S. Antarctic Lands") {
+            countries.add(c.name);
+          }
+        });
+      }
+
+      const sorted = Array.from(countries).sort((a, b) => a.localeCompare(b));
+      let html = "";
+      sorted.forEach(cName => {
+        html += `<option value="${cName}">`;
+      });
+      datalist.innerHTML = html;
     }
 
     /* =========================================================================
@@ -2929,7 +3209,7 @@
       revealTargetOnMap(loc);
       const fb = document.getElementById("feedbackBanner");
       fb.className = "feedback-banner";
-      fb.querySelector("#feedbackText").textContent = `👁️ Revealed: ${loc.city || loc.continent}, ${loc.country || ''} (${loc.latFormatted}, ${loc.lonFormatted})`;
+      fb.querySelector("#feedbackText").textContent = `👁️ Revealed: ${loc.city || loc.continent}, ${loc.country || ''} (${loc.latFormatted}, ${localizeCoordString(loc.lonFormatted)})`;
 
       playSound("click");
     }
@@ -3014,7 +3294,7 @@
         const item = locations.find(l => l.id === id);
         if (!item) return "";
         return `<div class="tricky-item">
-          <span>${item.city || item.continent} (${item.latFormatted}, ${item.lonFormatted})</span>
+          <span>${item.city || item.continent} (${item.latFormatted}, ${localizeCoordString(item.lonFormatted)})</span>
           <span style="color:var(--danger); font-weight:700;">${count} ❌</span>
         </div>`;
       }).join("");
@@ -3137,6 +3417,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       loadSavedData();
       applyLanguage();
+      populateCountriesDatalist();
       buildMapLayers();
       filterLocations();
       renderMatrix();
